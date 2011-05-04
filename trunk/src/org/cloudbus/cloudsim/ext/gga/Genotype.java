@@ -22,7 +22,7 @@ public class Genotype {
 	public Genotype() {
 		this.objects = new int[Constants.MAXOBJECTS];
 		this.objects = new int[Constants.MAXOBJECTS];
-		this.packingUsed = PackingT.FISTFIT;
+		this.packingUsed = PackingT.FIRSTFIT;
 	}
 
 	public void Initialize(int numberOfObjects,
@@ -302,7 +302,7 @@ public class Genotype {
 	// Pack an object using the algoritm selected.
 	{
 		switch (packingUsed) {
-		case FISTFIT:
+		case FIRSTFIT:
 			PackObject_FirstFit(object);
 			break;
 		// These two have to be implemented
