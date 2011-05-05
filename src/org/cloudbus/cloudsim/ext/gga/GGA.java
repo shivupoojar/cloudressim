@@ -3,6 +3,7 @@ package org.cloudbus.cloudsim.ext.gga;
 import org.cloudbus.cloudsim.ext.gga.enums.PackingT;
 
 //TODO: Something needs to be done, for get config options of the gga.
+//files needs to be implemented or otherwise.
 
 public class GGA {
 	private GaParamsT gaparams;
