@@ -24,10 +24,10 @@ public class GGA {
 		nrofobjects = numberOfObjects;
 		maxevals = maxEvaluations;
 
-		gaparams.PopulationSize = 12;//inifile.ReadInt ("populationsize");
-		gaparams.N_Crossover = 10;//inifile.ReadInt ("crossover");
-		gaparams.N_Mutation = 10;//inifile.ReadInt ("mutation");
-		gaparams.AllelMutationProb = 0.899;//inifile.ReadDouble ("allelemutationprob");
+		gaparams.PopulationSize = 20;//inifile.ReadInt ("populationsize");
+		gaparams.N_Crossover = 7;//inifile.ReadInt ("crossover");
+		gaparams.N_Mutation = 7;//inifile.ReadInt ("mutation");
+		gaparams.AllelMutationProb = 0.8;//inifile.ReadDouble ("allelemutationprob");
 
 		if (gaparams.PopulationSize < gaparams.N_Crossover * 2)
 		{
