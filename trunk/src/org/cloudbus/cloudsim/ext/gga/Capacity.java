@@ -12,4 +12,11 @@ public class Capacity {
 		Disk = c.Disk;
 		Bandwidth = c.Bandwidth;
 	}
+
+	public Capacity() {
+		Cpu = 0;
+		Mem = 0;
+		Disk = 0;
+		Bandwidth = 0;
+	}
 }

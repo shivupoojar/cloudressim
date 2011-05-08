@@ -276,6 +276,14 @@ public class Genotype {
 		return 1;
 	}
 
+	public static Problem getProblem() {
+		return problem;
+	}
+
+	public static void setProblem(Problem problem) {
+		Genotype.problem = problem;
+	}
+
 	private int ViolatedConstraints (int object)
 	// Calculate the number of constraints an object violates.
 	{

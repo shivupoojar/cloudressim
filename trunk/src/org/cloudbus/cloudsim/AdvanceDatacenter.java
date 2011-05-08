@@ -6,6 +6,9 @@ import java.util.List;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
+import org.cloudbus.cloudsim.ext.gga.GGA;
+import org.cloudbus.cloudsim.ext.gga.Genotype;
+import org.cloudbus.cloudsim.ext.gga.Problem;
 
 public class AdvanceDatacenter extends Datacenter {
 	private List<? extends Vm> vmQueue;
@@ -58,8 +61,8 @@ public class AdvanceDatacenter extends Datacenter {
     	Vm vm = (Vm) ev.getData();
     	getVmQueue().add(vm);
     	
-    	if (getVmQueue().size() == 2) {
-    		for (int i=0; i < 2; i++) {
+    	if (getVmQueue().size() == 10) {
+    		for (int i=0; i < 10; i++) {
 	    		vm = getVmQueue().remove(0);
 	    		boolean result = getVmAllocationPolicy().allocateHostForVm(vm);
 	
@@ -93,5 +96,33 @@ public class AdvanceDatacenter extends Datacenter {
     		}
     	}
     }
+    
+    private void allcateVmsWithGGA() {
+    	Problem problem = new Problem();
+    	problem.CreateProblem(getVmQueue(), getHostList());
+    	
+    	GGA gga = new GGA();
+    	//TODO: The initialization variable should be well considered
+    	gga.Initialize(problem.getNrOfItems(), 200, 2282821);
+    	
+    	//TODO: Times of the reproduce should be a variable
+    	//这里的循环次数是尝试的次数
+    	for (int i=0; i < 10; i++) {
+    		gga.InitializePopulation ();
 
+    		if (gga.Run()) {
+    			//TODO: 成功得到结果
+    		} else {
+    			//TODO: 如果不成功怎么样
+    		}
+    		
+    		//TODO: 每次run怎么操作
+    	}
+    	
+    	//TODO: 怎么利用结果
+    	allcateByGenotype(new Genotype());
+    }
+    
+    private void allcateByGenotype(Genotype geno) {
+    }
 }
