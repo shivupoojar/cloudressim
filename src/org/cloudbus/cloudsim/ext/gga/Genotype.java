@@ -133,6 +133,9 @@ public class Genotype {
 		
 		//得到最后结果
 		fitness /= n;
+		System.out.println("fitness: "+fitness);
+		assert(3 == 2);
+		
 	}
 
 	public void Mutation()
