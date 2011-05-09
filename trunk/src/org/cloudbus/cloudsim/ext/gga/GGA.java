@@ -153,4 +153,9 @@ public class GGA {
 
 	} // GetTotalEvaluation ()
 
+
+	public Genotype getBestGeno() {
+		return population.getBestGeno();
+	}
+
 }

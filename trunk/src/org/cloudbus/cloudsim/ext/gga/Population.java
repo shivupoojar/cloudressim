@@ -5,7 +5,8 @@ import java.util.Random;
 import org.cloudbus.cloudsim.ext.gga.enums.PackingT;
 
 public class Population {
-	static private Random rnd = new Random(554881166);
+	static private Random rnd = new Random();
+	// Use the default random seed(system time);
 
 	private Genotype population[];
 	private GaParamsT gaParams;
@@ -276,4 +277,8 @@ public class Population {
 		}
 
 	} // ApplyMutation ()
+
+	public Genotype getBestGeno() {
+		return population[bestIndex];
+	}
 }
