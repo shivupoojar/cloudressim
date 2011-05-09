@@ -96,7 +96,7 @@ public class Population {
 				}*/
 
 			// Look for a better best fitness
-			if (population[bestIndex].GetFitness() > population[i].GetFitness())
+			if (population[bestIndex].GetFitness() < population[i].GetFitness())
 				bestIndex = i;
 		}
 	} // Evaluate ()

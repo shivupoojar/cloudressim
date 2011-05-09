@@ -6,7 +6,7 @@ import java.util.Stack;
 
 public class Genotype {
 	static private int idnum = 0;
-	static private Random rnd = new Random(554881166);
+	static private Random rnd = new Random();
 	static private Problem problem;
 
 	private int idTag; // unique number
@@ -133,7 +133,7 @@ public class Genotype {
 		
 		//得到最后结果
 		fitness /= n;
-		//System.out.println("fitness: "+fitness);
+		System.out.println("fitness: "+fitness);
 		assert(3 == 2);
 		
 	}
@@ -413,7 +413,6 @@ public class Genotype {
 		// First Fit Packing
 		objects[object] = 0;
 		while (ViolatedConstraints(object) > 0) {
-			System.out.println("Haha: " + i);
 			i++;
 			objects[object] = i;
 		}

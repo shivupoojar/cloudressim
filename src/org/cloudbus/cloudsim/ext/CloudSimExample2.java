@@ -90,21 +90,27 @@ public class CloudSimExample2 {
 	            	String vmm = "Xen"; //VMM name
 
 	            	//create two VMs
-	            	Vm vm1 = new Vm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
+	            	Vm vm1 = new Vm(vmid, brokerId, mips, pesNumber, 710, bw, size, vmm, new CloudletSchedulerTimeShared());
 
 	            	//the second VM will have twice the priority of VM1 and so will receive twice CPU time
 	            	vmid++;
-	            	Vm vm2 = new Vm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
+	            	Vm vm2 = new Vm(vmid, brokerId, mips, pesNumber, 900, bw, size, vmm, new CloudletSchedulerTimeShared());
 	            	vmid++;
-	            	Vm vm3 = new Vm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
+	            	Vm vm3 = new Vm(vmid, brokerId, mips, pesNumber, 300, bw, size, vmm, new CloudletSchedulerTimeShared());
 	            	vmid++;
-	            	Vm vm4 = new Vm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
+	            	Vm vm4 = new Vm(vmid, brokerId, mips, pesNumber, 700, bw, size, vmm, new CloudletSchedulerTimeShared());
+	            	vmid++;
+	            	Vm vm5 = new Vm(vmid, brokerId, mips, pesNumber, 290, bw, size, vmm, new CloudletSchedulerTimeShared());
+	            	vmid++;
+	            	Vm vm6 = new Vm(vmid, brokerId, mips, pesNumber, 100, bw, size, vmm, new CloudletSchedulerTimeShared());
 
 	            	//add the VMs to the vmList
 	            	vmlist.add(vm1);
 	            	vmlist.add(vm2);
 	            	vmlist.add(vm3);
 	            	vmlist.add(vm4);
+	            	vmlist.add(vm5);
+	            	vmlist.add(vm6);
 
 	            	//submit vm list to the broker
 	            	broker.submitVmList(vmlist);
@@ -181,10 +187,55 @@ public class CloudSimExample2 {
 
 	        //4. Create Host with its id and list of PEs and add them to the list of machines
 	        int hostId=0;
-	        int ram = 2048; //host memory (MB)
+	        int ram = 1000; //host memory (MB)
 	        long storage = 1000000; //host storage
 	        int bw = 10000;
 
+	        hostList.add(
+	    			new Host(
+	    				hostId,
+	    				new RamProvisionerSimple(ram),
+	    				new BwProvisionerSimple(bw),
+	    				storage,
+	    				peList,
+	    				new VmSchedulerTimeShared(peList)
+	    			)
+	    		); // This is our machine
+	        
+	        hostId++;
+	        hostList.add(
+	    			new Host(
+	    				hostId,
+	    				new RamProvisionerSimple(ram),
+	    				new BwProvisionerSimple(bw),
+	    				storage,
+	    				peList,
+	    				new VmSchedulerTimeShared(peList)
+	    			)
+	    		); // This is our machine
+	        hostId++;
+	        hostList.add(
+	    			new Host(
+	    				hostId,
+	    				new RamProvisionerSimple(ram),
+	    				new BwProvisionerSimple(bw),
+	    				storage,
+	    				peList,
+	    				new VmSchedulerTimeShared(peList)
+	    			)
+	    		); // This is our machine
+	        hostId++;
+	        hostList.add(
+	    			new Host(
+	    				hostId,
+	    				new RamProvisionerSimple(ram),
+	    				new BwProvisionerSimple(bw),
+	    				storage,
+	    				peList,
+	    				new VmSchedulerTimeShared(peList)
+	    			)
+	    		); // This is our machine
+	        hostId++;
 	        hostList.add(
 	    			new Host(
 	    				hostId,
