@@ -104,7 +104,8 @@ public class Population {
 	public void Reproduce()
 	// Use the genetic operators to form a new generation.
 	{
-		PlayTwoTournament();
+		//PlayTwoTournament();
+		PlayRoulette();
 		ApplyCrossover();
 		ApplyMutation();
 
@@ -218,6 +219,7 @@ public class Population {
 
 		for (i = 0; i < gaParams.PopulationSize; i++) {
 			probs[i] = 0;
+			temp[i] = new Genotype();
 			population[i].Copy(temp[i]);
 		}
 
@@ -273,7 +275,7 @@ public class Population {
 			mutated[i] = false;
 
 		for (i = 0; i < gaParams.N_Mutation; i++) {
-			j = rnd.nextInt() % gaParams.PopulationSize;
+			j = rnd.nextInt(99999) % gaParams.PopulationSize;
 			while (mutated[j])
 				j = (j + 1) % gaParams.PopulationSize;
 			mutated[j] = true;
