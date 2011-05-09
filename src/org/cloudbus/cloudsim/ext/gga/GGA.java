@@ -51,7 +51,7 @@ public class GGA {
 
 		}
 
-		debug = true;//inifile.ReadBool ("ggadebug");
+		debug = false;//inifile.ReadBool ("ggadebug");
 		plotdata = true;//inifile.ReadBool ("plotdata");
 		printsolutions = true;//inifile.ReadBool ("printsolutions");
 
@@ -86,7 +86,7 @@ public class GGA {
 		packingAlgorithm = PackingT.FIRSTFIT;
 		//TODO: Other strategies
 
-		population.Initialize (problem, gaparams, nrofobjects, true, 50, packingAlgorithm);
+		population.Initialize (problem, gaparams, nrofobjects, false, 50, packingAlgorithm);
 
 	} // InintializePupulation ()
 
@@ -128,6 +128,8 @@ public class GGA {
 			//TODO: Solution file
 			//population.PrintBest (solutionsfile);
 			population.PrintBest ();
+		
+		population.PrintBest ();
 
 		if (population.GetBestFitness () > 0)
 			return (true);

@@ -2,6 +2,7 @@ package org.cloudbus.cloudsim;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
@@ -104,7 +105,7 @@ public class AdvanceDatacenter extends Datacenter {
     	
     	GGA gga = new GGA();
     	//TODO: The initialization variable should be well considered
-    	gga.Initialize(problem, 500, 2282821);
+    	gga.Initialize(problem, 500, new Random().nextInt(9999999));
     	
     	Genotype bestGeno = null;
     	//TODO: Times of the reproduce should be a variable

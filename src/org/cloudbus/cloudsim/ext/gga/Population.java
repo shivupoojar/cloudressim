@@ -95,6 +95,7 @@ public class Population {
 					break;
 				}*/
 
+			population[i].Print();
 			// Look for a better best fitness
 			if (population[bestIndex].GetFitness() < population[i].GetFitness())
 				bestIndex = i;
@@ -114,8 +115,8 @@ public class Population {
 	public void PrintBest()
 	// Print out the best geno from the pack, to standard error.
 	{
-		System.err.println(bestIndex + ": ");
-		population[bestIndex].Print(/* cerr */);
+		System.out.println("Best is:" + bestIndex + ": ");
+		population[bestIndex].Print();
 
 	} // PrintBest ()
 
