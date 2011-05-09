@@ -115,10 +115,10 @@ public class Genotype {
 			
 			//计算FF中单项分母
 			double down = 0;
-			down += Math.sqrt(uCpu-uAvg);
-			down += Math.sqrt(uBw-uAvg);
-			down += Math.sqrt(uDisk-uAvg);
-			down += Math.sqrt(uRam-uAvg);
+			down += Math.sqrt(Math.abs(uCpu-uAvg));
+			down += Math.sqrt(Math.abs(uBw-uAvg));
+			down += Math.sqrt(Math.abs(uDisk-uAvg));
+			down += Math.sqrt(Math.abs(uRam-uAvg));
 			
 			//计算单项结果
 			fitness += Math.sqrt(uAvg / down);
@@ -133,7 +133,7 @@ public class Genotype {
 		
 		//得到最后结果
 		fitness /= n;
-		System.out.println("fitness: "+fitness);
+		//System.out.println("fitness: "+fitness);
 		assert(3 == 2);
 		
 	}
@@ -153,7 +153,7 @@ public class Genotype {
 
 		// pick colors for elimination
 		for (i = 0; i < nrOfGroups; i++)
-			if ((rnd.nextInt () % 100) <= (allEleMutationProb * 100))
+			if ((rnd.nextInt (99999) % 100) <= (allEleMutationProb * 100))
 			{
 				eliminated[groups[i]] = true;
 				groups[i] = Constants.ELIMINATED;
@@ -205,16 +205,16 @@ public class Genotype {
 		//cerr << "crossover " << idtag << " " << otherParent.idtag << " " << child1.idtag << " " << child2.idtag << endl;
 
 		// Choose crossover points
-		p1cp1 = rnd.nextInt () % nrOfGroups;
-		p1cp2 = rnd.nextInt () % nrOfGroups;
+		p1cp1 = rnd.nextInt (99999) % nrOfGroups;
+		p1cp2 = rnd.nextInt (99999) % nrOfGroups;
 		if (p1cp2 < p1cp1)
 		{
 			i = p1cp1;
 			p1cp1 = p1cp2;
 			p1cp2 = i;
 		}
-		p2cp1 = rnd.nextInt () % otherParent.nrOfGroups;
-		p2cp2 = rnd.nextInt () % otherParent.nrOfGroups;
+		p2cp1 = rnd.nextInt (99999) % otherParent.nrOfGroups;
+		p2cp2 = rnd.nextInt (99999) % otherParent.nrOfGroups;
 		if (p2cp2 < p2cp1)
 		{
 			i = p2cp1;

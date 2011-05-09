@@ -129,7 +129,7 @@ public class GGA {
 			//population.PrintBest (solutionsfile);
 			population.PrintBest ();
 
-		if (population.GetBestFitness () == 0)
+		if (population.GetBestFitness () > 0)
 			return (true);
 		else
 			return (false);

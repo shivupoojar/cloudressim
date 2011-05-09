@@ -104,7 +104,7 @@ public class AdvanceDatacenter extends Datacenter {
     	
     	GGA gga = new GGA();
     	//TODO: The initialization variable should be well considered
-    	gga.Initialize(problem, 200, 2282821);
+    	gga.Initialize(problem, 500, 2282821);
     	
     	Genotype bestGeno = null;
     	//TODO: Times of the reproduce should be a variable
