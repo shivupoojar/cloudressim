@@ -352,6 +352,15 @@ public class Genotype {
 	public static void setProblem(Problem problem) {
 		Genotype.problem = problem;
 	}
+	
+	public int getAllocatedHost(int vm) {
+		if (vm < nrOfObjects)
+			return objects[vm];
+		else {
+			System.err.println("Err: Vm sequence exeeded");
+			return -1;
+		}
+	}
 
 	private int ViolatedConstraints (int object)
 	// Calculate the number of constraints an object violates.

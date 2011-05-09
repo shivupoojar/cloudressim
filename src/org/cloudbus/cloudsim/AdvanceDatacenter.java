@@ -61,8 +61,9 @@ public class AdvanceDatacenter extends Datacenter {
     	Vm vm = (Vm) ev.getData();
     	getVmQueue().add(vm);
     	
-    	if (getVmQueue().size() == 10) {
-    		for (int i=0; i < 10; i++) {
+    	if (getVmQueue().size() == 10) //{
+    		allocateVmsWithGGA();
+    	/*	for (int i=0; i < 10; i++) {
 	    		vm = getVmQueue().remove(0);
 	    		boolean result = getVmAllocationPolicy().allocateHostForVm(vm);
 	
@@ -94,10 +95,10 @@ public class AdvanceDatacenter extends Datacenter {
 	    			vm.updateVmProcessing(CloudSim.clock(), getVmAllocationPolicy().getHost(vm).getVmScheduler().getAllocatedMipsForVm(vm));
 	     	    }
     		}
-    	}
+    	}*/
     }
     
-    private void allcateVmsWithGGA() {
+    private void allocateVmsWithGGA() {
     	Problem problem = new Problem();
     	problem.CreateProblem(getVmQueue(), getHostList());
     	
@@ -105,6 +106,7 @@ public class AdvanceDatacenter extends Datacenter {
     	//TODO: The initialization variable should be well considered
     	gga.Initialize(problem.getNrOfItems(), 200, 2282821);
     	
+    	Genotype bestGeno = null;
     	//TODO: Times of the reproduce should be a variable
     	//这里的循环次数是尝试的次数
     	for (int i=0; i < 10; i++) {
@@ -112,6 +114,8 @@ public class AdvanceDatacenter extends Datacenter {
 
     		if (gga.Run()) {
     			//TODO: 成功得到结果
+    			bestGeno = gga.getBestGeno();
+    			break; //得到就不跑了吧
     		} else {
     			//TODO: 如果不成功怎么样
     		}
@@ -120,9 +124,46 @@ public class AdvanceDatacenter extends Datacenter {
     	}
     	
     	//TODO: 怎么利用结果
-    	allcateByGenotype(new Genotype());
+    	allcateByGenotype(bestGeno);
     }
     
     private void allcateByGenotype(Genotype geno) {
+    	int size = getVmQueue().size();
+    	for (int i=0; i < size; i++) {
+    		Vm vm = getVmQueue().get(i);
+    		int host = geno.getAllocatedHost(i);
+    		boolean result = getVmAllocationPolicy().allocateHostForVm(vm, getHostList().get(host));
+    		int[] data = new int[3];
+            data[0] = getId();
+  	       	data[1] = vm.getId();
+    		if (result) {
+         	   data[2] = CloudSimTags.TRUE;
+            } else {
+         	   data[2] = CloudSimTags.FALSE;
+            }
+ 		   	sendNow(vm.getUserId(), CloudSimTags.VM_CREATE_ACK, data);
+			if (result) {
+				double amount = 0.0;
+				if (getDebts().containsKey(vm.getUserId())) {
+					amount = getDebts().get(vm.getUserId());
+				}
+				amount += getCharacteristics().getCostPerMem() * vm.getRam();
+				amount += getCharacteristics().getCostPerStorage()
+						* vm.getSize();
+
+				getDebts().put(vm.getUserId(), amount);
+
+				getVmList().add(vm);
+
+				vm.updateVmProcessing(CloudSim.clock(), getVmAllocationPolicy()
+						.getHost(vm).getVmScheduler().getAllocatedMipsForVm(vm));
+			} else {
+				System.err.println("GGA Seems to be failed");
+				assert(3==2);
+			}
+    		
+    	}
+    	
+    	getVmQueue().clear();
     }
 }
