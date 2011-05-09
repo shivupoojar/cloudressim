@@ -66,7 +66,66 @@ public class Genotype {
 	}
 
 	public void Evaluate() {
+		double uRam = 0;
+		double uCpu = 0;
+		double uDisk = 0;
+		double uBw = 0;
+		double uAvg = 0;
+		int cRam[];
+		int cCpu[];
+		int cDisk[];
+		int cBw[];
 
+		fitness = 0;
+		
+		int n = GetBinsUsed();
+		cRam = new int[n];
+		cCpu = new int[n];
+		cBw = new int[n];
+		cDisk = new int[n];
+		
+		for (int j=0; j < nrOfObjects; j++) {
+			int group = objects[j];
+			cBw[group] += problem.getItemRequest(j, 0);
+			cCpu[group] += problem.getItemRequest(j, 1);
+			cDisk[group] += problem.getItemRequest(j, 2);
+			cRam[group] += problem.getItemRequest(j, 3);
+		}
+		
+		int nRam = problem.GetBinSize().Mem;
+		int nCpu = problem.GetBinSize().Cpu;
+		int nDisk = problem.GetBinSize().Disk;
+		int nBw = problem.GetBinSize().Bandwidth;
+		
+		for (int i=0; i < n; i++) {
+			//计算算子结果
+			uRam = (double)cRam[i] / nRam;
+			//System.out.println("uRam: " + uRam);
+			uCpu = (double)cCpu[i] / nCpu;
+			uDisk = (double)cDisk[i] / nDisk;
+			uBw = (double)cBw[i] / nBw;
+			uAvg = (uRam+uCpu+uDisk+uBw) / 4;
+			
+			//计算FF中单项分母
+			double down = 0;
+			down += Math.sqrt(uCpu-uAvg);
+			down += Math.sqrt(uBw-uAvg);
+			down += Math.sqrt(uDisk-uAvg);
+			down += Math.sqrt(uRam-uAvg);
+			
+			//计算单项结果
+			fitness += Math.sqrt(uAvg / down);
+			
+			//算子清零
+			uRam = 0;
+			uCpu = 0;
+			uDisk = 0;
+			uBw = 0;
+			uAvg = 0;
+		}
+		
+		//得到最后结果
+		fitness /= n;
 	}
 
 	public void Mutation()

@@ -72,4 +72,26 @@ public class Problem {
 			items.add(c);
 		}
 	}
+	
+	//TODO: 这个借口用int表示type，应当改成enum
+	public int getItemRequest(int seq, int type) {
+		int retVal;
+		switch (type) {
+		case 0:
+			retVal = items.get(seq).Bandwidth;
+			break;
+		case 1:
+			retVal = items.get(seq).Cpu;
+			break;
+		case 2:
+			retVal = items.get(seq).Disk;
+			break;
+		case 3:
+			retVal = items.get(seq).Mem;
+			break;
+		default:
+			retVal = items.get(seq).Mem;
+		}
+		return retVal;
+	}
 }
