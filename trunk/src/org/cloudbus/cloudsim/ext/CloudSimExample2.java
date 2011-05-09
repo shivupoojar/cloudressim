@@ -19,7 +19,6 @@ import java.util.List;
 import org.cloudbus.cloudsim.AdvanceDatacenter;
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.Datacenter;
 import org.cloudbus.cloudsim.DatacenterBroker;
 import org.cloudbus.cloudsim.DatacenterCharacteristics;
 import org.cloudbus.cloudsim.Host;
@@ -29,7 +28,7 @@ import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.UtilizationModel;
 import org.cloudbus.cloudsim.UtilizationModelFull;
 import org.cloudbus.cloudsim.Vm;
-import org.cloudbus.cloudsim.VmAllocationPolicySimple;
+import org.cloudbus.cloudsim.VmAllocationPolicyLite;
 import org.cloudbus.cloudsim.VmSchedulerTimeShared;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
@@ -219,7 +218,7 @@ public class CloudSimExample2 {
 	        // 6. Finally, we need to create a PowerDatacenter object.
 	        AdvanceDatacenter datacenter = null;
 	        try {
-	            datacenter = new AdvanceDatacenter(name, characteristics, new VmAllocationPolicySimple(hostList), storageList, 0);
+	            datacenter = new AdvanceDatacenter(name, characteristics, new VmAllocationPolicyLite(hostList), storageList, 0);
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
