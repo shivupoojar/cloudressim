@@ -199,6 +199,48 @@ public class Population {
 		temp[i].Copy(population[n]);
 
 	} // PlayTwoTournament ()
+	
+	private void PlayRoulette()
+	// the roulette 
+	{
+		int n, i, j;
+		Genotype temp[]; // copy of population to use for selection
+		double probs[]; // holds the losers
+
+		temp = new Genotype[Constants.MAXPOPSIZE];
+		probs = new double[gaParams.PopulationSize];
+
+		for (i = 0; i < gaParams.PopulationSize; i++) {
+			probs[i] = 0;
+			population[i].Copy(temp[i]);
+		}
+
+		// We'll have to do this populationsize times
+		probs[0] = population[0].GetFitness();
+		for (i = 1; i < gaParams.PopulationSize; i++) {
+			probs[i] = probs[i-1] + population[i].GetFitness();
+		}
+		//归一化
+		double totalP = probs[gaParams.PopulationSize - 1];
+		for (i = 0; i < gaParams.PopulationSize; i++) {
+			probs[i] = probs[i] / totalP;
+		}
+		
+		double p;
+		int selected = 0;
+		for (i = 0; i < gaParams.PopulationSize; i++) {
+			p = rnd.nextDouble();
+			//选出轮盘命中个体
+			if (p <= probs[0]) selected = 0;
+			else {
+				for (j = 1; j < gaParams.PopulationSize; j++) {
+					if (p > probs[j-1] && p <= probs[j])
+						selected = j;
+				}
+			}
+			temp[selected].Copy(population[i]);
+		}
+	} // PlayRoulette()
 
 	private void ApplyCrossover()
 	// Does crossover operation on N_Crossove individuals.
