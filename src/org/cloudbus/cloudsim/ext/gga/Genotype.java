@@ -21,7 +21,7 @@ public class Genotype {
 
 	public Genotype() {
 		this.objects = new int[Constants.MAXOBJECTS];
-		this.objects = new int[Constants.MAXOBJECTS];
+		this.groups = new int[Constants.MAXOBJECTS];
 		this.packingUsed = PackingT.FIRSTFIT;
 	}
 
@@ -33,7 +33,7 @@ public class Genotype {
 	{
 		int i, r;
 
-		r = rnd.nextInt();
+		r = rnd.nextInt(99999);
 
 		idTag = idnum;
 		idnum++;
@@ -372,6 +372,8 @@ public class Genotype {
 		
 		Capacity size = problem.GetBinSize();
 		
+		System.out.println(size);
+		
 		for (int i=0; i < nrOfObjects; i++) {
 			if (objects[i] == group) {
 				//将第i个item放到bin里头，size记录当前这个bin剩余容量
@@ -413,6 +415,7 @@ public class Genotype {
 		// First Fit Packing
 		objects[object] = 0;
 		while (ViolatedConstraints(object) > 0) {
+			System.out.println("Haha: " + i);
 			i++;
 			objects[object] = i;
 		}

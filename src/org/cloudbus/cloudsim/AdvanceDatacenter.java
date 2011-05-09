@@ -61,7 +61,7 @@ public class AdvanceDatacenter extends Datacenter {
     	Vm vm = (Vm) ev.getData();
     	getVmQueue().add(vm);
     	
-    	if (getVmQueue().size() == 10) //{
+    	if (getVmQueue().size() == 4) //{
     		allocateVmsWithGGA();
     	/*	for (int i=0; i < 10; i++) {
 	    		vm = getVmQueue().remove(0);
@@ -104,7 +104,7 @@ public class AdvanceDatacenter extends Datacenter {
     	
     	GGA gga = new GGA();
     	//TODO: The initialization variable should be well considered
-    	gga.Initialize(problem.getNrOfItems(), 200, 2282821);
+    	gga.Initialize(problem, 200, 2282821);
     	
     	Genotype bestGeno = null;
     	//TODO: Times of the reproduce should be a variable

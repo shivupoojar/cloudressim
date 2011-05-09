@@ -19,9 +19,10 @@ public class Population {
 	// Set the arrays
 	{
 		population = new Genotype[Constants.MAXPOPSIZE];
+		gaParams = new GaParamsT();
 	}
 
-	public void Initialize(GaParamsT gaparameters, int nrofobjects,
+	public void Initialize(Problem problem, GaParamsT gaparameters, int nrofobjects,
 			boolean debugactive, int k_coloring, PackingT coloringalgorithm)
 	// Ask every geno in the population to initialize itself.
 	{
@@ -49,9 +50,13 @@ public class Population {
 							+ gaParams.N_Crossover + " instead");
 		}
 
-		for (i = 0; i < gaParams.PopulationSize; i++)
+		//set the problem
+		Genotype.setProblem(problem);
+		for (i = 0; i < gaParams.PopulationSize; i++) {
+			population[i] = new Genotype();
 			population[i].Initialize(nrofobjects, gaParams.AllelMutationProb,
 					k_coloring, coloringalgorithm);
+		}
 
 	} // Initialize ()
 
