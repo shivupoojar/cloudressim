@@ -6,8 +6,10 @@ import org.cloudbus.cloudsim.ext.gga.enums.PackingT;
 //files needs to be implemented or otherwise.
 
 public class GGA {
-	private GaParamsT gaparams;
-	private Population population;
+	private Problem problem;
+	
+	private GaParamsT gaparams = new GaParamsT();
+	private Population population = new Population();
 	private java.io.File solutionsFile;
 	private java.io.File dataFile;
 	private int maxevals;
@@ -17,10 +19,13 @@ public class GGA {
 	private boolean plotdata;
 	private boolean printsolutions;
 	
-	public void Initialize (int numberOfObjects, int maxEvaluations, int seed)
+	public void Initialize (Problem problem, int maxEvaluations, int seed)
 	// Set all genetic algorithm specific parameters and
 	// initialize the population.
 	{
+		this.problem = problem;
+		
+		int numberOfObjects = problem.getNrOfItems();
 		nrofobjects = numberOfObjects;
 		maxevals = maxEvaluations;
 
@@ -81,7 +86,7 @@ public class GGA {
 		packingAlgorithm = PackingT.FIRSTFIT;
 		//TODO: Other strategies
 
-		population.Initialize (gaparams, nrofobjects, true, 50, packingAlgorithm);
+		population.Initialize (problem, gaparams, nrofobjects, true, 50, packingAlgorithm);
 
 	} // InintializePupulation ()
 

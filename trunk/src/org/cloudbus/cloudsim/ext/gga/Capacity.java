@@ -19,4 +19,8 @@ public class Capacity {
 		Disk = 0;
 		Bandwidth = 0;
 	}
+	
+	public String toString() {
+		return "Cpu:" + Cpu + "Mem:" + Mem + "Disk:" + Disk + "Bw:" + Bandwidth;
+	}
 }

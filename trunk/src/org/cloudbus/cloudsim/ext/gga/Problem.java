@@ -8,7 +8,7 @@ import org.cloudbus.cloudsim.Vm;
 
 public class Problem {
 	private ArrayList<Capacity> items;
-	private Capacity cBin;
+	private Capacity cBin = new Capacity();
 	private int nrOfItems;
 	private int nrOfBins;
 	
@@ -28,19 +28,19 @@ public class Problem {
 	// to see if the bin fit the item
 	{
 		Capacity item = items.get(object);
-		if (item.Cpu < bin.Cpu)
+		if (item.Cpu > bin.Cpu)
 			return false;
 		else
 			bin.Cpu -= item.Cpu;
-		if (item.Mem < bin.Mem)
+		if (item.Mem > bin.Mem)
 			return false;
 		else
 			bin.Mem -= item.Mem;
-		if (item.Disk < bin.Disk)
+		if (item.Disk > bin.Disk)
 			return false;
 		else
 			bin.Disk -= item.Disk;
-		if (item.Bandwidth < bin.Bandwidth)
+		if (item.Bandwidth > bin.Bandwidth)
 			return false;
 		else
 			bin.Bandwidth -= item.Bandwidth;
@@ -55,6 +55,8 @@ public class Problem {
 		nrOfBins = hostList.size();
 		
 		Host host = hostList.get(0);
+		System.out.println("Size of hostlist£º" + hostList.size());
+		System.out.println("Size of vmlist£º" + vmList.size());
 		//TODO: the size of the variable
 		cBin.Bandwidth = (int) host.getBw();
 		cBin.Cpu = (int) host.getMaxAvailableMips();
