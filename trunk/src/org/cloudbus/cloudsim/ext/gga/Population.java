@@ -71,7 +71,7 @@ public class Population {
 
 		for (i = 0; i < gaParams.PopulationSize; i++) {
 			// This switch adds quite some extra load on the cpu
-			if (debug)
+			/*if (debug)
 				switch (population[i].IsValid(object)) {
 				case 0:
 					break;
@@ -93,7 +93,7 @@ public class Population {
 									+ object + "]");
 					population[i].Print();
 					break;
-				}
+				}*/
 
 			// Look for a better best fitness
 			if (population[bestIndex].GetFitness() > population[i].GetFitness())

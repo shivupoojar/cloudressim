@@ -372,8 +372,6 @@ public class Genotype {
 		
 		Capacity size = problem.GetBinSize();
 		
-		System.out.println(size);
-		
 		for (int i=0; i < nrOfObjects; i++) {
 			if (objects[i] == group) {
 				//将第i个item放到bin里头，size记录当前这个bin剩余容量
