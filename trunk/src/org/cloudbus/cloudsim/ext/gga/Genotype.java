@@ -290,25 +290,25 @@ public class Genotype {
 	{
 		int i;
 
-		System.out.println("(" + idTag + ") ");
+		System.out.print("(" + idTag + ") ");
 
 		// Print out objects
 		for (i = 0; i < nrOfObjects; i++)
 			if (objects[i] == Constants.UNCOLORED)
 				System.out.println("X ");
 			else
-				System.out.println(objects[i]+ " ");
+				System.out.print(objects[i]+ " ");
 
-		System.out.println(" : ");
+		System.out.print(" : ");
 
 		// Print out groups
 		for (i = 0; i < nrOfGroups; i++)
 			if (groups[i] == Constants.ELIMINATED)
-				System.out.println("X ");
+				System.out.print("X ");
 			else
-				System.out.println(groups[i]+" ");
+				System.out.print(groups[i]+" ");
 
-		System.out.println(", ");
+		System.out.print(", ");
 
 		// Print out fitness
 		System.out.println("fitness: "+fitness);
