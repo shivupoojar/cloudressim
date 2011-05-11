@@ -55,9 +55,6 @@ public class Problem {
 		nrOfBins = hostList.size();
 		
 		Host host = hostList.get(0);
-		System.out.println("Size of hostlist£º" + hostList.size());
-		System.out.println("Size of vmlist£º" + vmList.size());
-		//TODO: the size of the variable
 		cBin.Bandwidth = (int) host.getBw();
 		cBin.Cpu = (int) host.getMaxAvailableMips();
 		cBin.Disk = (int) host.getStorage();

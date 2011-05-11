@@ -70,32 +70,8 @@ public class Population {
 		int object = 0; // holds first faulty gene
 
 		for (i = 0; i < gaParams.PopulationSize; i++) {
-			// This switch adds quite some extra load on the cpu
-			/*if (debug)
-				switch (population[i].IsValid(object)) {
-				case 0:
-					break;
-				case 1:
-					System.err.println("\n"
-							+ "Found an invalid genoom! [badcoloring in gene "
-							+ object + "]");
-					population[i].Print();
-					break;
-				case 2:
-					System.err.println("\n"
-							+ "Found an invalid genoom! [duplicatecolor]");
-					population[i].Print();
-					break;
-				case 3:
-					System.err
-							.println("\n"
-									+ "Found an invalid genoom! [illegalcolorused in gene "
-									+ object + "]");
-					population[i].Print();
-					break;
-				}*/
-
-			population[i].Print();
+			if (debug)
+				population[i].Print();
 			// Look for a better best fitness
 			if (population[bestIndex].GetFitness() < population[i].GetFitness())
 				bestIndex = i;
