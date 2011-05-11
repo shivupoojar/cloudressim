@@ -79,7 +79,6 @@ public class Genotype {
 		fitness = 0;
 		
 		int n = GetBinsUsed();
-		//TODO: 希望数组初值为0
 		cRam = new int[n];
 		cCpu = new int[n];
 		cBw = new int[n];
