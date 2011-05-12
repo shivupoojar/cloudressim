@@ -9,6 +9,7 @@ public class Population {
 	// Use the default random seed(system time);
 
 	private Genotype population[];
+	private Genotype curBestGeno = null;
 	private GaParamsT gaParams;
 	private boolean debug;
 	private double totalFitness;
@@ -75,6 +76,13 @@ public class Population {
 			// Look for a better best fitness
 			if (population[bestIndex].GetFitness() < population[i].GetFitness())
 				bestIndex = i;
+		}
+		// Save the current best geno;
+		if (curBestGeno == null) {
+			curBestGeno = new Genotype(); 
+			population[bestIndex].Copy(curBestGeno);
+		} else if (curBestGeno.GetFitness() < population[bestIndex].GetFitness()){
+			population[bestIndex].Copy(curBestGeno);
 		}
 	} // Evaluate ()
 
@@ -264,5 +272,9 @@ public class Population {
 
 	public Genotype getBestGeno() {
 		return population[bestIndex];
+	}
+
+	public Genotype getCurBestGeno() {
+		return curBestGeno;
 	}
 }

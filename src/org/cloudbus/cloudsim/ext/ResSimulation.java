@@ -44,7 +44,7 @@ import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
  * The cloudlets will take the same time to
  * complete the execution.
  */
-public class CloudSimExample2 {
+public class ResSimulation {
 
 	/** The cloudlet list. */
 	private static List<Cloudlet> cloudletList;
