@@ -29,8 +29,9 @@ public class GGA {
 		nrofobjects = numberOfObjects;
 		maxevals = maxEvaluations;
 
+		//TODO: These properties should be read from a file;
 		gaparams.PopulationSize = 20;//inifile.ReadInt ("populationsize");
-		gaparams.N_Crossover = 7;//inifile.ReadInt ("crossover");
+		gaparams.N_Crossover = 6;//inifile.ReadInt ("crossover");
 		gaparams.N_Mutation = 7;//inifile.ReadInt ("mutation");
 		gaparams.AllelMutationProb = 0.8;//inifile.ReadDouble ("allelemutationprob");
 
@@ -84,7 +85,7 @@ public class GGA {
 		PackingT packingAlgorithm = PackingT.UNDIFINED;
 		
 		packingAlgorithm = PackingT.FIRSTFIT;
-		//TODO: Other strategies
+		//TODO: Other strategies, max packing num;
 
 		population.Initialize (problem, gaparams, nrofobjects, false, 50, packingAlgorithm);
 
@@ -162,7 +163,8 @@ public class GGA {
 
 
 	public Genotype getBestGeno() {
-		return population.getBestGeno();
+		//return population.getBestGeno();
+		return population.getCurBestGeno();
 	}
 
 }
