@@ -1,5 +1,8 @@
 package org.cloudbus.cloudsim.ext.gga;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 import org.cloudbus.cloudsim.ext.gga.enums.PackingT;
 
 //TODO: Something needs to be done, for get config options of the gga.
@@ -10,8 +13,8 @@ public class GGA {
 	
 	private GaParamsT gaparams = new GaParamsT();
 	private Population population = new Population();
-	private java.io.File solutionsFile;
-	private java.io.File dataFile;
+	private FileWriter solutionsFile;
+	private FileWriter dataFile;
 	private int maxevals;
 	private int nrofobjects;
 	private int randomseed;
@@ -28,12 +31,14 @@ public class GGA {
 		int numberOfObjects = problem.getNrOfItems();
 		nrofobjects = numberOfObjects;
 		maxevals = maxEvaluations;
+		
+		PropertiesReader properties = PropertiesReader.loader();
 
 		//TODO: These properties should be read from a file;
-		gaparams.PopulationSize = 20;//inifile.ReadInt ("populationsize");
-		gaparams.N_Crossover = 6;//inifile.ReadInt ("crossover");
-		gaparams.N_Mutation = 7;//inifile.ReadInt ("mutation");
-		gaparams.AllelMutationProb = 0.8;//inifile.ReadDouble ("allelemutationprob");
+		gaparams.PopulationSize = properties.getInt("populations_size"); //20//inifile.ReadInt ("populationsize");
+		gaparams.N_Crossover = properties.getInt("crossover"); //6;//inifile.ReadInt ("crossover");
+		gaparams.N_Mutation = properties.getInt("mutations"); // 7;//inifile.ReadInt ("mutation");
+		gaparams.AllelMutationProb = properties.getDouble("allelemutation_prob"); //0.88("populations_size");0.8;//inifile.ReadDouble ("allelemutationprob");
 
 		if (gaparams.PopulationSize < gaparams.N_Crossover * 2)
 		{
@@ -52,26 +57,44 @@ public class GGA {
 
 		}
 
-		debug = false;//inifile.ReadBool ("ggadebug");
-		plotdata = true;//inifile.ReadBool ("plotdata");
-		printsolutions = true;//inifile.ReadBool ("printsolutions");
+		debug = properties.getBoolean("debug"); //false;//inifile.ReadBool ("ggadebug");
+		plotdata = properties.getBoolean("plotdata"); //true;//inifile.ReadBool ("plotdata");
+		printsolutions = properties.getBoolean("printsolutions"); //true;//inifile.ReadBool ("printsolutions");
+		
+		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH/mm/ss");
+		java.util.Date date = new java.util.Date();
 
 		if (printsolutions)
 		{
-			solutionsFile = new java.io.File("solutions");// .open (inifile.ReadString("solutionsfile"));
-			if (!solutionsFile.exists())
-			{
+			try {
+				solutionsFile = new FileWriter("solutions");
+			} catch (IOException e1) {
+				printsolutions = false;
+				e1.printStackTrace();
+			}// .open (inifile.ReadString("solutionsfile"));
+			try {
+				solutionsFile.write("New data:" + format.format(date));
+			} catch (Exception e) {
 				printsolutions = false;
 				System.err.println("Warning: could not open solution files");
+				e.printStackTrace();
 			}
 		}
 
 		if (plotdata)
 		{
-			dataFile =  new java.io.File("data");//.open (inifile.ReadString("datafile"));
-			if (!dataFile.exists())
-			{
+			try {
+				dataFile =  new FileWriter("data");
+			} catch (IOException e1) {
 				plotdata = false;
+				e1.printStackTrace();
+			}//.open (inifile.ReadString("datafile"));
+			
+			try {
+				dataFile.write("New data:" + format.format(date));
+			} catch (Exception e) {
+				plotdata = false;
+				e.printStackTrace();
 				System.err.println("Warning: could not open data files");
 			}
 		}
@@ -87,7 +110,7 @@ public class GGA {
 		packingAlgorithm = PackingT.FIRSTFIT;
 		//TODO: Other strategies, max packing num;
 
-		population.Initialize (problem, gaparams, nrofobjects, false, 50, packingAlgorithm);
+		population.Initialize (problem, gaparams, nrofobjects, debug, 50, packingAlgorithm);
 
 	} // InintializePupulation ()
 
@@ -102,7 +125,7 @@ public class GGA {
 		population.Evaluate ();
 		gen = 0;
 		if (debug)
-			System.err.print("\b\b\b\b\b\b\b\b\b\b" +  population.GetBestFitness () + GetBinsUsed ());
+			System.err.print("\n   " +  population.GetBestFitness () + GetBinsUsed ());
 		
 		while ((population.GetBestFitness () > 0) && (population.GetTotalEvaluations ()) < maxevals)
 		{
@@ -110,11 +133,14 @@ public class GGA {
 			gen++;
 			population.Evaluate ();
 			if (debug)
-				System.err.println("\b\b\b\b\b\b\b\b\b\b" + population.GetBestFitness () + GetBinsUsed ());
+				System.err.println("\n   " + population.GetBestFitness () + GetBinsUsed ());
 
 			if (plotdata)
-				//TODO: need!//dataFile. population.GetTotalEvaluations () + " " +\ population.GetBestFitness () << endl;
-				System.err.println("lack of codes1!");
+				try {
+					dataFile.write(population.GetTotalEvaluations () + "\n");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		}
 
 		if (plotdata)
@@ -127,8 +153,6 @@ public class GGA {
 
 		if (printsolutions)
 			//TODO: Solution file
-			//population.PrintBest (solutionsfile);
-			population.PrintBest ();
 		
 		population.PrintBest ();
 
@@ -141,7 +165,12 @@ public class GGA {
 
 	public void Close ()
 	{
-		//TODO: close files
+		try {
+			solutionsFile.close();
+			dataFile.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
 		return;
 	} // Close ()
 
