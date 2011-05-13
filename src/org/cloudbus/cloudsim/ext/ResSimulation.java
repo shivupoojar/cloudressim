@@ -89,28 +89,11 @@ public class ResSimulation {
 	            	int pesNumber = 1; //number of cpus
 	            	String vmm = "Xen"; //VMM name
 
-	            	//create two VMs
-	            	Vm vm1 = new Vm(vmid, brokerId, mips, pesNumber, 710, bw, size, vmm, new CloudletSchedulerTimeShared());
-
-	            	//the second VM will have twice the priority of VM1 and so will receive twice CPU time
-	            	vmid++;
-	            	Vm vm2 = new Vm(vmid, brokerId, mips, pesNumber, 900, bw, size, vmm, new CloudletSchedulerTimeShared());
-	            	vmid++;
-	            	Vm vm3 = new Vm(vmid, brokerId, mips, pesNumber, 300, bw, size, vmm, new CloudletSchedulerTimeShared());
-	            	vmid++;
-	            	Vm vm4 = new Vm(vmid, brokerId, mips, pesNumber, 700, bw, size, vmm, new CloudletSchedulerTimeShared());
-	            	vmid++;
-	            	Vm vm5 = new Vm(vmid, brokerId, mips, pesNumber, 290, bw, size, vmm, new CloudletSchedulerTimeShared());
-	            	vmid++;
-	            	Vm vm6 = new Vm(vmid, brokerId, mips, pesNumber, 100, bw, size, vmm, new CloudletSchedulerTimeShared());
-
-	            	//add the VMs to the vmList
-	            	vmlist.add(vm1);
-	            	vmlist.add(vm2);
-	            	vmlist.add(vm3);
-	            	vmlist.add(vm4);
-	            	vmlist.add(vm5);
-	            	vmlist.add(vm6);
+	            	//Create VMs
+	            	for (int i=0; i < 10; i++) {
+	            		vmlist.add(new Vm(vmid, brokerId, mips, pesNumber, 710, bw, size, vmm, new CloudletSchedulerTimeShared()));
+	            		vmid++;
+	            	}
 
 	            	//submit vm list to the broker
 	            	broker.submitVmList(vmlist);
@@ -144,8 +127,8 @@ public class ResSimulation {
 
 	            	//bind the cloudlets to the vms. This way, the broker
 	            	// will submit the bound cloudlets only to the specific VM
-	            	broker.bindCloudletToVm(cloudlet1.getCloudletId(),vm1.getId());
-	            	broker.bindCloudletToVm(cloudlet2.getCloudletId(),vm2.getId());
+	            	broker.bindCloudletToVm(cloudlet1.getCloudletId(),vmlist.get(0).getId());
+	            	broker.bindCloudletToVm(cloudlet2.getCloudletId(),vmlist.get(1).getId());
 
 	            	// Sixth step: Starts the simulation
 	            	CloudSim.startSimulation();
@@ -191,62 +174,19 @@ public class ResSimulation {
 	        long storage = 1000000; //host storage
 	        int bw = 10000;
 
-	        hostList.add(
-	    			new Host(
-	    				hostId,
-	    				new RamProvisionerSimple(ram),
-	    				new BwProvisionerSimple(bw),
-	    				storage,
-	    				peList,
-	    				new VmSchedulerTimeShared(peList)
-	    			)
-	    		); // This is our machine
-	        
-	        hostId++;
-	        hostList.add(
-	    			new Host(
-	    				hostId,
-	    				new RamProvisionerSimple(ram),
-	    				new BwProvisionerSimple(bw),
-	    				storage,
-	    				peList,
-	    				new VmSchedulerTimeShared(peList)
-	    			)
-	    		); // This is our machine
-	        hostId++;
-	        hostList.add(
-	    			new Host(
-	    				hostId,
-	    				new RamProvisionerSimple(ram),
-	    				new BwProvisionerSimple(bw),
-	    				storage,
-	    				peList,
-	    				new VmSchedulerTimeShared(peList)
-	    			)
-	    		); // This is our machine
-	        hostId++;
-	        hostList.add(
-	    			new Host(
-	    				hostId,
-	    				new RamProvisionerSimple(ram),
-	    				new BwProvisionerSimple(bw),
-	    				storage,
-	    				peList,
-	    				new VmSchedulerTimeShared(peList)
-	    			)
-	    		); // This is our machine
-	        hostId++;
-	        hostList.add(
-	    			new Host(
-	    				hostId,
-	    				new RamProvisionerSimple(ram),
-	    				new BwProvisionerSimple(bw),
-	    				storage,
-	    				peList,
-	    				new VmSchedulerTimeShared(peList)
-	    			)
-	    		); // This is our machine
-
+	        for (int i=0; i < 10; i++) {
+	        	hostList.add(
+		    			new Host(
+		    				hostId,
+		    				new RamProvisionerSimple(ram),
+		    				new BwProvisionerSimple(bw),
+		    				storage,
+		    				peList,
+		    				new VmSchedulerTimeShared(peList)
+		    			)
+		    		); // This is our machine
+	        	hostId++;
+	        }
 
 	        // 5. Create a DatacenterCharacteristics object that stores the
 	        //    properties of a data center: architecture, OS, list of
