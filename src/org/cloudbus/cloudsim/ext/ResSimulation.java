@@ -23,6 +23,7 @@ import org.cloudbus.cloudsim.DatacenterBroker;
 import org.cloudbus.cloudsim.DatacenterCharacteristics;
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Log;
+import org.cloudbus.cloudsim.NetworkTopology;
 import org.cloudbus.cloudsim.Pe;
 import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.UtilizationModel;
@@ -90,10 +91,14 @@ public class ResSimulation {
 	            	String vmm = "Xen"; //VMM name
 
 	            	//Create VMs
-	            	for (int i=0; i < 10; i++) {
-	            		vmlist.add(new Vm(vmid, brokerId, mips, pesNumber, 710, bw, size, vmm, new CloudletSchedulerTimeShared()));
-	            		vmid++;
-	            	}
+	            	//for (int i=0; i < 10; i++) {
+	            		//vmlist.add(new Vm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared()));
+	            		//vmid++;
+	            	//}
+	            	
+	            	WorkLoad workload = new WorkLoad("from-file", "test.xml", brokerId);
+	            	workload.genWorkLoad();
+	            	vmlist = workload.getVmList();
 
 	            	//submit vm list to the broker
 	            	broker.submitVmList(vmlist);
@@ -129,6 +134,18 @@ public class ResSimulation {
 	            	// will submit the bound cloudlets only to the specific VM
 	            	broker.bindCloudletToVm(cloudlet1.getCloudletId(),vmlist.get(0).getId());
 	            	broker.bindCloudletToVm(cloudlet2.getCloudletId(),vmlist.get(1).getId());
+	            	
+	            	//load the network topology file
+	    			NetworkTopology.buildNetworkTopology("topology.brite");
+
+	    			//maps CloudSim entities to BRITE entities
+	    			//PowerDatacenter will correspond to BRITE node 0
+	    			int briteNode=0;
+	    			NetworkTopology.mapNode(vmlist.get(0).getId(),briteNode);
+
+	    			//Broker will correspond to BRITE node 3
+	    			briteNode=3;
+	    			NetworkTopology.mapNode(vmlist.get(3).getId(),briteNode);
 
 	            	// Sixth step: Starts the simulation
 	            	CloudSim.startSimulation();
