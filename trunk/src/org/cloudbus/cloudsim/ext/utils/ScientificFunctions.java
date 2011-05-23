@@ -11,5 +11,4 @@ public class ScientificFunctions {
 		
 		return Math.pow((double) k, - param);
 	}
-
 }
