@@ -32,6 +32,7 @@ import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.VmAllocationPolicyLite;
 import org.cloudbus.cloudsim.VmSchedulerTimeShared;
 import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.ext.event.CloudSimEventListener;
 import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
@@ -52,11 +53,17 @@ public class ResSimulation {
 
 	/** The vmlist. */
 	private static List<Vm> vmlist;
+	
+	private CloudSimEventListener guiListener;
+	
+	public ResSimulation(CloudSimEventListener gui) {
+		this.guiListener = gui;		
+	}
 
 	/**
 	 * Creates main() to run this example
 	 */
-	public static void main(String[] args) {
+	public void runSimulation() {
 
 		Log.printLine("Starting CloudSimExample2...");
 
