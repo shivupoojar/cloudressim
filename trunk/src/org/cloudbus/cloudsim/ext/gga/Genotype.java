@@ -1,6 +1,11 @@
 package org.cloudbus.cloudsim.ext.gga;
 
 import org.cloudbus.cloudsim.ext.gga.enums.PackingT;
+import org.cloudbus.cloudsim.ext.utils.ScientificMethods;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 
@@ -227,7 +232,7 @@ public class Genotype {
 			p2cp2 = i;
 		}
 		
-		//p1cp1 = this.getChanePoint();
+		System.err.println("ChangePoint: " + this.getChangePoint());
 
 		// Copy parents to children
 		Copy (child1);
@@ -291,11 +296,6 @@ public class Genotype {
 		child1.Evaluate ();
 
 	} // Crossover ()
-		
-	private int getChanePoint() {
-		
-		return rnd.nextInt (99999) % nrOfGroups;
-	}
 
 	public void Print()
 	// Print out the geno's genes and it's fitness.
@@ -504,4 +504,40 @@ public class Genotype {
 			i++;
 		}
 	} // CompactGroup ()
+	
+	private int getChangePoint() {
+		List<RankSort> rankList = new ArrayList<RankSort>();
+		
+		for (int i=0; i < GetBinsUsed(); i++) {
+			rankList.add(new RankSort(groups[i], gFitness[groups[i]]));
+		}
+		
+		// 进行排序
+		Collections.sort(rankList);
+		
+		// 得到一个随机的rank
+		double prob = rnd.nextDouble();
+		int selectedRank = ScientificMethods.getRankByProb(prob, GetBinsUsed());
+		
+		return rankList.get(selectedRank).groupId;
+	}
+}
+
+class RankSort implements Comparable<RankSort>{
+	public int groupId;
+	public double fitness;
+	
+	public RankSort(int groupId, double fitness) {
+		this.groupId = groupId;
+		this.fitness = fitness;
+	}
+
+	@Override
+	public int compareTo(RankSort other) {
+		if ((fitness - other.fitness) > 0)
+			return 1;
+		else if ((fitness - other.fitness) < 0)
+			return -1;
+		else return 0;
+	}
 }
