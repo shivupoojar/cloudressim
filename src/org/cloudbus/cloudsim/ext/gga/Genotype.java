@@ -1,4 +1,4 @@
-﻿package org.cloudbus.cloudsim.ext.gga;
+package org.cloudbus.cloudsim.ext.gga;
 
 import org.cloudbus.cloudsim.ext.gga.enums.PackingT;
 import java.util.Random;

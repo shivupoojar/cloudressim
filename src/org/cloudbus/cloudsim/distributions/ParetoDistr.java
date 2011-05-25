@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Title:        CloudSim Toolkit
  * Descripimport java.util.Random;
 mulation) Toolkit for Modeling and Simulation of Clouds

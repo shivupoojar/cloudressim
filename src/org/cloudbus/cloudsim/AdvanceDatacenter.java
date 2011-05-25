@@ -1,4 +1,4 @@
-﻿package org.cloudbus.cloudsim;
+package org.cloudbus.cloudsim;
 
 import java.util.ArrayList;
 import java.util.List;

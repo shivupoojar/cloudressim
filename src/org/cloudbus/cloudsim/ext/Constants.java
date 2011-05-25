@@ -1,4 +1,4 @@
-﻿package org.cloudbus.cloudsim.ext;
+package org.cloudbus.cloudsim.ext;
 
 public interface Constants {
 	//TODO: say sth.

@@ -1,4 +1,4 @@
-﻿package org.cloudbus.cloudsim.ext.gga;
+package org.cloudbus.cloudsim.ext.gga;
 
 import java.util.ArrayList;
 import java.util.List;
