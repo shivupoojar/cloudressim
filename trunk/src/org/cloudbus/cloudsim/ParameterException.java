@@ -1,4 +1,4 @@
-﻿/*
+/*
  * ** Network and Service Differentiation Extensions to CloudSim 3.0 **
  *
  * Gokul Poduval & Chen-Khong Tham
