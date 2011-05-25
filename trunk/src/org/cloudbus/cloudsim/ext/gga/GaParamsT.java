@@ -1,4 +1,4 @@
-package org.cloudbus.cloudsim.ext.gga;
+﻿package org.cloudbus.cloudsim.ext.gga;
 
 public class GaParamsT {
 	public int PopulationSize;
