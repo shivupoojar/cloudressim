@@ -1,4 +1,4 @@
-package org.cloudbus.cloudsim.ext.gga;
+ï»¿package org.cloudbus.cloudsim.ext.gga;
 
 import org.cloudbus.cloudsim.ext.gga.enums.PackingT;
 import java.util.Random;
@@ -109,7 +109,7 @@ public class Genotype {
 		int nBw = problem.GetBinSize().Bandwidth;
 		
 		for (int i=0; i < n; i++) {
-			//¼ÆËãËã×Ó½á¹û
+			//è®¡ç®—ç®—å­ç»“æœ
 			uRam = (double)cRam[i] / nRam;
 			//System.out.println("uRam: " + uRam);
 			uCpu = (double)cCpu[i] / nCpu;
@@ -117,20 +117,20 @@ public class Genotype {
 			uBw = (double)cBw[i] / nBw;
 			uAvg = (uRam+uCpu+uDisk+uBw) / 4;
 			
-			//¼ÆËãFFÖĞµ¥Ïî·ÖÄ¸
+			//è®¡ç®—FFä¸­å•é¡¹åˆ†æ¯
 			double down = 0;
 			down += Math.sqrt(Math.abs(uCpu-uAvg));
 			down += Math.sqrt(Math.abs(uBw-uAvg));
 			down += Math.sqrt(Math.abs(uDisk-uAvg));
 			down += Math.sqrt(Math.abs(uRam-uAvg));
 			
-			//¼ÆËãµ¥Ïî½á¹û
+			//è®¡ç®—å•é¡¹ç»“æœ
 			if (down != 0) {
 				gFitness[i] = Math.sqrt(uAvg / down);
 				fitness += gFitness[i];
 			}
 			
-			//Ëã×ÓÇåÁã
+			//ç®—å­æ¸…é›¶
 			uRam = 0;
 			uCpu = 0;
 			uDisk = 0;
@@ -138,7 +138,7 @@ public class Genotype {
 			uAvg = 0;
 		}
 		
-		//µÃµ½×îºó½á¹û
+		//å¾—åˆ°æœ€åç»“æœ
 		fitness /= GetBinsUsed();
 		//System.err.println("fitdddd!!!ness: "+fitness);		
 	}
@@ -386,9 +386,9 @@ public class Genotype {
 		
 		for (int i=0; i < nrOfObjects; i++) {
 			if (objects[i] == group) {
-				//½«µÚi¸öitem·Åµ½binÀïÍ·£¬size¼ÇÂ¼µ±Ç°Õâ¸öbinÊ£ÓàÈİÁ¿
+				//å°†ç¬¬iä¸ªitemæ”¾åˆ°biné‡Œå¤´ï¼Œsizeè®°å½•å½“å‰è¿™ä¸ªbinå‰©ä½™å®¹é‡
 				success = problem.PutItem(size, i);
-				//Èç¹û²»ÄÜ·ÅÈëµÄ»°£¬·µ»Ø>0µÄviolations£¬±íÊ¾Õâ¸ö·ÀÖ¹·½·¨²»·ûºÏÒªÇó
+				//å¦‚æœä¸èƒ½æ”¾å…¥çš„è¯ï¼Œè¿”å›>0çš„violationsï¼Œè¡¨ç¤ºè¿™ä¸ªé˜²æ­¢æ–¹æ³•ä¸ç¬¦åˆè¦æ±‚
 				if (!success) return 1;
 			}
 		}
