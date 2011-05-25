@@ -1,4 +1,4 @@
-package org.cloudbus.cloudsim;
+ï»¿package org.cloudbus.cloudsim;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,22 +109,22 @@ public class AdvanceDatacenter extends Datacenter {
     	
     	Genotype bestGeno = null;
     	//TODO: Times of the reproduce should be a variable
-    	//ÕâÀïµÄÑ­»·´ÎÊıÊÇ³¢ÊÔµÄ´ÎÊı
+    	//è¿™é‡Œçš„å¾ªç¯æ¬¡æ•°æ˜¯å°è¯•çš„æ¬¡æ•°
     	for (int i=0; i < 10; i++) {
     		gga.InitializePopulation ();
 
     		if (gga.Run()) {
-    			//TODO: ³É¹¦µÃµ½½á¹û
+    			//TODO: æˆåŠŸå¾—åˆ°ç»“æœ
     			bestGeno = gga.getBestGeno();
-    			break; //µÃµ½¾Í²»ÅÜÁË°É
+    			break; //å¾—åˆ°å°±ä¸è·‘äº†å§
     		} else {
-    			//TODO: Èç¹û²»³É¹¦ÔõÃ´Ñù
+    			//TODO: å¦‚æœä¸æˆåŠŸæ€ä¹ˆæ ·
     		}
     		
-    		//TODO: Ã¿´ÎrunÔõÃ´²Ù×÷
+    		//TODO: æ¯æ¬¡runæ€ä¹ˆæ“ä½œ
     	}
     	
-    	//TODO: ÔõÃ´ÀûÓÃ½á¹û
+    	//TODO: æ€ä¹ˆåˆ©ç”¨ç»“æœ
     	allcateByGenotype(bestGeno);
     }
     

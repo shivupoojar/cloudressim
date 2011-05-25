@@ -1,4 +1,4 @@
-package org.cloudbus.cloudsim.ext.gga;
+锘縫ackage org.cloudbus.cloudsim.ext.gga;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +72,7 @@ public class Problem {
 		}
 	}
 	
-	//TODO: 这个借口用int表示type，应当改成enum
+	//TODO: 杩欎釜鍊熷彛鐢╥nt琛ㄧずtype锛屽簲褰撴敼鎴恊num
 	public int getItemRequest(int seq, int type) {
 		int retVal;
 		switch (type) {

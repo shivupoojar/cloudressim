@@ -1,4 +1,4 @@
-package org.cloudbus.cloudsim.ext.gga;
+ï»¿package org.cloudbus.cloudsim.ext.gga;
 
 import java.util.Random;
 
@@ -213,7 +213,7 @@ public class Population {
 		for (i = 1; i < gaParams.PopulationSize; i++) {
 			probs[i] = probs[i-1] + population[i].GetFitness();
 		}
-		//¹éÒ»»¯
+		//å½’ä¸€åŒ–
 		double totalP = probs[gaParams.PopulationSize - 1];
 		for (i = 0; i < gaParams.PopulationSize; i++) {
 			probs[i] = probs[i] / totalP;
@@ -223,7 +223,7 @@ public class Population {
 		int selected = 0;
 		for (i = 0; i < gaParams.PopulationSize; i++) {
 			p = rnd.nextDouble();
-			//Ñ¡³öÂÖÅÌÃüÖÐ¸öÌå
+			//é€‰å‡ºè½®ç›˜å‘½ä¸­ä¸ªä½“
 			if (p <= probs[0]) selected = 0;
 			else {
 				for (j = 1; j < gaParams.PopulationSize; j++) {
