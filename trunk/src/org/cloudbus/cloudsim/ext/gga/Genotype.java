@@ -11,6 +11,7 @@ public class Genotype {
 
 	private int idTag; // unique number
 	private double fitness; // current fitness
+	private double[] gFitness; // current fitness
 	private int nrOfObjects; // number of objects
 	private int nrOfGroups; // number of groups
 	private int nrOfPacks; // number of colors in problem
@@ -23,6 +24,7 @@ public class Genotype {
 		this.objects = new int[Constants.MAXOBJECTS];
 		this.groups = new int[Constants.MAXOBJECTS];
 		this.packingUsed = PackingT.FIRSTFIT;
+		this.gFitness = new double[Constants.MAXOBJECTS];
 	}
 
 	public void Initialize(int numberOfObjects,
@@ -78,7 +80,9 @@ public class Genotype {
 
 		fitness = 0;
 		
-		int n = GetBinsUsed();
+		//int n = GetBinsUsed();
+		// group sequence is no longer continuous
+		int n = Constants.MAXOBJECTS;
 		cRam = new int[n];
 		cCpu = new int[n];
 		cBw = new int[n];
@@ -87,7 +91,8 @@ public class Genotype {
 			cBw[i] = 0;
 			cCpu[i] = 0;
 			cDisk[i] = 0;
-			cRam[i] = 0;			
+			cRam[i] = 0;
+			gFitness[i] = 0;
 		}
 		
 		for (int j=0; j < nrOfObjects; j++) {
@@ -120,7 +125,10 @@ public class Genotype {
 			down += Math.sqrt(Math.abs(uRam-uAvg));
 			
 			//计算单项结果
-			fitness += Math.sqrt(uAvg / down);
+			if (down != 0) {
+				gFitness[i] = Math.sqrt(uAvg / down);
+				fitness += gFitness[i];
+			}
 			
 			//算子清零
 			uRam = 0;
@@ -131,10 +139,8 @@ public class Genotype {
 		}
 		
 		//得到最后结果
-		fitness /= n;
-		System.out.println("fitness: "+fitness);
-		assert(3 == 2);
-		
+		fitness /= GetBinsUsed();
+		//System.err.println("fitdddd!!!ness: "+fitness);		
 	}
 
 	public void Mutation()
@@ -220,6 +226,8 @@ public class Genotype {
 			p2cp1 = p2cp2;
 			p2cp2 = i;
 		}
+		
+		//p1cp1 = this.getChanePoint();
 
 		// Copy parents to children
 		Copy (child1);
@@ -284,6 +292,11 @@ public class Genotype {
 
 	} // Crossover ()
 		
+	private int getChanePoint() {
+		
+		return rnd.nextInt (99999) % nrOfGroups;
+	}
+
 	public void Print()
 	// Print out the geno's genes and it's fitness.
 	{
