@@ -62,7 +62,7 @@ public class AdvanceDatacenter extends Datacenter {
     	Vm vm = (Vm) ev.getData();
     	getVmQueue().add(vm);
     	
-    	if (getVmQueue().size() == 19) //{
+    	if (getVmQueue().size() == 9) //{
     		allocateVmsWithGGA();
     	/*	for (int i=0; i < 10; i++) {
 	    		vm = getVmQueue().remove(0);
