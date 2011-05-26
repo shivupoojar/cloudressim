@@ -422,9 +422,8 @@ public class Genotype {
 		System.out.println("----AfterCrossOver\n\n");
 	}
 	
-	// 旧的CrossOver暂时废除
-	/*
-	public void Crossover(Genotype otherParent, Genotype child1, Genotype child2)
+	// 旧的是MulCrossover
+	public void CrossoverOld(Genotype otherParent, Genotype child1, Genotype child2)
 	// Do a crossover operation between the geno and another parent,
 	// producing two children. Using the procedure described by
 	// E.Falkenhauer and the PackObject function to reinsert objects.
@@ -526,8 +525,7 @@ public class Genotype {
 		child2.Evaluate ();
 		child1.Evaluate ();
 
-	} // Crossover ()
-	*/
+	} // MulCrossover ()
 
 	public void Print()
 	// Print out the geno's genes and it's fitness.
