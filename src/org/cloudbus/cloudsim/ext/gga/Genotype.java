@@ -716,7 +716,8 @@ public class Genotype {
 	
 	// 将另一个父辈cross point上头的插入到自己的position
 	private void InsertGroup(int[] parentGroups, int cp, int position) {
-		groups[position] = parentGroups[cp];
+		groups[this.nrOfGroups] = parentGroups[cp];
+		nrOfGroups ++;
 	}
 
 	private void CompactGroupPart()
