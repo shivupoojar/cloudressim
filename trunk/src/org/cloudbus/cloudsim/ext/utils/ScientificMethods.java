@@ -1,5 +1,7 @@
 package org.cloudbus.cloudsim.ext.utils;
 
+import java.util.Random;
+
 import org.cloudbus.cloudsim.ext.gga.Constants;
 
 public class ScientificMethods {
@@ -52,5 +54,10 @@ public class ScientificMethods {
 		}
 		
 		return selected;
+	}
+	
+	public static double normDistribution(Random rndSeed, double mean, double deviation) {
+		double rndNum = rndSeed.nextGaussian();
+		return (rndNum * deviation + mean); 
 	}
 }
