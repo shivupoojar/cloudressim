@@ -103,7 +103,7 @@ public class ResSimulation {
 	            		//vmid++;
 	            	//}
 	            	
-	            	WorkLoad workload = new WorkLoad("from-file", "test.xml", brokerId);
+	            	WorkLoad workload = new WorkLoad("from-file", "test.xml", brokerId, datacenter0.getHostList().get(0));
 	            	workload.genWorkLoad();
 	            	vmlist = workload.getVmList();
 

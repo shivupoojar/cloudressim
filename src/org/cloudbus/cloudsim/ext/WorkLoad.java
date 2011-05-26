@@ -6,6 +6,7 @@ import java.util.List;
 import javax.xml.parsers.*;
 
 import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
+import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -15,11 +16,13 @@ public class WorkLoad {
 	private String loadFile;
 	private int brokerId;
 	private List<? extends Vm> vmList;
+	private Host host;
 	
-	public WorkLoad(String workMode, String loadFile, int brokerId) {
+	public WorkLoad(String workMode, String loadFile, int brokerId, Host host) {
 		this.workMode = workMode;
 		this.loadFile = loadFile;
 		this.brokerId = brokerId;
+		this.host = host;
 		setVmList(new ArrayList<Vm>());
 	}
 	
@@ -32,7 +35,17 @@ public class WorkLoad {
 			}
 		} else if (workMode.equals("auto-gen")){
 			//TODO: Gen leases
+			//TODO: 这里的常数需要改成Properties读取 
+			setVmList(autoGenVms(300));
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T extends Vm> List<T> autoGenVms(int amount) {
+		List<Vm> vms = new ArrayList<Vm>();
+		
+		
+		return (List<T>) vms;
 	}
 	
 	@SuppressWarnings("unchecked")
