@@ -1,12 +1,13 @@
 package org.cloudbus.cloudsim.ext.utils;
 
+import org.cloudbus.cloudsim.ext.gga.Constants;
+
 public class ScientificMethods {
 	static double[] kProbs; // 其实就是rank概率的值，注意，这里的0，对应rank值应该为1
 	static {
-		// 这个部分计算所有的Rank Probs，因为这个部分是可以复用的
-		// 静态构造函数，暂时只算100
-		kProbs = new double[100];
-		for (int i = 0; i <= 100; i++) {
+		// 这个部分计算所有的Rank Probs，因为这个部分是可以复用的，所以用静态构造函数实现
+		kProbs = new double[Constants.MAXOBJECTS];
+		for (int i = 0; i < Constants.MAXOBJECTS; i++) {
 			kProbs[i] = getKProb(i + 1, 2);
 		}
 	}

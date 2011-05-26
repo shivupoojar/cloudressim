@@ -152,6 +152,10 @@ public class Genotype {
 	// Mutate a geno by eliminating some groups and reinserting
 	// the objects using the PackObject function.
 	{
+		System.out.println("\n\nBeforeMutation:");
+		this.Print();
+		System.out.println("----BeforeMutation\n\n");
+		
 		int i;
 		Stack<Integer> savedObjects = new Stack<Integer>();			// objects form eliminated groups
 		boolean eliminated [] = new boolean[Constants.MAXOBJECTS];	// marker-array for eliminated groups
@@ -180,19 +184,246 @@ public class Genotype {
 			}
 		}
 
+		System.out.println("before compact");
+		this.Print();
+		System.out.println("before compact");
 		// Remove holes in group part created by elimination
-		CompactGroupPart ();
+		CompactGroupSimple ();
+		System.out.println("\nafter compact");
+		this.Print();
+		System.out.println("after compact");
 
 		// Reinsert uncolored objects with PackObject function
-		while (!savedObjects.empty ())
+		while (!savedObjects.empty ()) {
 			PackObject (savedObjects.pop ());
+		}
 
 		// Reevaluate geno
 		Evaluate ();
-
-
+		
+		System.out.println("\n\nAfterMutation:");
+		this.Print();
+		System.out.println("----AfterMutation\n\n");
 	} // Mutation ()
+	
+	// 旧的CrossOver暂时废除
+	/*
+	public void Crossover(Genotype otherParent, Genotype child1, Genotype child2)
+	// Do a crossover operation between the geno and another parent,
+	// producing two children. Using the procedure described by
+	// E.Falkenhauer and the PackObject function to reinsert objects.
+	{
+		int i, j;
+		int p1cp1, p1cp2;				// crossover-points for parent P1
+		int p2cp1, p2cp2;				// crossover-points for parent P2
+		boolean eliminated1[] = new boolean[Constants.MAXOBJECTS];	// marker-array for elimination process P1
+		boolean eliminated2[] = new boolean[Constants.MAXOBJECTS];	// marker-array for elimination process P2
+		Stack<Integer> objects1 = new Stack<Integer>();				// holds objects from eliminated groups P1
+		Stack<Integer> objects2 = new Stack<Integer>();				// holds objects from eliminated groups P2
+	
+		for (i = 0; i < nrOfGroups; i++)
+		{
+			eliminated1[i] = false;
+			eliminated2[i] = false;
+		}
+	
+		//cerr << "crossover " << idtag << " " << otherParent.idtag << " " << child1.idtag << " " << child2.idtag << endl;
+	
+		// Choose crossover points
+		p1cp1 = rnd.nextInt (99999) % nrOfGroups;
+		p1cp2 = rnd.nextInt (99999) % nrOfGroups;
+		if (p1cp2 < p1cp1)
+		{
+			i = p1cp1;
+			p1cp1 = p1cp2;
+			p1cp2 = i;
+		}
+		p2cp1 = rnd.nextInt (99999) % otherParent.nrOfGroups;
+		p2cp2 = rnd.nextInt (99999) % otherParent.nrOfGroups;
+		if (p2cp2 < p2cp1)
+		{
+			i = p2cp1;
+			p2cp1 = p2cp2;
+			p2cp2 = i;
+		}
+		
+		System.err.println("this.getCrossPoint: " + this.getCrossPoint());
+	
+		// Copy parents to children
+		Copy (child1);
+		otherParent.Copy (child2);
+	
+		// Mark all groups losing at least one object with ELIMINATED
+		for (i = 0; i < nrOfObjects; i++)			// look at all objects
+			for (j = p1cp1; j <= p1cp2; j++)		// walk through crossing-section
+				if (objects[i] == groups[j])		// object is in injected group
+				{
+					eliminated2[child2.objects[i]] = true;		// mark group affected
+					child2.objects[i] = groups[j] + child2.nrOfGroups;	// new color
+				}
+		for (i = 0; i < otherParent.nrOfObjects; i++)
+			for (j = p2cp1; j <= p2cp2; j++)
+				if (otherParent.objects[i] == otherParent.groups[j])
+				{
+					eliminated1[child1.objects[i]] = true;
+					child1.objects[i] = otherParent.groups[j] + child1.nrOfGroups;
+				}
+	
+		// Eliminate effected groups
+		for (i = 0; i < child1.nrOfGroups; i++)
+			if (eliminated1[child1.groups[i]])
+					child1.groups[i] = Constants.ELIMINATED;
+	
+		for (i = 0; i < child2.nrOfGroups; i++)
+			if (eliminated2[child2.groups[i]])
+					child2.groups[i] = Constants.ELIMINATED;
+	
+		// Collect objects member of an eliminated group
+		for (i = 0; i < child2.nrOfObjects; i++)
+			if ((child2.objects[i] < child2.nrOfGroups) && (eliminated2[child2.objects[i]]))
+			{
+				child2.objects[i] = Constants.UNCOLORED;
+				objects2.push (i);
+			}
+		for (i = 0; i < child1.nrOfObjects; i++)
+			if ((child1.objects[i] < child1.nrOfGroups) && (eliminated1[child1.objects[i]]))
+			{
+				child1.objects[i] = Constants.UNCOLORED;
+				objects1.push (i);
+			}
+	
+		// Inject group-part from parents into children
+		child2.InsertGroup (groups, p1cp1, p1cp2, p2cp1);
+		child1.InsertGroup (otherParent.groups, p2cp1, p2cp2, p1cp1);
+	
+		// Remove holes in group-array created by the elimination process
+		child2.CompactGroupPart ();
+		child1.CompactGroupPart ();
+	
+		// Reinsert objects from eliminted groups
+		while (!objects2.empty ())
+			child2.PackObject (objects2.pop ());
+		while (!objects1.empty ())
+			child1.PackObject (objects1.pop ());
+	
+		// Compute fitness of children
+		child2.Evaluate ();
+		child1.Evaluate ();
+	
+	} // Crossover ()
+	*/
 
+	public void Crossover(Genotype otherParent, Genotype child1, Genotype child2)
+	// 这个CrossOver是单基因位的交换
+	{
+		int p1cp, p2cp;		//两个父代的交汇点；
+		int i;
+		boolean eliminated1[] = new boolean[Constants.MAXOBJECTS];	// marker-array for elimination process P1
+		boolean eliminated2[] = new boolean[Constants.MAXOBJECTS];	// marker-array for elimination process P2
+		Stack<Integer> objects1 = new Stack<Integer>();				// holds objects from eliminated groups P1
+		Stack<Integer> objects2 = new Stack<Integer>();				// holds objects from eliminated groups P2
+		
+		for (i = 0; i < nrOfGroups; i++)
+		{
+			eliminated1[i] = false;
+			eliminated2[i] = false;
+		}
+		
+		// Choose crossover point
+		p1cp = getCrossPoint();
+		p2cp = otherParent.getCrossPoint();
+		
+		// Copy parents to children
+		Copy (child1);
+		otherParent.Copy (child2);
+		
+		// 将bin_id冲突的item位直接拿出来
+		for (i = 0; i < child2.nrOfObjects; i++)
+			if (child2.objects[i] == groups[p1cp])
+			{
+				child2.objects[i] = Constants.UNCOLORED;
+				objects2.push (i);
+			}
+		for (i = 0; i < child1.nrOfObjects; i++)
+			if (child1.objects[i] == otherParent.groups[p2cp])
+			{
+				child1.objects[i] = Constants.UNCOLORED;
+				objects1.push (i);
+			}
+
+		// Mark all groups losing at least one object with ELIMINATED
+		for (i = 0; i < nrOfObjects; i++)			// look at all objects
+			if (objects[i] == groups[p1cp])			// object is in injected group
+			{
+				if (child2.objects[i] != Constants.UNCOLORED) eliminated2[child2.objects[i]] = true;		// mark group affected
+				child2.objects[i] = groups[p1cp];	// 这里改动了，变成直接的
+			}
+		for (i = 0; i < otherParent.nrOfObjects; i++)
+			if (otherParent.objects[i] == otherParent.groups[p2cp])
+			{
+				if (child1.objects[i] != Constants.UNCOLORED) eliminated1[child1.objects[i]] = true;
+				child1.objects[i] = otherParent.groups[p2cp];
+			}
+		
+		// 这里把bin_id冲突的标记为eliminated，为了下一步抹去group
+		eliminated1[otherParent.groups[p2cp]] = true;
+		eliminated2[groups[p1cp]] = true;
+		
+		// Eliminate effected groups
+		// 这里把bin_id冲突的group位抹去
+		for (i = 0; i < child1.nrOfGroups; i++)
+			if (eliminated1[child1.groups[i]])
+					child1.groups[i] = Constants.ELIMINATED;
+
+		for (i = 0; i < child2.nrOfGroups; i++)
+			if (eliminated2[child2.groups[i]])
+					child2.groups[i] = Constants.ELIMINATED;
+		
+		// 注意，我们不把和bin_id冲突的标记为eliminated，因为item位已经染色
+		eliminated1[otherParent.groups[p2cp]] = false;
+		eliminated2[groups[p1cp]] = false;
+
+		// Collect objects member of an eliminated group
+		// 这里不标记item位冲突的；
+		for (i = 0; i < child2.nrOfObjects; i++)
+			if ((child2.objects[i] != Constants.UNCOLORED) && (child2.objects[i] < child2.nrOfGroups) && (eliminated2[child2.objects[i]]))
+			{
+				child2.objects[i] = Constants.UNCOLORED;
+				objects2.push (i);
+			}
+		for (i = 0; i < child1.nrOfObjects; i++)
+			if ((child1.objects[i] != Constants.UNCOLORED) && (child1.objects[i] < child1.nrOfGroups) && (eliminated1[child1.objects[i]]))
+			{
+				child1.objects[i] = Constants.UNCOLORED;
+				objects1.push (i);
+			}
+
+		// Inject group-part from parents into children
+		child2.InsertGroup (groups, p1cp, p2cp);
+		child1.InsertGroup (otherParent.groups, p2cp, p1cp);
+
+		// Remove holes in group-array created by the elimination process
+		child2.CompactGroupSimple ();
+		child1.CompactGroupSimple ();
+
+		// Reinsert objects from eliminted groups
+		while (!objects2.empty ())
+			child2.PackObject (objects2.pop ());
+		while (!objects1.empty ())
+			child1.PackObject (objects1.pop ());
+
+		// Compute fitness of children
+		child2.Evaluate ();
+		child1.Evaluate ();
+		
+		System.out.println("\n\nAfterCrossOver:");
+		child1.Print();
+		child2.Print();
+		System.out.println("----AfterCrossOver\n\n");
+	}
+	
+	// 旧的CrossOver暂时废除
+	/*
 	public void Crossover(Genotype otherParent, Genotype child1, Genotype child2)
 	// Do a crossover operation between the geno and another parent,
 	// producing two children. Using the procedure described by
@@ -232,7 +463,7 @@ public class Genotype {
 			p2cp2 = i;
 		}
 		
-		System.err.println("ChangePoint: " + this.getChangePoint());
+		System.err.println("this.getCrossPoint: " + this.getCrossPoint());
 
 		// Copy parents to children
 		Copy (child1);
@@ -296,6 +527,7 @@ public class Genotype {
 		child1.Evaluate ();
 
 	} // Crossover ()
+	*/
 
 	public void Print()
 	// Print out the geno's genes and it's fitness.
@@ -307,7 +539,7 @@ public class Genotype {
 		// Print out objects
 		for (i = 0; i < nrOfObjects; i++)
 			if (objects[i] == Constants.UNCOLORED)
-				System.out.println("X ");
+				System.out.print("X ");
 			else
 				System.out.print(objects[i]+ " ");
 
@@ -421,21 +653,44 @@ public class Genotype {
 	// the object with.
 	{
 		int i = 0;
+		int bin = -1;
+		boolean find = false;
+		boolean[] binUsed = new boolean[Constants.MAXOBJECTS];
+		
+		// TODO: 这里可以考虑用哈希表存储已经访问过的
+		for (int j = 0; j < Constants.MAXOBJECTS; j++) {
+			binUsed[j] = false;
+		}
 
 		// First Fit Packing
-		objects[object] = 0;
-		while (ViolatedConstraints(object) > 0) {
+		while (i < nrOfGroups) {
+			bin = groups[i];
+			binUsed[bin] = true;
+			objects[object] = bin;
+			if (ViolatedConstraints(object) > 0) {
+				i++;
+			} else {
+				find = true;
+				break;
+			}
+		}
+		
+		// 如果没有从已用箱子里头找到合适的，则需要重新建一个箱子
+		i = 0;
+		while (!find) {
+			//如果箱子木有用，则试试
+			if (!binUsed[i]) {
+				objects[object] = i;
+				if (ViolatedConstraints(object) > 0) {
+					find = false;
+				} else {
+					find = true;
+					nrOfGroups++;
+					groups[nrOfGroups - 1] = i;
+				}
+			} 
 			i++;
-			objects[object] = i;
 		}
-
-		// New color used, update number of groups and
-		// add a new color to the group-part
-		if (i + 1 > nrOfGroups) {
-			nrOfGroups = i + 1;
-			groups[nrOfGroups - 1] = nrOfGroups - 1;
-		}
-
 	} // PackObject_FirstFit ()
 
 	private void InsertGroup(int parentGroups[], int cp1, int cp2, int position)
@@ -457,6 +712,12 @@ public class Genotype {
 		nrOfGroups = nrOfGroups + (cp2 - cp1) + 1;
 
 	} // InsertGroup ()
+
+	
+	// 将另一个父辈cross point上头的插入到自己的position
+	private void InsertGroup(int[] parentGroups, int cp, int position) {
+		groups[position] = parentGroups[cp];
+	}
 
 	private void CompactGroupPart()
 	// After elimination of groups from the group-part of the gene,
@@ -505,11 +766,28 @@ public class Genotype {
 		}
 	} // CompactGroup ()
 	
-	private int getChangePoint() {
+	private void CompactGroupSimple()
+	// 这个过程去掉了传统的压缩操作，仅仅进行移动位的操作；
+	{
+		int i, j;
+
+		// Remove eliminated groups
+		i = 0;
+		while (i < nrOfGroups)
+			if (groups[i] == Constants.ELIMINATED) {
+				for (j = i; j < nrOfGroups - 1; j++)
+					groups[j] = groups[j + 1];
+				nrOfGroups--;
+			} else
+				i++;
+	} // CompactGroupSimple ()
+	
+	private int getCrossPoint() {
 		List<RankSort> rankList = new ArrayList<RankSort>();
 		
 		for (int i=0; i < GetBinsUsed(); i++) {
-			rankList.add(new RankSort(groups[i], gFitness[groups[i]]));
+			// TODO: RankSort的groupId部分，应该是序列号，而不是bin_id
+			rankList.add(new RankSort(i, gFitness[groups[i]]));
 		}
 		
 		// 进行排序
