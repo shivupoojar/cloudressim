@@ -170,11 +170,11 @@ private static final String CMD_ABOUT = "About";
 	private void showConfigureScreen(){
 		
 		disableMenuPanel();
-		/*
+		
 		if (configScreen == null){
 			configScreen = new ConfigureSimulationPanel(simulation, this);
 			mainPanel.add(CONFIG_SCREEN, configScreen);
-		}*/
+		}
 		screenController.show(mainPanel, CONFIG_SCREEN);
 		this.validate();
 		this.repaint();
