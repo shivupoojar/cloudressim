@@ -188,7 +188,7 @@ public class Genotype {
 		//this.Print();
 		//System.out.println("before compact");
 		// Remove holes in group part created by elimination
-		CompactGroupSimple ();
+		CompactGroupPart ();
 		//System.out.println("\nafter compact");
 		//this.Print();
 		//System.out.println("after compact");
@@ -422,6 +422,91 @@ public class Genotype {
 		//System.out.println("----AfterCrossOver\n\n");
 	}
 	
+	public void CrossoverFit(Genotype otherParent, Genotype child1, Genotype child2)
+	// Do a crossover operation between the geno and another parent,
+	// producing two children. Using the procedure described by
+	// E.Falkenhauer and the PackObject function to reinsert objects.
+	{
+		int i;
+		int p1cp, p2cp;
+		boolean eliminated1[] = new boolean[Constants.MAXOBJECTS];	// marker-array for elimination process P1
+		boolean eliminated2[] = new boolean[Constants.MAXOBJECTS];	// marker-array for elimination process P2
+		Stack<Integer> objects1 = new Stack<Integer>();				// holds objects from eliminated groups P1
+		Stack<Integer> objects2 = new Stack<Integer>();				// holds objects from eliminated groups P2
+
+		for (i = 0; i < nrOfGroups; i++)
+		{
+			eliminated1[i] = false;
+			eliminated2[i] = false;
+		}
+
+		//cerr << "crossover " << idtag << " " << otherParent.idtag << " " << child1.idtag << " " << child2.idtag << endl;
+
+		// Choose crossover points
+		p1cp = getCrossPoint();
+		p2cp = otherParent.getCrossPoint();
+		
+		// Copy parents to children
+		Copy (child1);
+		otherParent.Copy (child2);
+
+		// Mark all groups losing at least one object with ELIMINATED
+		for (i = 0; i < nrOfObjects; i++)			// look at all objects
+			if (objects[i] == groups[p1cp])
+			{
+				eliminated2[child2.objects[i]] = true;		// mark group affected
+				child2.objects[i] = groups[p1cp] + child2.nrOfGroups;	// new color
+			}
+		for (i = 0; i < otherParent.nrOfObjects; i++)
+			if (otherParent.objects[i] == otherParent.groups[p2cp])
+			{
+				eliminated1[child1.objects[i]] = true;
+				child1.objects[i] = otherParent.groups[p2cp] + child1.nrOfGroups;
+			}
+
+		// Eliminate effected groups
+		for (i = 0; i < child1.nrOfGroups; i++)
+			if (eliminated1[child1.groups[i]])
+					child1.groups[i] = Constants.ELIMINATED;
+
+		for (i = 0; i < child2.nrOfGroups; i++)
+			if (eliminated2[child2.groups[i]])
+					child2.groups[i] = Constants.ELIMINATED;
+
+		// Collect objects member of an eliminated group
+		for (i = 0; i < child2.nrOfObjects; i++)
+			if ((child2.objects[i] < child2.nrOfGroups) && (eliminated2[child2.objects[i]]))
+			{
+				child2.objects[i] = Constants.UNCOLORED;
+				objects2.push (i);
+			}
+		for (i = 0; i < child1.nrOfObjects; i++)
+			if ((child1.objects[i] < child1.nrOfGroups) && (eliminated1[child1.objects[i]]))
+			{
+				child1.objects[i] = Constants.UNCOLORED;
+				objects1.push (i);
+			}
+
+		// Inject group-part from parents into children
+		child2.InsertGroup (groups, p1cp, p1cp, p2cp);
+		child1.InsertGroup (otherParent.groups, p2cp, p2cp, p1cp);
+
+		// Remove holes in group-array created by the elimination process
+		child2.CompactGroupPart ();
+		child1.CompactGroupPart ();
+
+		// Reinsert objects from eliminted groups
+		while (!objects2.empty ())
+			child2.PackObject (objects2.pop ());
+		while (!objects1.empty ())
+			child1.PackObject (objects1.pop ());
+
+		// Compute fitness of children
+		child2.Evaluate ();
+		child1.Evaluate ();
+
+	} // CrossoverF ()
+	
 	// 旧的是MulCrossover
 	public void CrossoverOld(Genotype otherParent, Genotype child1, Genotype child2)
 	// Do a crossover operation between the geno and another parent,
@@ -643,7 +728,7 @@ public class Genotype {
 	{
 		switch (packingUsed) {
 		case FIRSTFIT:
-			PackObject_FirstFit(object);
+			PackObject_FirstFit_Simple(object);
 			break;
 		// These two have to be implemented
 		/*
@@ -657,7 +742,7 @@ public class Genotype {
 
 	} // PackObject ()
 
-	private void PackObject_FirstFit(int object)
+	private void PackObject_FirstFit_Advanced(int object)
 	// Packs an object by using a first fit heurist, if no color
 	// is available it creates a new group and uses this to color
 	// the object with.
@@ -701,7 +786,31 @@ public class Genotype {
 			} 
 			i++;
 		}
-	} // PackObject_FirstFit ()
+	} // PackObject_FirstFit_Advanced ()
+	
+	// 不区分不同的bin；
+	private void PackObject_FirstFit_Simple(int object)
+	// Packs an object by using a first fit heurist, if no color
+	// is available it creates a new group and uses this to color
+	// the object with.
+	{
+		 int i = 0;
+
+         // First Fit Packing
+         objects[object] = 0;
+         while (ViolatedConstraints(object) > 0) {
+                 i++;
+                 objects[object] = i;
+         }
+
+         // New color used, update number of groups and
+         // add a new color to the group-part
+         if (i + 1 > nrOfGroups) {
+                 nrOfGroups = i + 1;
+                 groups[nrOfGroups - 1] = nrOfGroups - 1;
+         }
+	} // PackObject_FirstFit_Simple ()
+
 
 	private void InsertGroup(int parentGroups[], int cp1, int cp2, int position)
 	// Given the group-part and the crossing-points of another geno,
