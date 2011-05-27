@@ -152,9 +152,9 @@ public class Genotype {
 	// Mutate a geno by eliminating some groups and reinserting
 	// the objects using the PackObject function.
 	{
-		System.out.println("\n\nBeforeMutation:");
-		this.Print();
-		System.out.println("----BeforeMutation\n\n");
+		//System.out.println("\n\nBeforeMutation:");
+		//this.Print();
+		//System.out.println("----BeforeMutation\n\n");
 		
 		int i;
 		Stack<Integer> savedObjects = new Stack<Integer>();			// objects form eliminated groups
@@ -184,14 +184,14 @@ public class Genotype {
 			}
 		}
 
-		System.out.println("before compact");
-		this.Print();
-		System.out.println("before compact");
+		//System.out.println("before compact");
+		//this.Print();
+		//System.out.println("before compact");
 		// Remove holes in group part created by elimination
 		CompactGroupSimple ();
-		System.out.println("\nafter compact");
-		this.Print();
-		System.out.println("after compact");
+		//System.out.println("\nafter compact");
+		//this.Print();
+		//System.out.println("after compact");
 
 		// Reinsert uncolored objects with PackObject function
 		while (!savedObjects.empty ()) {
@@ -201,9 +201,9 @@ public class Genotype {
 		// Reevaluate geno
 		Evaluate ();
 		
-		System.out.println("\n\nAfterMutation:");
-		this.Print();
-		System.out.println("----AfterMutation\n\n");
+		//System.out.println("\n\nAfterMutation:");
+		//this.Print();
+		//System.out.println("----AfterMutation\n\n");
 	} // Mutation ()
 	
 	// 旧的CrossOver暂时废除
@@ -416,10 +416,10 @@ public class Genotype {
 		child2.Evaluate ();
 		child1.Evaluate ();
 		
-		System.out.println("\n\nAfterCrossOver:");
-		child1.Print();
-		child2.Print();
-		System.out.println("----AfterCrossOver\n\n");
+		//System.out.println("\n\nAfterCrossOver:");
+		//child1.Print();
+		//child2.Print();
+		//System.out.println("----AfterCrossOver\n\n");
 	}
 	
 	// 旧的是MulCrossover
