@@ -33,6 +33,7 @@ import org.cloudbus.cloudsim.ext.ResSimulation;
 import org.cloudbus.cloudsim.ext.event.CloudSimEvent;
 import org.cloudbus.cloudsim.ext.event.CloudSimEventListener;
 import org.cloudbus.cloudsim.ext.event.CloudSimEvents;
+import org.cloudbus.cloudsim.ext.gui.screens.ConfigureSimulationPanel;
 
 /**
  * The main class of the GUI. Sets up the UI, and controls the screen transitions.
@@ -59,7 +60,7 @@ private static final String CMD_ABOUT = "About";
 	
 	private CardLayout screenController;
 	private JPanel mainPanel;
-	//private ConfigureSimulationPanel configScreen;
+	private ConfigureSimulationPanel configScreen;
 	//private SimulationPanel simulationPanel;
 	private JPanel internetBehaviourScreen;
 	//private ResultsScreen resultsScreen;

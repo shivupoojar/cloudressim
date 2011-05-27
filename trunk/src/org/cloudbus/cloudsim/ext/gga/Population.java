@@ -230,7 +230,7 @@ public class Population {
 		int i;
 
 		for (i = 0; i < gaParams.N_Crossover; i = i + 2) {
-			population[gaParams.PopulationSize - i - 1].Crossover(
+			population[gaParams.PopulationSize - i - 1].CrossoverFit(
 					population[gaParams.PopulationSize - i - 2], population[i],
 					population[i + 1]);
 		}
