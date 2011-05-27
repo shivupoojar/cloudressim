@@ -13,14 +13,17 @@ import org.cloudbus.cloudsim.ext.gga.Problem;
 
 public class AdvanceDatacenter extends Datacenter {
 	private List<? extends Vm> vmQueue;
+	
+	private int vmQueueCapacity;		//vmQueue容量，到了这个值启动一次vm部署
 
 	public AdvanceDatacenter(String name,
 			DatacenterCharacteristics characteristics,
 			VmAllocationPolicy vmAllocationPolicy, List<Storage> storageList,
-			double schedulingInterval) throws Exception {
+			double schedulingInterval, int vmQueueCapacity) throws Exception {
 		super(name, characteristics, vmAllocationPolicy, storageList,
 				schedulingInterval);
 		
+		this.vmQueueCapacity = vmQueueCapacity;
 		setVmQueue(new ArrayList<Vm>());
 	}
 	
@@ -62,7 +65,7 @@ public class AdvanceDatacenter extends Datacenter {
     	Vm vm = (Vm) ev.getData();
     	getVmQueue().add(vm);
     	
-    	if (getVmQueue().size() == 9) //{
+    	if (getVmQueue().size() == vmQueueCapacity) //{
     		allocateVmsWithGGA();
     	/*	for (int i=0; i < 10; i++) {
 	    		vm = getVmQueue().remove(0);

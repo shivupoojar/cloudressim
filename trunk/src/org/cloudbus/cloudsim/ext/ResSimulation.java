@@ -54,6 +54,8 @@ public class ResSimulation {
 	/** The vmlist. */
 	private static List<Vm> vmlist;
 	
+	private static int workloadSize = 300;
+	
 	private CloudSimEventListener guiListener;
 	
 	public ResSimulation(CloudSimEventListener gui) {
@@ -103,7 +105,7 @@ public class ResSimulation {
 	            		//vmid++;
 	            	//}
 	            	
-	            	WorkLoad workload = new WorkLoad("from-file", "test.xml", brokerId, datacenter0.getHostList().get(0));
+	            	WorkLoad workload = new WorkLoad("auto-gen", "test.xml", brokerId, datacenter0.getHostList().get(0), workloadSize);
 	            	workload.genWorkLoad();
 	            	vmlist = workload.getVmList();
 
@@ -198,7 +200,8 @@ public class ResSimulation {
 	        long storage = 1000000; //host storage
 	        int bw = 10000;
 
-	        for (int i=0; i < 10; i++) {
+	        // Host数量跟workload一样大，足够用
+	        for (int i=0; i < workloadSize; i++) {
 	        	hostList.add(
 		    			new Host(
 		    				hostId,
@@ -233,7 +236,7 @@ public class ResSimulation {
 	        // 6. Finally, we need to create a PowerDatacenter object.
 	        AdvanceDatacenter datacenter = null;
 	        try {
-	            datacenter = new AdvanceDatacenter(name, characteristics, new VmAllocationPolicyLite(hostList), storageList, 0);
+	            datacenter = new AdvanceDatacenter(name, characteristics, new VmAllocationPolicyLite(hostList), storageList, 0, workloadSize);
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
