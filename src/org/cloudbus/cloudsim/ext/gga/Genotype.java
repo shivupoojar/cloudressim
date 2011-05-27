@@ -530,30 +530,7 @@ public class Genotype {
 	public void Print()
 	// Print out the geno's genes and it's fitness.
 	{
-		int i;
-
-		System.out.print("(" + idTag + ") ");
-
-		// Print out objects
-		for (i = 0; i < nrOfObjects; i++)
-			if (objects[i] == Constants.UNCOLORED)
-				System.out.print("X ");
-			else
-				System.out.print(objects[i]+ " ");
-
-		System.out.print(" : ");
-
-		// Print out groups
-		for (i = 0; i < nrOfGroups; i++)
-			if (groups[i] == Constants.ELIMINATED)
-				System.out.print("X ");
-			else
-				System.out.print(groups[i]+" ");
-
-		System.out.print(", ");
-
-		// Print out fitness
-		System.out.println("fitness: "+fitness);
+		System.out.println("Geno: " + this);
 	}
 
 	public int GetBinsUsed() {
@@ -602,6 +579,41 @@ public class Genotype {
 			System.err.println("Err: Vm sequence exeeded");
 			return -1;
 		}
+	}
+	
+	public void CompactFromOutSide() {
+		this.CompactGroupPart();
+	}
+	
+	public String toString() {
+		int i;
+		String str = new String("");
+
+		str += ("(" + idTag + ") ");
+		str += ("--" + nrOfGroups + "-- ");
+
+		// Print out objects
+		for (i = 0; i < nrOfObjects; i++)
+			if (objects[i] == Constants.UNCOLORED)
+				str += ("X ");
+			else
+				str += (objects[i]+ " ");
+
+		str += (" : ");
+
+		// Print out groups
+		for (i = 0; i < nrOfGroups; i++)
+			if (groups[i] == Constants.ELIMINATED)
+				str += ("X ");
+			else
+				str += (groups[i]+" ");
+
+		str += (", ");
+
+		// Print out fitness
+		str += (" fitness: "+fitness);
+		
+		return str;		
 	}
 
 	private int ViolatedConstraints (int object)

@@ -12,9 +12,7 @@ public class Population {
 	private Genotype curBestGeno = null;
 	private GaParamsT gaParams;
 	private boolean debug;
-	private double totalFitness;
 	private int bestIndex;
-	private double totalEvaluations;
 
 	public Population()
 	// Set the arrays
@@ -29,7 +27,6 @@ public class Population {
 	{
 		int i;
 		bestIndex = 0;
-		totalEvaluations = 0;
 
 		debug = debugactive;
 		gaParams = gaparameters;
@@ -97,10 +94,10 @@ public class Population {
 	} // Reproduce ()
 
 	public void PrintBest()
-	// Print out the best geno from the pack, to standard error.
+	// Print out the overall best geno from the pack.
 	{
-		System.out.println("Best is:" + bestIndex + ": ");
-		population[bestIndex].Print();
+		System.out.println("The Overall Best is: ");
+		getCurBestGeno().Print();
 
 	} // PrintBest ()
 
@@ -131,14 +128,6 @@ public class Population {
 		return (population[bestIndex].GetBinsUsed());
 
 	} // GetBestFitness ()
-
-	public double GetTotalEvaluations()
-	// Return the number of evaluations done so far by this
-	// population, no calculation done here.
-	{
-		return (totalEvaluations);
-
-	} // GetTotalEvaluations ()
 
 	// ------------------------------------------------ Private functions
 
@@ -244,7 +233,6 @@ public class Population {
 			population[gaParams.PopulationSize - i - 1].Crossover(
 					population[gaParams.PopulationSize - i - 2], population[i],
 					population[i + 1]);
-			totalEvaluations += 2;
 		}
 	} // ApplyCrossover ()
 
@@ -265,7 +253,6 @@ public class Population {
 				j = (j + 1) % gaParams.PopulationSize;
 			mutated[j] = true;
 			population[j].Mutation();
-			totalEvaluations++;
 		}
 
 	} // ApplyMutation ()

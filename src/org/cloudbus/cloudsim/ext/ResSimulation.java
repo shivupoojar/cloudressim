@@ -54,7 +54,7 @@ public class ResSimulation {
 	/** The vmlist. */
 	private static List<Vm> vmlist;
 	
-	private static int workloadSize = 300;
+	private static int workloadSize = 200;
 	
 	private CloudSimEventListener guiListener;
 	
