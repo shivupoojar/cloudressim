@@ -15,14 +15,14 @@ public class GGA {
 	private Population population = new Population();
 	private FileWriter solutionsFile;
 	private FileWriter dataFile;
-	private int maxevals;
+	private int maxRuntimes;
 	private int nrofobjects;
 	private int randomseed;
 	private boolean debug;
 	private boolean plotdata;
 	private boolean printsolutions;
 	
-	public void Initialize (Problem problem, int maxEvaluations, int seed)
+	public void Initialize (Problem problem, int maxRuntimes, int seed)
 	// Set all genetic algorithm specific parameters and
 	// initialize the population.
 	{
@@ -30,7 +30,7 @@ public class GGA {
 		
 		int numberOfObjects = problem.getNrOfItems();
 		nrofobjects = numberOfObjects;
-		maxevals = maxEvaluations;
+		this.maxRuntimes = maxRuntimes;
 		
 		PropertiesReader properties = PropertiesReader.loader();
 
@@ -127,33 +127,37 @@ public class GGA {
 		if (debug)
 			System.err.print("\n   " +  population.GetBestFitness () + GetBinsUsed ());
 		
-		while ((population.GetBestFitness () > 0) && (population.GetTotalEvaluations ()) < maxevals)
+		while ((population.GetBestFitness () > 0) && (gen < maxRuntimes))
 		{
 			population.Reproduce ();
 			gen++;
 			population.Evaluate ();
 			if (debug)
-				System.err.println("\n   " + population.GetBestFitness () + GetBinsUsed ());
+				System.out.println("\n   " + population.GetBestFitness () + GetBinsUsed ());
 
 			if (plotdata)
 				try {
-					dataFile.write(population.GetTotalEvaluations () + "\n");
+					dataFile.write(gen + " generation's best: " + population.getBestGeno() + "\n");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				
 		}
 
-		if (plotdata)
+		if (plotdata) {
 			//TODO: need!
-			System.err.println("lack of codes2!");
+		}
 
 		// Print some stats
 		if (debug) 
-			System.err.println("\b\b\b\b\b" + "total evals = " + population.GetTotalEvaluations () + "    bestfitness = " + population.GetBestFitness ());
+			System.out.println("\n   " + "total runs = " + gen + "    bestfitness = " + population.GetBestFitness ());
 
-		if (printsolutions)
+		if (printsolutions) {
 			//TODO: Solution file
+		}
 		
+		//getBestGeno().CompactFromOutSide();
+				
 		population.PrintBest ();
 
 		if (population.GetBestFitness () > 0)
@@ -166,6 +170,7 @@ public class GGA {
 	public void Close ()
 	{
 		try {
+			dataFile.flush();
 			solutionsFile.close();
 			dataFile.close();
 		} catch (IOException e) {
@@ -180,16 +185,6 @@ public class GGA {
 		return (population.GetBinsUsed ());
 
 	} // GetColorsUsed ()
-
-
-	public double GetTotalEvaluations ()
-	// Return the totalevaluations done so far by the
-	// genetic algorithm, no calculations are done.
-	{
-		return (population.GetTotalEvaluations ());
-
-	} // GetTotalEvaluation ()
-
 
 	public Genotype getBestGeno() {
 		//return population.getBestGeno();
