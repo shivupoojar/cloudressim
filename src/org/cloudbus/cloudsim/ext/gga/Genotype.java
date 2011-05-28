@@ -69,6 +69,8 @@ public class Genotype {
 			PackObject((i + r) % nrOfObjects);
 
 		Evaluate();
+		
+		//System.out.println("\n\nNetworkCost: " + problem.getTopology().getVolumeCostOfNetwork(objects) + "\n");
 
 	}
 

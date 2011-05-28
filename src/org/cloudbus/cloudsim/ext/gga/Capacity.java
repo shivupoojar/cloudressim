@@ -23,4 +23,36 @@ public class Capacity {
 	public String toString() {
 		return "Cpu:" + Cpu + "Mem:" + Mem + "Disk:" + Disk + "Bw:" + Bandwidth;
 	}
+
+	public int getCpu() {
+		return Cpu;
+	}
+
+	public int getMem() {
+		return Mem;
+	}
+
+	public int getDisk() {
+		return Disk;
+	}
+
+	public int getBandwidth() {
+		return Bandwidth;
+	}
+
+	public void setCpu(int cpu) {
+		Cpu = cpu;
+	}
+
+	public void setMem(int mem) {
+		Mem = mem;
+	}
+
+	public void setDisk(int disk) {
+		Disk = disk;
+	}
+
+	public void setBandwidth(int bandwidth) {
+		Bandwidth = bandwidth;
+	}
 }

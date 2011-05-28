@@ -54,7 +54,6 @@ public class GGA {
 		{
 			System.err.println("Error: the parameter AllelMutationProb (" + gaparams.AllelMutationProb + ") should lie between 0 and 1");
 			System.exit(2);
-
 		}
 
 		debug = properties.getBoolean("debug"); //false;//inifile.ReadBool ("ggadebug");

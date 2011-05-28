@@ -11,6 +11,7 @@ public class Problem {
 	private Capacity cBin = new Capacity();
 	private int nrOfItems;
 	private int nrOfBins;
+	private Topology topology;
 	
 	public int getNrOfItems() {
 		return nrOfItems;
@@ -70,6 +71,12 @@ public class Problem {
 			c.Mem = vm.getRam();
 			items.add(c);
 		}
+		
+		topology = new Topology("topology.properties");
+		if (!topology.genTopology(items, cBin)) {
+			System.err.println("Network Generation Failure");
+			System.exit(1);
+		}
 	}
 	
 	//TODO: 这个借口用int表示type，应当改成enum
@@ -92,5 +99,8 @@ public class Problem {
 			retVal = items.get(seq).Mem;
 		}
 		return retVal;
+	}
+	public Topology getTopology() {
+		return topology;
 	}
 }
