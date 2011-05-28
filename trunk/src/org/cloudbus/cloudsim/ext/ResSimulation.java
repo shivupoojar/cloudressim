@@ -54,7 +54,7 @@ public class ResSimulation {
 	/** The vmlist. */
 	private static List<Vm> vmlist;
 	
-	private static int workloadSize = 200;
+	private static int workloadSize = 300;
 	
 	private CloudSimEventListener guiListener;
 	
@@ -107,6 +107,7 @@ public class ResSimulation {
 	            	
 	            	WorkLoad workload = new WorkLoad("auto-gen", "test.xml", brokerId, datacenter0.getHostList().get(0), workloadSize);
 	            	workload.genWorkLoad();
+	            	workload.genNetwork("VolumeFile.txt");
 	            	vmlist = workload.getVmList();
 
 	            	//submit vm list to the broker

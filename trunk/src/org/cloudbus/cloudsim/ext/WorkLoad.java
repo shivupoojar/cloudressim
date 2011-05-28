@@ -1,5 +1,6 @@
 package org.cloudbus.cloudsim.ext;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +47,56 @@ public class WorkLoad {
 		} else {
 			//TODO: 这里是默认参数
 			setVmList(autoGenVms(vmsPerRound));
+		}		
+	}
+	
+	public void genNetwork(String fileName) {
+		FileWriter file = null;
+		Random comRnd = new Random();
+		int[][] network = new int[300][300];
+		int netLoad = -1;
+		try {
+			file =  new FileWriter(fileName);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		for (int i=0; i < vmsPerRound; i++) {
+			for (int j=0; j < vmsPerRound; j++) {
+				if (i == j) {
+					netLoad = 0;
+				} else if( i < j) {
+					while (netLoad < 0 || netLoad > 8) {
+						netLoad = (int) ScientificMethods.normDistribution(comRnd, 1, 2);
+					}
+				} else {
+					netLoad = network[j][i];
+				}
+				network[i][j] = netLoad;
+				// 重要，随机生成
+				netLoad = -1;
+			}
 		}
 		
+		for (int i=0; i < vmsPerRound; i++) {
+			for (int j=0; j < vmsPerRound; j++) {
+				netLoad = network[i][j]; 
+				String postfix = " ";
+				if (j == (vmsPerRound - 1)) {
+					postfix = "\n";
+				} 
+				try {
+					file.write(Integer.toString(netLoad) + postfix);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		try {
+			file.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}		
 	}
 	
 	@SuppressWarnings("unchecked")
