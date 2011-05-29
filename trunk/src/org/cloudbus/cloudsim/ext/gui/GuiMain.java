@@ -34,6 +34,9 @@ import org.cloudbus.cloudsim.ext.event.CloudSimEvent;
 import org.cloudbus.cloudsim.ext.event.CloudSimEventListener;
 import org.cloudbus.cloudsim.ext.event.CloudSimEvents;
 import org.cloudbus.cloudsim.ext.gui.screens.ConfigureSimulationPanel;
+import org.cloudbus.cloudsim.ext.gui.screens.SimulationPanel;
+
+import org.cloudbus.cloudsim.ext.gui.utils.SimpleGraph;
 
 /**
  * The main class of the GUI. Sets up the UI, and controls the screen transitions.
@@ -59,7 +62,7 @@ private static final String CMD_ABOUT = "About";
 	private CardLayout screenController;
 	private JPanel mainPanel;
 	private ConfigureSimulationPanel configScreen;
-	//private SimulationPanel simulationPanel;
+	private SimulationPanel simulationPanel;
 	//private ResultsScreen resultsScreen;
 	private ResSimulation simulation;
 	private Map<String, JButton> menuButtons;
@@ -107,13 +110,12 @@ private static final String CMD_ABOUT = "About";
 	private void showHomeScreen(){
 		enableMenuPanel();
 		
-		if (messagePanel == null) {//simulationPanel == null){
+		if (simulationPanel == null) {//simulationPanel == null){
 			JPanel simulationScreen = new JPanel();
 			simulationScreen.setLayout(new BorderLayout());
-			//JPanel pnl = new JPanel();
-			//simulationPanel = new SimulationPanel();
-			//pnl.add(simulationPanel);
-			//simulationScreen.add(pnl, BorderLayout.CENTER);
+			
+			simulationPanel = new SimulationPanel(simulation.getGgaGens());
+			simulationScreen.add(simulationPanel, BorderLayout.CENTER);
 			
 			messagePanel = new JPanel();
 			Dimension dimension = new Dimension(500, 60);
@@ -361,7 +363,8 @@ private static final String CMD_ABOUT = "About";
 		} else if (e.getId() == CloudSimEvents.EVENT_PROGRESS_UPDATE){
 			int currSimTime = (Integer) e.getParameter(Constants.PARAM_TIME);
 			progressBar.setValue((int) currSimTime);
-			System.out.println("\n\n\nii@@#@$@$#@$#@ii!!!!\n\n\n");
+		} else if (e.getId() == CloudSimEvents.EVENT_FITNESS_UPDATE){
+			simulationPanel.cloudSimEventFired(e);
 		}
 	}
 	

@@ -151,9 +151,13 @@ public class GGA {
 					e.printStackTrace();
 				}
 				
-			CloudSimEvent e = new CloudSimEvent(CloudSimEvents.EVENT_PROGRESS_UPDATE);
-			e.addParameter(Constants.PARAM_TIME, gen);
-			progressListener.cloudSimEventFired(e);				
+			CloudSimEvent e1 = new CloudSimEvent(CloudSimEvents.EVENT_PROGRESS_UPDATE);
+			e1.addParameter(Constants.PARAM_TIME, gen);
+			progressListener.cloudSimEventFired(e1);
+			
+			CloudSimEvent e2 = new CloudSimEvent(CloudSimEvents.EVENT_FITNESS_UPDATE);
+			e2.addParameter(Constants.PARAM_FVAL, (long)(population.GetBestFitness()*100));
+			progressListener.cloudSimEventFired(e2);
 		}
 
 		if (plotdata) {

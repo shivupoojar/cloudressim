@@ -13,4 +13,5 @@ public interface CloudSimEvents {
 	public static final int EVENT_VM_FINISHED_CLOUDLET = 3003;
 	
 	final int EVENT_PROGRESS_UPDATE = 4000;
+	final int EVENT_FITNESS_UPDATE = 4001;
 }
