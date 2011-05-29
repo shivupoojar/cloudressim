@@ -47,8 +47,6 @@ private static final String CMD_ABOUT = "About";
 	private static final String CMD_DISPLAY_RESULTS = "display_results";
 	private static final String CMD_CANCEL_SIMULATION = "Cancel_simulation";
 	private static final String CMD_SHOW_BOUNDARIES = "show_boundaries";
-	private static final String INTERNET_CHARACTERISTICS_SCREEN = "Internet characteristics screen";
-	private static final String CMD_DEFINE_INTERNET_CHARACTERISTICS = "Define Internet Characteristics";
 	private static final String HOME_SCREEN = "home screen";
 	private static final String CONFIG_SCREEN = "configScreen";
 	private static final String CMD_RUN_SIMULATION = "Run Simulation";
@@ -62,7 +60,6 @@ private static final String CMD_ABOUT = "About";
 	private JPanel mainPanel;
 	private ConfigureSimulationPanel configScreen;
 	//private SimulationPanel simulationPanel;
-	private JPanel internetBehaviourScreen;
 	//private ResultsScreen resultsScreen;
 	private ResSimulation simulation;
 	private Map<String, JButton> menuButtons;
@@ -110,13 +107,13 @@ private static final String CMD_ABOUT = "About";
 	private void showHomeScreen(){
 		enableMenuPanel();
 		
-		if (true) {//simulationPanel == null){
+		if (messagePanel == null) {//simulationPanel == null){
 			JPanel simulationScreen = new JPanel();
 			simulationScreen.setLayout(new BorderLayout());
-			JPanel pnl = new JPanel();
+			//JPanel pnl = new JPanel();
 			//simulationPanel = new SimulationPanel();
 			//pnl.add(simulationPanel);
-			simulationScreen.add(pnl, BorderLayout.CENTER);
+			//simulationScreen.add(pnl, BorderLayout.CENTER);
 			
 			messagePanel = new JPanel();
 			Dimension dimension = new Dimension(500, 60);
@@ -180,18 +177,6 @@ private static final String CMD_ABOUT = "About";
 		this.repaint();
 	}
 	
-	private void showInternetBehaviourScreen(){
-		disableMenuPanel();
-		
-		if (internetBehaviourScreen == null){
-			//internetBehaviourScreen = new InternetCharacteristicsScreen(simulation, this);
-			mainPanel.add(INTERNET_CHARACTERISTICS_SCREEN, internetBehaviourScreen);
-		}
-		screenController.show(mainPanel, INTERNET_CHARACTERISTICS_SCREEN);
-		this.validate();
-		this.repaint();
-	}
-	
 	private void showResultsScreen(){
 		if (resultsDlg == null){
 			resultsDlg = new JDialog(this);
@@ -217,7 +202,6 @@ private static final String CMD_ABOUT = "About";
 		menuPanel.setBorder(new CompoundBorder(bevelBorder, emptyBoarder));
 		
 		addMenuButton(menuPanel, CMD_CONFIGURE_SIMULATION);
-		addMenuButton(menuPanel, CMD_DEFINE_INTERNET_CHARACTERISTICS);
 		menuPanel.add(Box.createVerticalStrut(20));
 		addMenuButton(menuPanel, CMD_RUN_SIMULATION);
 		menuPanel.add(Box.createVerticalStrut(20));
@@ -258,13 +242,11 @@ private static final String CMD_ABOUT = "About";
 	
 	private void disableMenuPanel() {
 		menuButtons.get(CMD_CONFIGURE_SIMULATION).setEnabled(false);
-		menuButtons.get(CMD_DEFINE_INTERNET_CHARACTERISTICS).setEnabled(false);
 		menuButtons.get(CMD_RUN_SIMULATION).setEnabled(false);
 	}
 	
 	private void enableMenuPanel() {
 		menuButtons.get(CMD_CONFIGURE_SIMULATION).setEnabled(true);
-		menuButtons.get(CMD_DEFINE_INTERNET_CHARACTERISTICS).setEnabled(true);
 		menuButtons.get(CMD_RUN_SIMULATION).setEnabled(true);
 	}
 		
@@ -273,7 +255,7 @@ private static final String CMD_ABOUT = "About";
 			busyMessagePnl = new JPanel();
 			busyMessagePnl.add(new JLabel("<html><h2>Simulation Running...</h2></html>"), BorderLayout.NORTH);
 			
-			//progressBar = new JProgressBar(0, (int) (simulation.getSimulationTime() / 1000));
+			progressBar = new JProgressBar(0, simulation.getGgaGens());
 			progressBar.setStringPainted(true);
 			busyMessagePnl.add(progressBar, BorderLayout.CENTER);
 		}
@@ -315,7 +297,7 @@ private static final String CMD_ABOUT = "About";
 			showHomeScreen();
 		}*/ else if (e.getActionCommand().equals(CMD_RUN_SIMULATION)){
 			if (!simulationFinished){
-				//showBusyMessage();
+				showBusyMessage();
 				
 				//Start simulation in a new thread, because this is the Event-dispatch thread
 				Thread t = new Thread(){
@@ -340,14 +322,6 @@ private static final String CMD_ABOUT = "About";
 													" \nThis is required due to a limitation in the underlying simulation framework.");
 			}
 			
-		} else if (e.getActionCommand().equals(CMD_DEFINE_INTERNET_CHARACTERISTICS)){
-			showInternetBehaviourScreen();
-		} /*else if (e.getActionCommand().equals(InternetCharacteristicsScreen.CMD_CANCEL_INTERNET_CONFIG)){
-			showHomeScreen();
-		} else if (e.getActionCommand().equals(InternetCharacteristicsScreen.CMD_DONE_INTERNET_CONFIG)){
-			showHomeScreen();
-		} else if (e.getActionCommand().equals(CMD_SHOW_BOUNDARIES)){
-			simulationPanel.setShowBoundaries(btnShowBoundaries.isSelected());
 		} else if (e.getActionCommand().equals(CMD_CANCEL_SIMULATION)){
 			try {
 				showSimulationCancellingMessage();
@@ -355,7 +329,7 @@ private static final String CMD_ABOUT = "About";
 			} catch (Exception ex) {
 				JOptionPane.showMessageDialog(this, ex.getMessage());
 			}
-		} */else if (e.getActionCommand().equals(CMD_DISPLAY_RESULTS)){
+		} else if (e.getActionCommand().equals(CMD_DISPLAY_RESULTS)){
 			showResultsScreen();
 		} else if (e.getActionCommand().equals(CMD_ABOUT)){
 			if (abtDlg == null){
@@ -385,8 +359,9 @@ private static final String CMD_ABOUT = "About";
 			showOnScreenResults();
 			showResultsScreen();
 		} else if (e.getId() == CloudSimEvents.EVENT_PROGRESS_UPDATE){
-			double currSimTime = (Double) e.getParameter(Constants.PARAM_TIME);
-			progressBar.setValue((int) (currSimTime / 1000));
+			int currSimTime = (Integer) e.getParameter(Constants.PARAM_TIME);
+			progressBar.setValue((int) currSimTime);
+			System.out.println("\n\n\nii@@#@$@$#@$#@ii!!!!\n\n\n");
 		}
 	}
 	
