@@ -49,17 +49,19 @@ import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
 public class ResSimulation {
 
 	/** The cloudlet list. */
-	private static List<Cloudlet> cloudletList;
+	private List<Cloudlet> cloudletList;
 
 	/** The vmlist. */
-	private static List<Vm> vmlist;
+	private List<Vm> vmlist;
 	
-	private static int workloadSize = 300;
+	private int workloadSize = 300;
+	private int ggaGens = 200;
 	
 	private CloudSimEventListener guiListener;
 	
 	public ResSimulation(CloudSimEventListener gui) {
-		this.guiListener = gui;		
+		this.guiListener = gui;
+		this.ggaGens = 200;
 	}
 
 	/**
@@ -179,7 +181,7 @@ public class ResSimulation {
 	        }
 	    }
 
-		private static AdvanceDatacenter createDatacenter(String name){
+		private AdvanceDatacenter createDatacenter(String name){
 
 	        // Here are the steps needed to create a PowerDatacenter:
 	        // 1. We need to create a list to store
@@ -237,7 +239,7 @@ public class ResSimulation {
 	        // 6. Finally, we need to create a PowerDatacenter object.
 	        AdvanceDatacenter datacenter = null;
 	        try {
-	            datacenter = new AdvanceDatacenter(name, characteristics, new VmAllocationPolicyLite(hostList), storageList, 0, workloadSize);
+	            datacenter = new AdvanceDatacenter(name, characteristics, new VmAllocationPolicyLite(hostList), storageList, 0, workloadSize, ggaGens, guiListener);
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
@@ -247,7 +249,7 @@ public class ResSimulation {
 
 	    //We strongly encourage users to develop their own broker policies, to submit vms and cloudlets according
 	    //to the specific rules of the simulated scenario
-	    private static DatacenterBroker createBroker(){
+	    private DatacenterBroker createBroker(){
 
 	    	DatacenterBroker broker = null;
 	        try {
@@ -263,7 +265,7 @@ public class ResSimulation {
 	     * Prints the Cloudlet objects
 	     * @param list  list of Cloudlets
 	     */
-	    private static void printCloudletList(List<Cloudlet> list) {
+	    private void printCloudletList(List<Cloudlet> list) {
 	        int size = list.size();
 	        Cloudlet cloudlet;
 
@@ -288,4 +290,16 @@ public class ResSimulation {
 	        }
 
 	    }
+
+		public int getGgaGens() {
+			return ggaGens;
+		}
+
+		public void setGgaGens(int ggaGens) {
+			this.ggaGens = ggaGens;
+		}
+
+		public void cancelSimulation() {
+			CloudSim.stopSimulation();			
+		}
 }

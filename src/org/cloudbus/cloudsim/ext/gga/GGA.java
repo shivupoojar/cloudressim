@@ -3,7 +3,11 @@ package org.cloudbus.cloudsim.ext.gga;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.cloudbus.cloudsim.ext.event.CloudSimEventListener;
+import org.cloudbus.cloudsim.ext.event.CloudSimEvent;
+import org.cloudbus.cloudsim.ext.event.CloudSimEvents;
 import org.cloudbus.cloudsim.ext.gga.enums.PackingT;
+import org.cloudbus.cloudsim.ext.Constants;
 
 //TODO: Something needs to be done, for get config options of the gga.
 //files needs to be implemented or otherwise.
@@ -21,6 +25,12 @@ public class GGA {
 	private boolean debug;
 	private boolean plotdata;
 	private boolean printsolutions;
+	
+	private CloudSimEventListener progressListener;
+	
+	public GGA (CloudSimEventListener progressListener) {
+		this.progressListener = progressListener;		
+	}
 	
 	public void Initialize (Problem problem, int maxRuntimes, int seed)
 	// Set all genetic algorithm specific parameters and
@@ -141,6 +151,9 @@ public class GGA {
 					e.printStackTrace();
 				}
 				
+			CloudSimEvent e = new CloudSimEvent(CloudSimEvents.EVENT_PROGRESS_UPDATE);
+			e.addParameter(Constants.PARAM_TIME, gen);
+			progressListener.cloudSimEventFired(e);				
 		}
 
 		if (plotdata) {

@@ -10,20 +10,25 @@ import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.ext.gga.GGA;
 import org.cloudbus.cloudsim.ext.gga.Genotype;
 import org.cloudbus.cloudsim.ext.gga.Problem;
+import org.cloudbus.cloudsim.ext.event.CloudSimEventListener;
 
 public class AdvanceDatacenter extends Datacenter {
 	private List<? extends Vm> vmQueue;
 	
 	private int vmQueueCapacity;		//vmQueue容量，到了这个值启动一次vm部署
+	private int ggaGenerations;
+	private CloudSimEventListener progressListener;
 
 	public AdvanceDatacenter(String name,
 			DatacenterCharacteristics characteristics,
 			VmAllocationPolicy vmAllocationPolicy, List<Storage> storageList,
-			double schedulingInterval, int vmQueueCapacity) throws Exception {
+			double schedulingInterval, int vmQueueCapacity, int totalGens, CloudSimEventListener l) throws Exception {
 		super(name, characteristics, vmAllocationPolicy, storageList,
 				schedulingInterval);
 		
 		this.vmQueueCapacity = vmQueueCapacity;
+		this.ggaGenerations = totalGens;
+		this.progressListener = l;
 		setVmQueue(new ArrayList<Vm>());
 	}
 	
@@ -65,50 +70,17 @@ public class AdvanceDatacenter extends Datacenter {
     	Vm vm = (Vm) ev.getData();
     	getVmQueue().add(vm);
     	
-    	if (getVmQueue().size() == vmQueueCapacity) //{
+    	if (getVmQueue().size() == vmQueueCapacity)
     		allocateVmsWithGGA();
-    	/*	for (int i=0; i < 10; i++) {
-	    		vm = getVmQueue().remove(0);
-	    		boolean result = getVmAllocationPolicy().allocateHostForVm(vm);
-	
-	     	    if (ack) {
-	     	       int[] data = new int[3];
-	               data[0] = getId();
-	     	       data[1] = vm.getId();
-	
-	               if (result) {
-	            	   data[2] = CloudSimTags.TRUE;
-	               } else {
-	            	   data[2] = CloudSimTags.FALSE;
-	               }
-	    		   sendNow(vm.getUserId(), CloudSimTags.VM_CREATE_ACK, data);
-	     	    }
-	
-	     	    if (result) {
-	    			double amount = 0.0;
-	    			if (getDebts().containsKey(vm.getUserId())) {
-	    				amount = getDebts().get(vm.getUserId());
-	    			}
-	    			amount += getCharacteristics().getCostPerMem() * vm.getRam();
-	    			amount += getCharacteristics().getCostPerStorage() * vm.getSize();
-	
-	    			getDebts().put(vm.getUserId(), amount);
-	
-	    			getVmList().add(vm);
-	
-	    			vm.updateVmProcessing(CloudSim.clock(), getVmAllocationPolicy().getHost(vm).getVmScheduler().getAllocatedMipsForVm(vm));
-	     	    }
-    		}
-    	}*/
     }
     
     private void allocateVmsWithGGA() {
     	Problem problem = new Problem();
     	problem.CreateProblem(getVmQueue(), getHostList());
     	
-    	GGA gga = new GGA();
+    	GGA gga = new GGA(progressListener);
     	//TODO: The initialization variable should be well considered
-    	gga.Initialize(problem, 150, new Random().nextInt(9999999));
+    	gga.Initialize(problem, ggaGenerations, new Random().nextInt(9999999));
     	
     	Genotype bestGeno = null;
     	//TODO: Times of the reproduce should be a variable
