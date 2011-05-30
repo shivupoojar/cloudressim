@@ -28,8 +28,9 @@ public class GGA {
 	
 	private CloudSimEventListener progressListener;
 	
-	public GGA (CloudSimEventListener progressListener) {
-		this.progressListener = progressListener;		
+	public GGA (CloudSimEventListener progressListener, GaParamsT gaparams) {
+		this.progressListener = progressListener;
+		this.gaparams = gaparams;
 	}
 	
 	public void Initialize (Problem problem, int maxRuntimes, int seed)
@@ -41,14 +42,6 @@ public class GGA {
 		int numberOfObjects = problem.getNrOfItems();
 		nrofobjects = numberOfObjects;
 		this.maxRuntimes = maxRuntimes;
-		
-		PropertiesReader properties = PropertiesReader.loader();
-
-		//TODO: These properties should be read from a file;
-		gaparams.PopulationSize = properties.getInt("populations_size"); //20//inifile.ReadInt ("populationsize");
-		gaparams.N_Crossover = properties.getInt("crossover"); //6;//inifile.ReadInt ("crossover");
-		gaparams.N_Mutation = properties.getInt("mutations"); // 7;//inifile.ReadInt ("mutation");
-		gaparams.AllelMutationProb = properties.getDouble("allelemutation_prob"); //0.88("populations_size");0.8;//inifile.ReadDouble ("allelemutationprob");
 
 		if (gaparams.PopulationSize < gaparams.N_Crossover * 2)
 		{
@@ -66,6 +59,8 @@ public class GGA {
 			System.exit(2);
 		}
 
+		PropertiesReader properties = PropertiesReader.loader();
+		
 		debug = properties.getBoolean("debug"); //false;//inifile.ReadBool ("ggadebug");
 		plotdata = properties.getBoolean("plotdata"); //true;//inifile.ReadBool ("plotdata");
 		printsolutions = properties.getBoolean("printsolutions"); //true;//inifile.ReadBool ("printsolutions");

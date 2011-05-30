@@ -33,6 +33,7 @@ import org.cloudbus.cloudsim.VmAllocationPolicyLite;
 import org.cloudbus.cloudsim.VmSchedulerTimeShared;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.ext.event.CloudSimEventListener;
+import org.cloudbus.cloudsim.ext.gga.GaParamsT;
 import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
@@ -54,14 +55,25 @@ public class ResSimulation {
 	/** The vmlist. */
 	private List<Vm> vmlist;
 	
-	private int workloadSize = 300;
-	private int ggaGens = 200;
+	private int workloadSize;
+	private int ggaGens;
+	private int populationSize;
+	private int crossover;
+	private int mutations;
+	private double mutationProb;
 	
 	private CloudSimEventListener guiListener;
 	
 	public ResSimulation(CloudSimEventListener gui) {
 		this.guiListener = gui;
-		this.ggaGens = 200;
+		
+		this.workloadSize = Constants.DEFAULT_WORKLOAD_SIZE;
+		
+		this.ggaGens = Constants.DEFAULT_GGA_GENERAIONS;
+		this.populationSize = Constants.DEFAULT_GGA_POPULATION_SIZE;
+		this.crossover = Constants.DEFAULT_GGA_CROSSOVER;
+		this.mutations = Constants.DEFAULT_GGA_MUTATIONS;
+		this.mutationProb = Constants.DEFAULT_GGA_MUTATION_PROB;		
 	}
 
 	/**
@@ -237,9 +249,15 @@ public class ResSimulation {
 
 
 	        // 6. Finally, we need to create a PowerDatacenter object.
+	        GaParamsT gaparams = new GaParamsT();
+	        gaparams.PopulationSize = populationSize;
+	        gaparams.N_Crossover = crossover;
+	        gaparams.N_Mutation = mutations;
+	        gaparams.AllelMutationProb = mutationProb;
+	        
 	        AdvanceDatacenter datacenter = null;
 	        try {
-	            datacenter = new AdvanceDatacenter(name, characteristics, new VmAllocationPolicyLite(hostList), storageList, 0, workloadSize, ggaGens, guiListener);
+	            datacenter = new AdvanceDatacenter(name, characteristics, new VmAllocationPolicyLite(hostList), storageList, 0, workloadSize, ggaGens, guiListener, gaparams);
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
@@ -297,6 +315,54 @@ public class ResSimulation {
 
 		public void setGgaGens(int ggaGens) {
 			this.ggaGens = ggaGens;
+		}
+
+		public int getWorkloadSize() {
+			return workloadSize;
+		}
+
+		public int getPopulationSize() {
+			return populationSize;
+		}
+
+		public int getCrossover() {
+			return crossover;
+		}
+
+		public int getMutations() {
+			return mutations;
+		}
+
+		public double getMutationProb() {
+			return mutationProb;
+		}
+
+		public CloudSimEventListener getGuiListener() {
+			return guiListener;
+		}
+
+		public void setWorkloadSize(int workloadSize) {
+			this.workloadSize = workloadSize;
+		}
+
+		public void setPopulationSize(int populationSize) {
+			this.populationSize = populationSize;
+		}
+
+		public void setCrossover(int crossover) {
+			this.crossover = crossover;
+		}
+
+		public void setMutations(int mutations) {
+			this.mutations = mutations;
+		}
+
+		public void setMutationProb(double mutationProb) {
+			this.mutationProb = mutationProb;
+		}
+
+		public void setGuiListener(CloudSimEventListener guiListener) {
+			this.guiListener = guiListener;
 		}
 
 		public void cancelSimulation() {

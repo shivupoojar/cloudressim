@@ -52,64 +52,44 @@ import org.cloudbus.cloudsim.ext.event.CloudSimEvents;
 public class ConfigureSimulationPanel extends JPanel 
 									  implements ActionListener, CloudSimEventListener, Constants {
 
-	private static final String CMD_COPY_MACHINE = "copy_machine";
-	private static final String LBL_COPY = "Copy";
-	private static final String CMD_REMOVE_VM_ALLOCATION = "remove_vm_allocation";
-	private static final String CMD_ADD_VM_ALLOCATION = "add_vm_allocation";
-	private static final String CMD_REMOVE_MACHINE = "Remove Machine";
-	private static final String CMD_ADD_MACHINE = "add_machine";
 	private static final String CMD_SAVE_CONFIG = "save_config_file";
 	public static final String CMD_LOAD_CONFIG = "load_config_from_file";
 	public static final String CMD_CANCEL_CONFIGURATION = "cancel_configuration";
 	public static final String CMD_DONE_CONFIGURATION = "done_ configuration";
-	private static final String CMD_REMOVE_DATACENTER = "remove datacenter";
-	private static final String CMD_ADD_NEW_DATACENTER = "add new datacenter";
-	private static final String CMD_REMOVE_USERBASE = "remove userbase";
-	private static final String CMD_ADD_NEW_USERBASE = "add new userbase";
-	
-	private static final String COL_AVG_OFF_PEAK_USERS = "Avg Off-Peak \nUsers";
-	private static final String COL_AVG_PEAK_USERS = "Avg Peak \nUsers";
 	
 	private static final String LBL_SAVE_CONFIGURATION = "Save Configuration";
 	private static final String LBL_LOAD = "Load Configuration";
 	private static final String LBL_CANCEL = "Cancel";
 	private static final String LBL_DONE = "Done";
-	private static final String LBL_REMOVE = "Remove";
-	private static final String LBL_ADD_NEW = "Add New";
-	private static final int TABLE_HEIGHT = 80;
-	private static final Dimension TABLE_DIMENSION = new Dimension(650, TABLE_HEIGHT);
 	private static final Dimension BTN_DIMENSION = new Dimension(100, 25);
 	private static final String SIM_FILE_EXTENSION = ".sim";
-	private static final String TIME_UNIT_DAYS = "days";
-	private static final String TIME_UNIT_HOURS = "hours";
-	private static final String TIME_UNIT_MIN = "min";
 	
-	private JTable userBasesTable;
 	private ResSimulation simulation;
 	private ActionListener screenListener;
 	private JTextField txtSimDuration;
 	private JComboBox cmbTimeUnit;
-	private JComboBox regionCombo;
 	
 	/** fileChooser is used for both open and save dialog for configurations. */
 	private JFileChooser fileChooser;
-	private JTable dataCentersTable;
 	
-	private JPanel machineListPanel;
-	private JTable machineTable;
-	private JPanel machineListControlsPanel;
-	private JComboBox archCombo;
-	private JComboBox osCombo;
-	private JComboBox vmmCombo;
-	private JLabel lblDcName;
-	private JPanel machineDetailsPanel;
-	private JTable vmAllocTable;
-	private JComboBox dcCombo;
-	private JTextField txtUserGroupingFactor;
-	private JTextField txtDcRequestGroupingFactor;
-	private JTextField txtInstructionLength;
-	private JComboBox cmbServiceBroker;
-	private JComboBox cmbLoadBalancingPolicy;
+	/** Workload configurations. */
+	private JComboBox cmbWorkloadSize;
+	private JTextField txtHostCPU;
+	private JTextField txtHostRam;
+	private JTextField txtHostStorage;
+	private JTextField txtHostBw;
+	
+	/** Network configurations. */
+	private JTextField txtNetworkFirstLayer;
+	private JTextField txtNetworkSecondLayer;
+	private JTextField txtNetworkThirdLayer;
+	
+	/** GGA configurations. */
+	private JTextField txtGGAGenerations;
+	private JComboBox cmbGGAPopulationSize;
+	private JTextField txtGGACrossover;
+	private JTextField txtGGAMutation;
+	private JTextField txtGGAMutationProb;
 	
 
 	/** 
@@ -123,11 +103,6 @@ public class ConfigureSimulationPanel extends JPanel
 		this.screenListener = screenListener;
 		
 		initListLocalCopies();
-		
-		regionCombo = new JComboBox(new Integer[]{0, 1, 2, 3, 4, 5});
-		archCombo = new JComboBox(new String[]{DEFAULT_ARCHITECTURE});
-		osCombo = new JComboBox(new String[]{DEFAULT_OS});
-		vmmCombo = new JComboBox(new String[]{DEFAULT_VMM});
 		initUI();
 	}
 	
@@ -161,8 +136,9 @@ public class ConfigureSimulationPanel extends JPanel
 		compH = 500;
 		compW = 900;
 		JTabbedPane tabbedPane = new JTabbedPane();
-		tabbedPane.addTab("Main Configuration", createMainTab());
-		tabbedPane.addTab("Advanced", createAdvancedTab());
+		tabbedPane.addTab("Main Confuguration", createMainTab());
+		tabbedPane.addTab("Network Confuguration", createNetworkTab());
+		tabbedPane.addTab("GGA Confuguration", createAdvancedTab());
 		tabbedPane.setBounds(x, y, compW, compH);
 		this.add(tabbedPane);
 		
@@ -196,58 +172,161 @@ public class ConfigureSimulationPanel extends JPanel
 	 * @return
 	 */
 	private JPanel createMainTab(){
-		int leftMargin = 10;
+		int leftMargin = 50;
 		int x = leftMargin;
-		int y = 30;
-		int compW = 500;
-		int compH = leftMargin;
-		int hGap = 10;
+		int y = 50;
 		int vGap = 20;
 		
 		JPanel mainTab = new JPanel();
 		mainTab.setLayout(null);
 		
-		compW = 120; 
-		compH = 20;
-		JLabel lblSimDuration = new JLabel("Simulation Duration:");
-		lblSimDuration.setBounds(x, y, compW, compH);
-		mainTab.add(lblSimDuration);
+		int compW = 500;
+		int compH = 20;
 		
-		x += compW + vGap; 
-		compW = 70; 
-		txtSimDuration = new JTextField("" + (222333223) / (60000));
-		txtSimDuration.setBounds(x, y, compW, compH);
-		mainTab.add(txtSimDuration);
+		compW = 150;
+		int lastCompH = compH = 30;
+		JLabel lblWorkloadSize = new JLabel("<html>Workload Size:<br/>" +
+				                                  "workload size:</html>");
+		lblWorkloadSize.setBounds(x, y, compW, compH);
+		mainTab.add(lblWorkloadSize);
 		
 		x += compW + vGap;
-		cmbTimeUnit = new JComboBox(new String[]{TIME_UNIT_MIN, TIME_UNIT_HOURS, TIME_UNIT_DAYS});
-		cmbTimeUnit.setBounds(x, y, compW, compH);
-		mainTab.add(cmbTimeUnit);
-		
-		x = leftMargin; 
-		y += compH + vGap; 
-		compW = 70; 
-		JLabel lblUbHeading = new JLabel("User bases:");
-		lblUbHeading.setBounds(x, y, compW, compH);
-		mainTab.add(lblUbHeading);
-		
-				
-		x = leftMargin;
-		y += compH + vGap;
-		compW = 80; 
-		compH = 60;
-		JLabel lblVmHeading = new JLabel("<html>Application<br/>Deployment<br/>Configuration:</html>");
-		lblVmHeading.setBounds(x, y, compW, compH);
-		mainTab.add(lblVmHeading);
-		
-		x += compW + hGap * 2;
-		compW = 150; 
+		compW = 150;
 		compH = 20;
-		JLabel lblServiceBroker = new JLabel("Service Broker Policy:");
-		lblServiceBroker.setBounds(x, y, compW, compH);
-		mainTab.add(lblServiceBroker);
+		cmbWorkloadSize = new JComboBox(new Integer[]{300, 400, 1000
+		});
+		cmbWorkloadSize.setSelectedItem(simulation.getWorkloadSize());
+		cmbWorkloadSize.setBounds(x, y, compW, compH);
+		mainTab.add(cmbWorkloadSize);
+		
+		x = leftMargin;
+		y += lastCompH + vGap;
+		compW = 150;
+		lastCompH = compH = 30;
+		JLabel lblHostRam = new JLabel("<html>Host ram:" +
+										 "<br/>units: (MB)</html>");
+		lblHostRam.setBounds(x, y, compW, compH);
+		mainTab.add(lblHostRam);
+		
+		x += compW + vGap;
+		compW = 80;
+		compH = 20;
+		txtHostRam = new JTextField("" + simulation.getGgaGens());
+		txtHostRam.setBounds(x, y, compW, compH);
+		mainTab.add(txtHostRam);
+		
+		x = leftMargin;
+		y += lastCompH + vGap;
+		compW = 150;
+		compH = 30;
+		JLabel lblHostCPU = new JLabel("<html>Host CPU:" +
+				                                  "<br/>Units: (MHz)</html>");
+		lblHostCPU.setBounds(x, y, compW, compH);
+		mainTab.add(lblHostCPU);
+		
+		x += compW + vGap;
+		compW = 80;
+		compH = 20;
+		txtHostCPU = new JTextField("" + simulation.getCrossover());
+		txtHostCPU.setBounds(x, y, compW, compH);
+		mainTab.add(txtHostCPU);
+		
+		x = leftMargin;
+		y += lastCompH + vGap;
+		compW = 150;
+		compH = 30;
+		JLabel lblHostStorage = new JLabel("<html>Host Storage:" +
+				                                  "<br/>units: (MB)</html>");
+		lblHostStorage.setBounds(x, y, compW, compH);
+		mainTab.add(lblHostStorage);
+		
+		x += compW + vGap;
+		compW = 80;
+		compH = 20;
+		txtHostStorage = new JTextField("" + simulation.getMutations());
+		txtHostStorage.setBounds(x, y, compW, compH);
+		mainTab.add(txtHostStorage);
+		
+		x = leftMargin;
+		y += lastCompH + vGap;
+		compW = 150;
+		compH = 30;
+		JLabel lblHostBw = new JLabel("<html>Host bandwidth:" +
+				                                  "<br/>units: (MB/sec)</html>");
+		lblHostBw.setBounds(x, y, compW, compH);
+		mainTab.add(lblHostBw);
+		
+		x += compW + vGap;
+		compW = 80;
+		compH = 20;
+		txtHostBw = new JTextField("" + simulation.getMutationProb());
+		txtHostBw.setBounds(x, y, compW, compH);
+		mainTab.add(txtHostBw);
 		
 		return mainTab;
+	}
+	
+	private JPanel createNetworkTab(){
+		int leftMargin = 50;
+		int x = leftMargin;
+		int y = 50;
+		int vGap = 20;
+		
+		JPanel networkTab = new JPanel();
+		networkTab.setLayout(null);
+		
+		int compW = 500;
+		int compH = 20;
+		
+		compW = 240;
+		int lastCompH = compH = 60;
+		JLabel lblNetworkFirstLayer = new JLabel("<html>Network first layer:" +
+										 "<br/>(Equivalent to first layer</html>");
+		lblNetworkFirstLayer.setBounds(x, y, compW, compH);
+		networkTab.add(lblNetworkFirstLayer);
+		
+		x += compW + vGap;
+		y += 10;
+		compW = 80;
+		compH = 20;
+		txtNetworkFirstLayer = new JTextField("" + simulation.getGgaGens());
+		txtNetworkFirstLayer.setBounds(x, y, compW, compH);
+		networkTab.add(txtNetworkFirstLayer);
+		
+		x = leftMargin;
+		y += lastCompH + vGap;
+		compW = 240;
+		lastCompH = compH = 70;
+		JLabel lblNetworkSecondLayer = new JLabel("<html>Network second layer:" +
+												"<br/>(Equivalent to second layer</html>");
+		lblNetworkSecondLayer.setBounds(x, y, compW, compH);
+		networkTab.add(lblNetworkSecondLayer);	
+		
+		x += compW + vGap;
+		y += 10;
+		compW = 80;
+		compH = 20;
+		txtNetworkSecondLayer = new JTextField("" + simulation.getCrossover());
+		txtNetworkSecondLayer.setBounds(x, y, compW, compH);
+		networkTab.add(txtNetworkSecondLayer);
+		
+		x = leftMargin;
+		y += lastCompH + vGap;
+		compW = 240;
+		compH = 30;
+		JLabel lblNetworkThirdLayer = new JLabel("<html>Network third layer:" +
+				                                  "<br/>third layer</html>");
+		lblNetworkThirdLayer.setBounds(x, y, compW, compH);
+		networkTab.add(lblNetworkThirdLayer);
+		
+		x += compW + vGap;
+		compW = 80;
+		compH = 20;
+		txtNetworkThirdLayer = new JTextField("" + simulation.getMutations());
+		txtNetworkThirdLayer.setBounds(x, y, compW, compH);
+		networkTab.add(txtNetworkThirdLayer);
+		
+		return networkTab;
 	}
 	
 
@@ -268,72 +347,87 @@ public class ConfigureSimulationPanel extends JPanel
 		
 		compW = 240;
 		int lastCompH = compH = 60;
-		JLabel lblUserGroup = new JLabel("<html>User grouping factor in User Bases:" +
-										 "<br/>(Equivalent to number of simultaneous" +
-										 "<br/> users from a single user base)</html>");
-		lblUserGroup.setBounds(x, y, compW, compH);
-		advancedTab.add(lblUserGroup);
+		JLabel lblGGAGens = new JLabel("<html>GGA run generations:" +
+										 "<br/>(Equivalent to number of generations" +
+										 "<br/> the gga runs)</html>");
+		lblGGAGens.setBounds(x, y, compW, compH);
+		advancedTab.add(lblGGAGens);
 		
 		x += compW + vGap;
 		y += 10;
 		compW = 80;
 		compH = 20;
-		txtUserGroupingFactor = new JTextField("" + 123);
-		txtUserGroupingFactor.setBounds(x, y, compW, compH);
-		advancedTab.add(txtUserGroupingFactor);
+		txtGGAGenerations = new JTextField("" + simulation.getGgaGens());
+		txtGGAGenerations.setBounds(x, y, compW, compH);
+		advancedTab.add(txtGGAGenerations);
 		
 		x = leftMargin;
 		y += lastCompH + vGap;
 		compW = 240;
 		lastCompH = compH = 70;
-		JLabel lblDcRequestGrouping = new JLabel("<html>Request grouping factor in Data Centers:" +
-				                                  "<br/>(Equivalent to number of simultaneous" +
-				                                  "<br/> requests a single applicaiton server" +
-				                                  "<br/> instance can support.) </html>");
-		lblDcRequestGrouping.setBounds(x, y, compW, compH);
-		advancedTab.add(lblDcRequestGrouping);
+		JLabel lblGGACrossover = new JLabel("<html>Crossover times:" +
+				                                  "<br/>(Equivalent to number of crossovers" +
+				                                  "<br/> of a generation in gga</html>");
+		lblGGACrossover.setBounds(x, y, compW, compH);
+		advancedTab.add(lblGGACrossover);
 		
 		x += compW + vGap;
 		y += 10;
 		compW = 80;
 		compH = 20;
-		txtDcRequestGroupingFactor = new JTextField("" + 234);
-		txtDcRequestGroupingFactor.setBounds(x, y, compW, compH);
-		advancedTab.add(txtDcRequestGroupingFactor);
+		txtGGACrossover = new JTextField("" + simulation.getCrossover());
+		txtGGACrossover.setBounds(x, y, compW, compH);
+		advancedTab.add(txtGGACrossover);
 		
 		x = leftMargin;
 		y += lastCompH + vGap;
 		compW = 240;
 		compH = 30;
-		JLabel lblInstructionLength = new JLabel("<html>Executable instruction length per request:" +
-				                                  "<br/>(bytes)</html>");
-		lblInstructionLength.setBounds(x, y, compW, compH);
-		advancedTab.add(lblInstructionLength);
+		JLabel lblGGAMutations = new JLabel("<html>Mutations Per Generation:" +
+				                                  "<br/>the mutations</html>");
+		lblGGAMutations.setBounds(x, y, compW, compH);
+		advancedTab.add(lblGGAMutations);
 		
 		x += compW + vGap;
 		compW = 80;
 		compH = 20;
-		txtInstructionLength = new JTextField("" + 222);
-		txtInstructionLength.setBounds(x, y, compW, compH);
-		advancedTab.add(txtInstructionLength);
+		txtGGAMutation = new JTextField("" + simulation.getMutations());
+		txtGGAMutation.setBounds(x, y, compW, compH);
+		advancedTab.add(txtGGAMutation);
 		
 		x = leftMargin;
 		y += lastCompH + vGap;
 		compW = 240;
 		compH = 30;
-		JLabel lblLoadBalancing = new JLabel("<html>Load balancing policy<br/>" +
-				                                  "across VM's in a single Data Center:</html>");
-		lblLoadBalancing.setBounds(x, y, compW, compH);
-		advancedTab.add(lblLoadBalancing);
+		JLabel lblGGAMutationProb = new JLabel("<html>Mutation probs:" +
+				                                  "<br/>the mutation probs.</html>");
+		lblGGAMutationProb.setBounds(x, y, compW, compH);
+		advancedTab.add(lblGGAMutationProb);
+		
+		x += compW + vGap;
+		compW = 80;
+		compH = 20;
+		txtGGAMutationProb = new JTextField("" + simulation.getMutationProb());
+		txtGGAMutationProb.setBounds(x, y, compW, compH);
+		advancedTab.add(txtGGAMutationProb);
+		
+		x = leftMargin;
+		y += lastCompH + vGap;
+		compW = 240;
+		compH = 30;
+		JLabel lblGGAPopulationSize = new JLabel("<html>Population Size:<br/>" +
+				                                  "the whole population size in gga:</html>");
+		lblGGAPopulationSize.setBounds(x, y, compW, compH);
+		advancedTab.add(lblGGAPopulationSize);
 		
 		x += compW + vGap;
 		compW = 240;
 		compH = 20;
-		cmbLoadBalancingPolicy = new JComboBox(new String[]{"EEE", "BBB"
+		cmbGGAPopulationSize = new JComboBox(new Integer[]{100, 300, 1000
 		});
-		cmbLoadBalancingPolicy.setSelectedItem("EEE");
-		cmbLoadBalancingPolicy.setBounds(x, y, compW, compH);
-		advancedTab.add(cmbLoadBalancingPolicy);
+		cmbGGAPopulationSize.setSelectedItem(simulation.getPopulationSize());
+		cmbGGAPopulationSize.setBounds(x, y, compW, compH);
+		advancedTab.add(cmbGGAPopulationSize);
 		
 		return advancedTab;
 	}
