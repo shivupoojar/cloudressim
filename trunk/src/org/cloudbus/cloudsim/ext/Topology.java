@@ -1,4 +1,4 @@
-package org.cloudbus.cloudsim.ext.gga;
+package org.cloudbus.cloudsim.ext;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Properties;
+
+import org.cloudbus.cloudsim.ext.gga.Capacity;
 
 
 public class Topology {
@@ -21,9 +23,11 @@ public class Topology {
 	private boolean readyForGettingVolume;
 	private int serverNum;
 	private int[][] linkNumBetweenHosts;
+	private TopologyParamsT topologyParams;
 
-	public Topology(String fileName){
+	public Topology(String fileName, TopologyParamsT topologyParams){
 		this.fileName = fileName;
+		this.topologyParams = topologyParams;
 		if(!this.readFromXML(fileName)){
 			this.fileName = null;
 			this.volumeFileName = null;
@@ -79,19 +83,24 @@ public class Topology {
 			return false;
 		}		
 		
-		this.VMNum = Integer.parseInt(properties.getProperty("VMNum"));
-		System.out.println(this.VMNum);
+		this.VMNum = topologyParams.vmNums;
+		//this.VMNum = Integer.parseInt(properties.getProperty("VMNum"));
+		//System.out.println(this.VMNum);
 		
 		this.volumeMatrix = new int[this.VMNum][this.VMNum];
 		
 		this.switchLinkNum = new int[3];
 		
-		this.switchLinkNum[0] = Integer.parseInt(properties.getProperty("FirstLayer"));
+		this.switchLinkNum[0] = topologyParams.firstLayer;
+		this.switchLinkNum[1] = topologyParams.secondLayer;
+		this.switchLinkNum[2] = topologyParams.thirdLayer;
+		
+		/*this.switchLinkNum[0] = Integer.parseInt(properties.getProperty("FirstLayer"));
 		System.out.println(this.switchLinkNum[0]);
 		this.switchLinkNum[1] = Integer.parseInt(properties.getProperty("SecondLayer"));
 		System.out.println(this.switchLinkNum[1]);
 		this.switchLinkNum[2] = Integer.parseInt(properties.getProperty("ThirdLayer"));
-		System.out.println(this.switchLinkNum[2]);
+		System.out.println(this.switchLinkNum[2]);*/
 		
 		this.volumeFileName = properties.getProperty("VolumeFileName");
 		if(!this.volumeFileName.isEmpty()){
@@ -125,12 +134,12 @@ public class Topology {
 							this.volumeMatrix[i][j] = this.volumeMatrix[i][j] * 10 + num - 48; 
 							num = reader.read();
 						}						
-						System.out.print("i:");
-						System.out.print(i);
-						System.out.print("j:");
-						System.out.print(j);
-						System.out.print("volume:");
-						System.out.println(this.volumeMatrix[i][j]);
+						//System.out.print("i:");
+						//System.out.print(i);
+						//System.out.print("j:");
+						//System.out.print(j);
+						//System.out.print("volume:");
+						//System.out.println(this.volumeMatrix[i][j]);
 					}
 				}
 			} catch (FileNotFoundException e) {
@@ -206,7 +215,7 @@ public class Topology {
 		}
 		
 		this.serverNum = this.serverNum * 2;
-		System.out.println(this.serverNum);
+		//System.out.println(this.serverNum);
 		this.linkNumBetweenHosts = new int[this.serverNum][this.serverNum];
 		
 		int[] layer1 = new int[this.switchLinkNum.length];

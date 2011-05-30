@@ -291,13 +291,13 @@ private static final String CMD_ABOUT = "About";
 			showConfigureScreen();
 		} else if (e.getActionCommand().equals(CMD_EXIT)){
 			System.exit(0);
-		}/* else if (e.getActionCommand().equals(ConfigureSimulationPanel.CMD_DONE_CONFIGURATION)){
+		} else if (e.getActionCommand().equals(ConfigureSimulationPanel.CMD_DONE_CONFIGURATION)){
 			if (configScreen.isValidConfiguration()){
 				showHomeScreen();
 			}
 		} else if (e.getActionCommand().equals(ConfigureSimulationPanel.CMD_CANCEL_CONFIGURATION)){
 			showHomeScreen();
-		}*/ else if (e.getActionCommand().equals(CMD_RUN_SIMULATION)){
+		} else if (e.getActionCommand().equals(CMD_RUN_SIMULATION)){
 			if (!simulationFinished){
 				showBusyMessage();
 				

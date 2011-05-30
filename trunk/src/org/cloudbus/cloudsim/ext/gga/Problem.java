@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
+import org.cloudbus.cloudsim.ext.Topology;
+import org.cloudbus.cloudsim.ext.TopologyParamsT;
 
 public class Problem {
 	private ArrayList<Capacity> items;
@@ -48,7 +50,7 @@ public class Problem {
 			
 		return true;		
 	}
-	public void CreateProblem(List<? extends Vm> vmList, List<? extends Host> hostList) 
+	public void CreateProblem(List<? extends Vm> vmList, List<? extends Host> hostList, TopologyParamsT topologyParams) 
 	// Create the problem.
 	{
 		items = new ArrayList<Capacity>();
@@ -72,7 +74,7 @@ public class Problem {
 			items.add(c);
 		}
 		
-		topology = new Topology("topology.properties");
+		topology = new Topology("topology.properties", topologyParams);
 		if (!topology.genTopology(items, cBin)) {
 			System.err.println("Network Generation Failure");
 			System.exit(1);

@@ -66,8 +66,6 @@ public class ConfigureSimulationPanel extends JPanel
 	
 	private ResSimulation simulation;
 	private ActionListener screenListener;
-	private JTextField txtSimDuration;
-	private JComboBox cmbTimeUnit;
 	
 	/** fileChooser is used for both open and save dialog for configurations. */
 	private JFileChooser fileChooser;
@@ -211,7 +209,7 @@ public class ConfigureSimulationPanel extends JPanel
 		x += compW + vGap;
 		compW = 80;
 		compH = 20;
-		txtHostRam = new JTextField("" + simulation.getGgaGens());
+		txtHostRam = new JTextField("" + simulation.getHostRam());
 		txtHostRam.setBounds(x, y, compW, compH);
 		mainTab.add(txtHostRam);
 		
@@ -227,7 +225,7 @@ public class ConfigureSimulationPanel extends JPanel
 		x += compW + vGap;
 		compW = 80;
 		compH = 20;
-		txtHostCPU = new JTextField("" + simulation.getCrossover());
+		txtHostCPU = new JTextField("" + simulation.getHostCpu());
 		txtHostCPU.setBounds(x, y, compW, compH);
 		mainTab.add(txtHostCPU);
 		
@@ -243,7 +241,7 @@ public class ConfigureSimulationPanel extends JPanel
 		x += compW + vGap;
 		compW = 80;
 		compH = 20;
-		txtHostStorage = new JTextField("" + simulation.getMutations());
+		txtHostStorage = new JTextField("" + simulation.getHostStorage());
 		txtHostStorage.setBounds(x, y, compW, compH);
 		mainTab.add(txtHostStorage);
 		
@@ -259,7 +257,7 @@ public class ConfigureSimulationPanel extends JPanel
 		x += compW + vGap;
 		compW = 80;
 		compH = 20;
-		txtHostBw = new JTextField("" + simulation.getMutationProb());
+		txtHostBw = new JTextField("" + simulation.getHostBw());
 		txtHostBw.setBounds(x, y, compW, compH);
 		mainTab.add(txtHostBw);
 		
@@ -289,7 +287,7 @@ public class ConfigureSimulationPanel extends JPanel
 		y += 10;
 		compW = 80;
 		compH = 20;
-		txtNetworkFirstLayer = new JTextField("" + simulation.getGgaGens());
+		txtNetworkFirstLayer = new JTextField("" + simulation.getFirstLayer());
 		txtNetworkFirstLayer.setBounds(x, y, compW, compH);
 		networkTab.add(txtNetworkFirstLayer);
 		
@@ -306,7 +304,7 @@ public class ConfigureSimulationPanel extends JPanel
 		y += 10;
 		compW = 80;
 		compH = 20;
-		txtNetworkSecondLayer = new JTextField("" + simulation.getCrossover());
+		txtNetworkSecondLayer = new JTextField("" + simulation.getSecondLayer());
 		txtNetworkSecondLayer.setBounds(x, y, compW, compH);
 		networkTab.add(txtNetworkSecondLayer);
 		
@@ -322,7 +320,7 @@ public class ConfigureSimulationPanel extends JPanel
 		x += compW + vGap;
 		compW = 80;
 		compH = 20;
-		txtNetworkThirdLayer = new JTextField("" + simulation.getMutations());
+		txtNetworkThirdLayer = new JTextField("" + simulation.getThirdLayer());
 		txtNetworkThirdLayer.setBounds(x, y, compW, compH);
 		networkTab.add(txtNetworkThirdLayer);
 		
@@ -451,10 +449,10 @@ public class ConfigureSimulationPanel extends JPanel
 		
 		JButton btnCancel = addButton(controlPanel, LBL_CANCEL, CMD_CANCEL_CONFIGURATION);
 		btnCancel.addActionListener(screenListener);
-		JButton btnLoad = addButton(controlPanel, LBL_LOAD, CMD_LOAD_CONFIG);
-		btnLoad.addActionListener(screenListener);	
-		JButton btnSave = addButton(controlPanel, LBL_SAVE_CONFIGURATION, CMD_SAVE_CONFIG);
-		btnSave.addActionListener(screenListener);	
+		//JButton btnLoad = addButton(controlPanel, LBL_LOAD, CMD_LOAD_CONFIG);
+		//btnLoad.addActionListener(screenListener);	
+		//JButton btnSave = addButton(controlPanel, LBL_SAVE_CONFIGURATION, CMD_SAVE_CONFIG);
+		//btnSave.addActionListener(screenListener);	
 		JButton btnDone = addButton(controlPanel, LBL_DONE, CMD_DONE_CONFIGURATION);
 		btnDone.addActionListener(screenListener);
 		
@@ -496,8 +494,22 @@ public class ConfigureSimulationPanel extends JPanel
 		} 
 	}
 
-	private void finishConfiguration() {		
+	private void finishConfiguration() {
+		simulation.setGgaGens(Integer.parseInt(txtGGAGenerations.getText().trim()));
+		simulation.setMutations(Integer.parseInt(txtGGAMutation.getText().trim()));
+		simulation.setMutationProb(Double.parseDouble(txtGGAMutationProb.getText().trim()));
+		simulation.setPopulationSize((Integer)(cmbGGAPopulationSize.getSelectedItem()));
+		simulation.setCrossover(Integer.parseInt(txtGGACrossover.getText().trim()));
 		
+		simulation.setFirstLayer(Integer.parseInt(txtNetworkFirstLayer.getText().trim()));
+		simulation.setSecondLayer(Integer.parseInt(txtNetworkSecondLayer.getText().trim()));
+		simulation.setThirdLayer(Integer.parseInt(txtNetworkThirdLayer.getText().trim()));
+		
+		simulation.setWorkloadSize((Integer)cmbWorkloadSize.getSelectedItem());
+		simulation.setHostCpu(Integer.parseInt(txtHostCPU.getText().trim()));
+		simulation.setHostBw(Integer.parseInt(txtHostBw.getText().trim()));
+		simulation.setHostRam(Integer.parseInt(txtHostRam.getText().trim()));
+		simulation.setHostStorage(Integer.parseInt(txtHostStorage.getText().trim()));
 	}
 	
 	public boolean isValidConfiguration(){
