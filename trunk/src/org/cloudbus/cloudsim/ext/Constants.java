@@ -10,4 +10,13 @@ public interface Constants {
 	final String DEFAULT_ARCHITECTURE = "x86";
 	final String DEFAULT_OS = "Linux";
 	final String DEFAULT_VMM = "Xen";
+	
+	final int DEFAULT_WORKLOAD_SIZE = 300;
+	
+	//Default GGA params
+	final int DEFAULT_GGA_GENERAIONS = 200;
+	final int DEFAULT_GGA_POPULATION_SIZE = 100;
+	final int DEFAULT_GGA_CROSSOVER = 40;
+	final int DEFAULT_GGA_MUTATIONS = 20;
+	final double DEFAULT_GGA_MUTATION_PROB = 0.25;
 }

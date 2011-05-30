@@ -8,6 +8,7 @@ import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
 import org.cloudbus.cloudsim.ext.gga.GGA;
+import org.cloudbus.cloudsim.ext.gga.GaParamsT;
 import org.cloudbus.cloudsim.ext.gga.Genotype;
 import org.cloudbus.cloudsim.ext.gga.Problem;
 import org.cloudbus.cloudsim.ext.event.CloudSimEventListener;
@@ -18,17 +19,19 @@ public class AdvanceDatacenter extends Datacenter {
 	private int vmQueueCapacity;		//vmQueue容量，到了这个值启动一次vm部署
 	private int ggaGenerations;
 	private CloudSimEventListener progressListener;
+	private GaParamsT gaparams;
 
 	public AdvanceDatacenter(String name,
 			DatacenterCharacteristics characteristics,
 			VmAllocationPolicy vmAllocationPolicy, List<Storage> storageList,
-			double schedulingInterval, int vmQueueCapacity, int totalGens, CloudSimEventListener l) throws Exception {
+			double schedulingInterval, int vmQueueCapacity, int totalGens, CloudSimEventListener l, GaParamsT gaparams) throws Exception {
 		super(name, characteristics, vmAllocationPolicy, storageList,
 				schedulingInterval);
 		
 		this.vmQueueCapacity = vmQueueCapacity;
 		this.ggaGenerations = totalGens;
 		this.progressListener = l;
+		this.gaparams = gaparams; 
 		setVmQueue(new ArrayList<Vm>());
 	}
 	
@@ -78,7 +81,7 @@ public class AdvanceDatacenter extends Datacenter {
     	Problem problem = new Problem();
     	problem.CreateProblem(getVmQueue(), getHostList());
     	
-    	GGA gga = new GGA(progressListener);
+    	GGA gga = new GGA(progressListener, gaparams);
     	//TODO: The initialization variable should be well considered
     	gga.Initialize(problem, ggaGenerations, new Random().nextInt(9999999));
     	
