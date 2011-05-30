@@ -34,6 +34,7 @@ import org.cloudbus.cloudsim.VmSchedulerTimeShared;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.ext.event.CloudSimEventListener;
 import org.cloudbus.cloudsim.ext.gga.GaParamsT;
+import org.cloudbus.cloudsim.ext.TopologyParamsT;
 import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
 import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
@@ -56,6 +57,15 @@ public class ResSimulation {
 	private List<Vm> vmlist;
 	
 	private int workloadSize;
+	private int hostCpu;
+    private int hostRam;
+    private int hostStorage;
+    private int hostBw;
+    
+    private int firstLayer;
+    private int secondLayer;
+    private int thirdLayer;    
+	
 	private int ggaGens;
 	private int populationSize;
 	private int crossover;
@@ -68,6 +78,14 @@ public class ResSimulation {
 		this.guiListener = gui;
 		
 		this.workloadSize = Constants.DEFAULT_WORKLOAD_SIZE;
+		this.hostCpu =  Constants.DEFAULT_HOST_CPU;
+		this.hostRam =  Constants.DEFAULT_HOST_RAM;
+		this.hostStorage = Constants.DEFAULT_HOST_STORAGE;
+		this.hostBw = Constants.DEFAULT_HOST_BW;
+		
+		this.firstLayer = Constants.DEFAULT_NETWORK_FIRSTLAYER;
+		this.secondLayer = Constants.DEFAULT_NETWORK_SECONDLAYER;
+		this.thirdLayer = Constants.DEFAULT_NETWORK_THIRDLAYER;
 		
 		this.ggaGens = Constants.DEFAULT_GGA_GENERAIONS;
 		this.populationSize = Constants.DEFAULT_GGA_POPULATION_SIZE;
@@ -204,16 +222,16 @@ public class ResSimulation {
 	    	// In this example, it will have only one core.
 	    	List<Pe> peList = new ArrayList<Pe>();
 
-	    	int mips = 1000;
+	    	int mips = hostCpu;
 
 	        // 3. Create PEs and add these into a list.
 	    	peList.add(new Pe(0, new PeProvisionerSimple(mips))); // need to store Pe id and MIPS Rating
 
 	        //4. Create Host with its id and list of PEs and add them to the list of machines
 	        int hostId=0;
-	        int ram = 1000; //host memory (MB)
-	        long storage = 1000000; //host storage
-	        int bw = 10000;
+	        int ram = hostRam; //host memory (MB)
+	        long storage = hostStorage; //host storage
+	        int bw = hostBw;
 
 	        // Host数量跟workload一样大，足够用
 	        for (int i=0; i < workloadSize; i++) {
@@ -255,9 +273,15 @@ public class ResSimulation {
 	        gaparams.N_Mutation = mutations;
 	        gaparams.AllelMutationProb = mutationProb;
 	        
+	        TopologyParamsT topology = new TopologyParamsT();
+	        topology.vmNums = workloadSize;
+	        topology.firstLayer = firstLayer;
+	        topology.secondLayer = secondLayer;
+	        topology.thirdLayer = thirdLayer;
+	        
 	        AdvanceDatacenter datacenter = null;
 	        try {
-	            datacenter = new AdvanceDatacenter(name, characteristics, new VmAllocationPolicyLite(hostList), storageList, 0, workloadSize, ggaGens, guiListener, gaparams);
+	            datacenter = new AdvanceDatacenter(name, characteristics, new VmAllocationPolicyLite(hostList), storageList, 0, workloadSize, ggaGens, guiListener, gaparams, topology);
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
@@ -317,8 +341,64 @@ public class ResSimulation {
 			this.ggaGens = ggaGens;
 		}
 
+		public int getFirstLayer() {
+			return firstLayer;
+		}
+
+		public void setFirstLayer(int firstLayer) {
+			this.firstLayer = firstLayer;
+		}
+
+		public int getSecondLayer() {
+			return secondLayer;
+		}
+
+		public void setSecondLayer(int secondLayer) {
+			this.secondLayer = secondLayer;
+		}
+
+		public int getThirdLayer() {
+			return thirdLayer;
+		}
+
+		public void setThirdLayer(int thirdLayer) {
+			this.thirdLayer = thirdLayer;
+		}
+
 		public int getWorkloadSize() {
 			return workloadSize;
+		}
+
+		public int getHostCpu() {
+			return hostCpu;
+		}
+
+		public int getHostRam() {
+			return hostRam;
+		}
+
+		public int getHostStorage() {
+			return hostStorage;
+		}
+
+		public int getHostBw() {
+			return hostBw;
+		}
+
+		public void setHostCpu(int hostCpu) {
+			this.hostCpu = hostCpu;
+		}
+
+		public void setHostRam(int hostRam) {
+			this.hostRam = hostRam;
+		}
+
+		public void setHostStorage(int hostStorage) {
+			this.hostStorage = hostStorage;
+		}
+
+		public void setHostBw(int hostBw) {
+			this.hostBw = hostBw;
 		}
 
 		public int getPopulationSize() {

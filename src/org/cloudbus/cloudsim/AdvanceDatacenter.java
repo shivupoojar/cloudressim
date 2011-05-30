@@ -7,6 +7,7 @@ import java.util.Random;
 import org.cloudbus.cloudsim.core.CloudSim;
 import org.cloudbus.cloudsim.core.CloudSimTags;
 import org.cloudbus.cloudsim.core.SimEvent;
+import org.cloudbus.cloudsim.ext.TopologyParamsT;
 import org.cloudbus.cloudsim.ext.gga.GGA;
 import org.cloudbus.cloudsim.ext.gga.GaParamsT;
 import org.cloudbus.cloudsim.ext.gga.Genotype;
@@ -20,18 +21,20 @@ public class AdvanceDatacenter extends Datacenter {
 	private int ggaGenerations;
 	private CloudSimEventListener progressListener;
 	private GaParamsT gaparams;
+	private TopologyParamsT topologyParams;
 
 	public AdvanceDatacenter(String name,
 			DatacenterCharacteristics characteristics,
 			VmAllocationPolicy vmAllocationPolicy, List<Storage> storageList,
-			double schedulingInterval, int vmQueueCapacity, int totalGens, CloudSimEventListener l, GaParamsT gaparams) throws Exception {
+			double schedulingInterval, int vmQueueCapacity, int totalGens, CloudSimEventListener l, GaParamsT gaparams, TopologyParamsT topologyParams) throws Exception {
 		super(name, characteristics, vmAllocationPolicy, storageList,
 				schedulingInterval);
 		
 		this.vmQueueCapacity = vmQueueCapacity;
 		this.ggaGenerations = totalGens;
 		this.progressListener = l;
-		this.gaparams = gaparams; 
+		this.gaparams = gaparams;
+		this.topologyParams = topologyParams;
 		setVmQueue(new ArrayList<Vm>());
 	}
 	
@@ -79,29 +82,22 @@ public class AdvanceDatacenter extends Datacenter {
     
     private void allocateVmsWithGGA() {
     	Problem problem = new Problem();
-    	problem.CreateProblem(getVmQueue(), getHostList());
+    	problem.CreateProblem(getVmQueue(), getHostList(), topologyParams);
     	
     	GGA gga = new GGA(progressListener, gaparams);
     	//TODO: The initialization variable should be well considered
     	gga.Initialize(problem, ggaGenerations, new Random().nextInt(9999999));
     	
     	Genotype bestGeno = null;
-    	//TODO: Times of the reproduce should be a variable
-    	//这里的循环次数是尝试的次数
-    	for (int i=0; i < 10; i++) {
-    		gga.InitializePopulation ();
+		gga.InitializePopulation ();
 
-    		if (gga.Run()) {
-    			//TODO: 成功得到结果
-    			bestGeno = gga.getBestGeno();
-    			break; //得到就不跑了吧
-    		} else {
-    			//TODO: 如果不成功怎么样
-    		}
+		if (gga.Run()) {
+			//TODO: 成功得到结果
+			bestGeno = gga.getBestGeno();
+		} else {
+			//TODO: 如果不成功怎么样
+		}
     		
-    		//TODO: 每次run怎么操作
-    	}
-    	
     	gga.Close();
     	
     	//TODO: 怎么利用结果

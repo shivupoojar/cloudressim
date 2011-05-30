@@ -12,6 +12,14 @@ public interface Constants {
 	final String DEFAULT_VMM = "Xen";
 	
 	final int DEFAULT_WORKLOAD_SIZE = 300;
+	final int DEFAULT_HOST_CPU = 2000;
+	final int DEFAULT_HOST_RAM = 2000;
+	final int DEFAULT_HOST_STORAGE = 1000000;
+	final int DEFAULT_HOST_BW = 100;
+	
+	final int DEFAULT_NETWORK_FIRSTLAYER = 16;
+	final int DEFAULT_NETWORK_SECONDLAYER = 48;
+	final int DEFAULT_NETWORK_THIRDLAYER = 8;
 	
 	//Default GGA params
 	final int DEFAULT_GGA_GENERAIONS = 200;
