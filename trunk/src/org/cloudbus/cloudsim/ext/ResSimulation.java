@@ -56,6 +56,8 @@ public class ResSimulation {
 	/** The vmlist. */
 	private List<Vm> vmlist;
 	
+	private String workloadMethod;
+	private String workloadFile;
 	private int workloadSize;
 	private int hostCpu;
     private int hostRam;
@@ -77,6 +79,8 @@ public class ResSimulation {
 	public ResSimulation(CloudSimEventListener gui) {
 		this.guiListener = gui;
 		
+		this.workloadMethod = Constants.WORKLOAD_AUTO_GEN;
+		this.workloadFile = Constants.DEFAULT_WORKLOAD_FILE;
 		this.workloadSize = Constants.DEFAULT_WORKLOAD_SIZE;
 		this.hostCpu =  Constants.DEFAULT_HOST_CPU;
 		this.hostRam =  Constants.DEFAULT_HOST_RAM;
@@ -99,7 +103,7 @@ public class ResSimulation {
 	 */
 	public void runSimulation() {
 
-		Log.printLine("Starting CloudSimExample2...");
+		Log.printLine("Starting CloudResSim...");
 
 	        try {
 	        	// First step: Initialize the CloudSim package. It should be called
@@ -137,7 +141,7 @@ public class ResSimulation {
 	            		//vmid++;
 	            	//}
 	            	
-	            	WorkLoad workload = new WorkLoad("auto-gen", "test.xml", brokerId, datacenter0.getHostList().get(0), workloadSize);
+	            	WorkLoad workload = new WorkLoad(workloadMethod, workloadFile, brokerId, datacenter0.getHostList().get(0), workloadSize);
 	            	workload.genWorkLoad();
 	            	workload.genNetwork("VolumeFile.txt");
 	            	vmlist = workload.getVmList();
@@ -339,6 +343,22 @@ public class ResSimulation {
 
 		public void setGgaGens(int ggaGens) {
 			this.ggaGens = ggaGens;
+		}
+
+		public String getWorkloadMethod() {
+			return workloadMethod;
+		}
+
+		public void setWorkloadMethod(String workloadMethod) {
+			this.workloadMethod = workloadMethod;
+		}
+
+		public String getWorkloadFile() {
+			return workloadFile;
+		}
+
+		public void setWorkloadFile(String workloadFile) {
+			this.workloadFile = workloadFile;
 		}
 
 		public int getFirstLayer() {
