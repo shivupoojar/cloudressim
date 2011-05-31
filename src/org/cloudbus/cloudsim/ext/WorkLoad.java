@@ -11,6 +11,8 @@ import javax.xml.parsers.*;
 import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
 import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
+import org.cloudbus.cloudsim.ext.gga.Capacity;
+import org.cloudbus.cloudsim.ext.utils.IOUtil;
 import org.cloudbus.cloudsim.ext.utils.ScientificMethods;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -36,17 +38,19 @@ public class WorkLoad {
 	}
 	
 	public void genWorkLoad() {
-		if (workMode.equals("from-file")) {
+		if (workMode.equals(Constants.WORKLOAD_FROM_XML)) {
 			try {
 				setVmList(readWorkLoadFromXml(loadFile));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		} else if (workMode.equals("auto-gen")){
+		} else if (workMode.equals(Constants.WORKLOAD_AUTO_GEN)){
 			setVmList(autoGenVms(vmsPerRound));
+			saveAsXML();
 		} else {
 			//TODO: 这里是默认参数
 			setVmList(autoGenVms(vmsPerRound));
+			saveAsXML();
 		}		
 	}
 	
@@ -134,11 +138,11 @@ public class WorkLoad {
     		while (mips <= 0 || mips > hMips)
     			mips = (int) ScientificMethods.normDistribution(rnd1, meanMips, deMips);
     		while (size <= 0 || size > hSize)
-    			size = (long) ScientificMethods.normDistribution(rnd1, meanSize, deSize);
+    			size = (long) ScientificMethods.normDistribution(rnd2, meanSize, deSize);
     		while (ram <= 0 || ram > hRam)
-    			ram = (int) ScientificMethods.normDistribution(rnd1, meanRam, deRam);
+    			ram = (int) ScientificMethods.normDistribution(rnd3, meanRam, deRam);
     		while (bw <= 0 || bw > hBw)
-    			bw = (long) ScientificMethods.normDistribution(rnd1, meanBw, deBw);
+    			bw = (long) ScientificMethods.normDistribution(rnd4, meanBw, deBw);
     		
     		Vm vm = new Vm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
 			System.out.println("VM:: "+vm.getBw()+"**"+vm.getMips()+"**"+vm.getRam()+"**"+vm.getSize());
@@ -151,13 +155,49 @@ public class WorkLoad {
 	    	ram = 0;
 	    	bw = 0;
     	}
+    	
+		return (List<T>) vms;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private <T extends Vm> List<T> readWorkLoadFromXml(String xmlFile) {
+		List<Capacity> workload;
+		List<Vm> vms = new ArrayList<Vm>();
 		
-    	
-    	
+		try {
+			workload = (List<Capacity>) IOUtil.loadFromXml(xmlFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+			workload = null;
+		}
+		
+		// 将第一个也就是host的参数pop出来；
+		workload.remove(0);
+		
+		int mips = 0;
+    	long size = 0; //image size (MB)
+    	int ram = 0; //vm memory (MB)
+    	long bw = 0;
+    	int pesNumber = 1; //number of cpus
+    	int vmid = 0;
+    	String vmm = "Xen"; //VMM name
+		for (int i=0; i < workload.size(); i++) {
+			Capacity c = workload.get(i);
+			mips = c.getCpu();
+			size = c.getDisk();
+			ram = c.getMem();
+			bw = c.getBandwidth();
+			
+			Vm vm = new Vm(vmid, brokerId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
+			System.out.println("VM:: "+vm.getBw()+"**"+vm.getMips()+"**"+vm.getRam()+"**"+vm.getSize());
+			vms.add(vm);
+			vmid++;
+		}
 		
 		return (List<T>) vms;
 	}
 	
+	/*
 	@SuppressWarnings("unchecked")
 	private <T extends Vm> List<T> readWorkLoadFromXml(String xmlFile) throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();   
@@ -205,6 +245,36 @@ public class WorkLoad {
 		
 		return (List<T>) vms;
 		
+	}*/
+	
+	private void saveAsXML() {
+		List<Capacity> workload = new ArrayList<Capacity>();
+		
+		Capacity c = new Capacity();
+		c.setBandwidth((int)host.getBw());
+		c.setDisk((int)host.getStorage());
+		c.setMem(host.getRam());
+		c.setCpu((int)host.getTotalMips());
+		workload.add(c);
+		
+		for (int i=0; i < getVmList().size(); i++) {
+			Vm vm = getVmList().get(i);
+			c = new Capacity();
+			c.setBandwidth((int)vm.getBw());
+			c.setDisk((int)vm.getSize());
+			c.setMem(vm.getRam());
+			c.setCpu((int)vm.getMips());
+			workload.add(c);
+		}
+		
+		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        java.util.Date date = new java.util.Date();
+        String time = format.format(date);
+		try {
+			IOUtil.saveAsXML(workload, time + Constants.SIM_FILE_EXTENSION);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**

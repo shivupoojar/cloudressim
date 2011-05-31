@@ -37,11 +37,14 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.ext.Constants;
 import org.cloudbus.cloudsim.ext.ResSimulation;
 import org.cloudbus.cloudsim.ext.event.CloudSimEvent;
 import org.cloudbus.cloudsim.ext.event.CloudSimEventListener;
 import org.cloudbus.cloudsim.ext.event.CloudSimEvents;
+import org.cloudbus.cloudsim.ext.gga.Capacity;
+import org.cloudbus.cloudsim.ext.utils.IOUtil;
 
 /**
  * The configuration panel of the simulator. This panel is a tabbed panel.
@@ -54,15 +57,15 @@ public class ConfigureSimulationPanel extends JPanel
 
 	private static final String CMD_SAVE_CONFIG = "save_config_file";
 	public static final String CMD_LOAD_CONFIG = "load_config_from_file";
+	public static final String CMD_LOAD_WORKLOAD = "load_workload_from_file";
 	public static final String CMD_CANCEL_CONFIGURATION = "cancel_configuration";
 	public static final String CMD_DONE_CONFIGURATION = "done_ configuration";
 	
-	private static final String LBL_SAVE_CONFIGURATION = "Save Configuration";
-	private static final String LBL_LOAD = "Load Configuration";
+	private static final String LBL_LOAD = "Load Config File";
+	private static final String LBL_LOAD_WORKLOAD = "Load WorkLoad";
 	private static final String LBL_CANCEL = "Cancel";
 	private static final String LBL_DONE = "Done";
 	private static final Dimension BTN_DIMENSION = new Dimension(100, 25);
-	private static final String SIM_FILE_EXTENSION = ".sim";
 	
 	private ResSimulation simulation;
 	private ActionListener screenListener;
@@ -152,7 +155,7 @@ public class ConfigureSimulationPanel extends JPanel
 		fileChooser.setFileFilter(new FileFilter(){
 			@Override
 			public boolean accept(File f) {
-				if (f.getAbsolutePath().toLowerCase().endsWith(SIM_FILE_EXTENSION)){
+				if (f.getAbsolutePath().toLowerCase().endsWith(Constants.SIM_FILE_EXTENSION)){
 					return true;
 				} else {
 					return false;
@@ -161,7 +164,7 @@ public class ConfigureSimulationPanel extends JPanel
 
 			@Override
 			public String getDescription() {
-				return SIM_FILE_EXTENSION;
+				return Constants.SIM_FILE_EXTENSION;
 			}});
 	}
 	
@@ -447,12 +450,14 @@ public class ConfigureSimulationPanel extends JPanel
 		JPanel controlPanel = new JPanel();
 		controlPanel.setBorder(new EmptyBorder(10, 5, 5, 5));
 		
+		JButton btnLoad = addButton(controlPanel, LBL_LOAD_WORKLOAD, CMD_LOAD_WORKLOAD);
+		btnLoad.addActionListener(screenListener);
 		JButton btnCancel = addButton(controlPanel, LBL_CANCEL, CMD_CANCEL_CONFIGURATION);
 		btnCancel.addActionListener(screenListener);
-		//JButton btnLoad = addButton(controlPanel, LBL_LOAD, CMD_LOAD_CONFIG);
-		//btnLoad.addActionListener(screenListener);	
+		/*JButton btnLoad = addButton(controlPanel, LBL_LOAD, CMD_LOAD_CONFIG);
+		btnLoad.addActionListener(screenListener);*/	
 		//JButton btnSave = addButton(controlPanel, LBL_SAVE_CONFIGURATION, CMD_SAVE_CONFIG);
-		//btnSave.addActionListener(screenListener);	
+		//btnSave.addActionListener(screenListener);
 		JButton btnDone = addButton(controlPanel, LBL_DONE, CMD_DONE_CONFIGURATION);
 		btnDone.addActionListener(screenListener);
 		
@@ -491,7 +496,49 @@ public class ConfigureSimulationPanel extends JPanel
 			loadSimulationFromFile();
 		} else if (e.getActionCommand().equals(CMD_SAVE_CONFIG)){
 			saveSimulation();
-		} 
+		} else if (e.getActionCommand().equals(CMD_LOAD_WORKLOAD)){
+			loadWorkloadFromFile();
+		}
+	}
+
+	private void loadWorkloadFromFile() {
+		simulation.setWorkloadMethod(Constants.WORKLOAD_FROM_XML);
+		cmbWorkloadSize.setEnabled(false);
+		txtHostCPU.setEnabled(false);
+		txtHostRam.setEnabled(false);
+		txtHostBw.setEnabled(false);
+		txtHostStorage.setEnabled(false);
+		
+		fileChooser.setDialogTitle("Open Workload File");
+		int status =fileChooser.showOpenDialog(this);
+		if (status == JFileChooser.APPROVE_OPTION) {
+			File simFile = fileChooser.getSelectedFile();
+			simulation.setWorkloadFile(simFile.getAbsolutePath());
+			
+			List<Capacity> workload;
+			
+			try {
+				workload = (List<Capacity>) IOUtil.loadFromXml(simFile);
+			} catch (IOException e) {
+				e.printStackTrace();
+				workload = null;
+			}
+			
+			cmbWorkloadSize.setSelectedItem(workload.size()-1);
+			Capacity host = workload.get(0);
+			txtHostCPU.setText(""+host.getCpu());
+			txtHostRam.setText(""+host.getMem());
+			txtHostBw.setText(""+host.getBandwidth());
+			txtHostStorage.setText(""+host.getDisk());
+			
+		} else {
+			cmbWorkloadSize.setEnabled(true);
+			txtHostCPU.setEnabled(true);
+			txtHostRam.setEnabled(true);
+			txtHostBw.setEnabled(true);
+			txtHostStorage.setEnabled(true);
+			simulation.setWorkloadMethod(Constants.WORKLOAD_AUTO_GEN);
+		}
 	}
 
 	private void finishConfiguration() {
