@@ -4,6 +4,7 @@ public interface Constants {
 	//TODO: say sth.
 	final String PARAM_TIME = "time";
 	final String PARAM_FVAL = "fval";
+	final String PARAM_RESULT = "gga-result";
 	
 	final String WORKLOAD_FROM_XML = "from-xml";
 	final String WORKLOAD_AUTO_GEN = "auto-gen";
