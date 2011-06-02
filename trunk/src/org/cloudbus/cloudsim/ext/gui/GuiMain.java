@@ -34,6 +34,7 @@ import org.cloudbus.cloudsim.ext.event.CloudSimEvent;
 import org.cloudbus.cloudsim.ext.event.CloudSimEventListener;
 import org.cloudbus.cloudsim.ext.event.CloudSimEvents;
 import org.cloudbus.cloudsim.ext.gui.screens.ConfigureSimulationPanel;
+import org.cloudbus.cloudsim.ext.gui.screens.ResultsScreen;
 import org.cloudbus.cloudsim.ext.gui.screens.SimulationPanel;
 
 import org.cloudbus.cloudsim.ext.gui.utils.SimpleGraph;
@@ -63,7 +64,7 @@ private static final String CMD_ABOUT = "About";
 	private JPanel mainPanel;
 	private ConfigureSimulationPanel configScreen;
 	private SimulationPanel simulationPanel;
-	//private ResultsScreen resultsScreen;
+	private ResultsScreen resultsScreen;
 	private ResSimulation simulation;
 	private Map<String, JButton> menuButtons;
 	private JProgressBar progressBar;
@@ -79,6 +80,8 @@ private static final String CMD_ABOUT = "About";
 	private JButton btnExportResults;
 	private JDialog abtDlg;
 	
+	private Map<String, Object> results;
+	
 	/** No args constructor */
 	public GuiMain() throws Exception{	
 		simulation = new ResSimulation(this);
@@ -89,7 +92,7 @@ private static final String CMD_ABOUT = "About";
 	}
 	
 	private void initUI(){		
-		this.setTitle("Cloud Analyst");
+		this.setTitle("CloudResSim");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(FRAME_SIZE);
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -130,7 +133,7 @@ private static final String CMD_ABOUT = "About";
 			btnShowBoundaries.setActionCommand(CMD_SHOW_BOUNDARIES);
 			btnShowBoundaries.addActionListener(this);
 			simulationControlPanel.add(Box.createHorizontalGlue());
-			simulationControlPanel.add(btnShowBoundaries);
+			//simulationControlPanel.add(btnShowBoundaries);
 			
 			simulationControlPanel.setBorder(new EmptyBorder(5, 5, 25, 25));
 			simulationScreen.add(simulationControlPanel, BorderLayout.SOUTH);
@@ -185,8 +188,8 @@ private static final String CMD_ABOUT = "About";
 			resultsDlg.setLocationRelativeTo(this);
 			resultsDlg.setTitle("Simulation Results");
 			
-			//resultsScreen = new ResultsScreen(simulation);
-			//resultsDlg.getContentPane().add(new JScrollPane(resultsScreen));
+			resultsScreen = new ResultsScreen(simulation, results);
+			resultsDlg.getContentPane().add(new JScrollPane(resultsScreen));
 						
 			Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 			resultsDlg.setSize((int) (screenSize.width * 0.8), (int) (screenSize.height * 0.8));
@@ -365,6 +368,9 @@ private static final String CMD_ABOUT = "About";
 			progressBar.setValue((int) currSimTime);
 		} else if (e.getId() == CloudSimEvents.EVENT_FITNESS_UPDATE){
 			simulationPanel.cloudSimEventFired(e);
+		} else if (e.getId() == CloudSimEvents.EVENT_GGA_FINISHED){
+			results = (Map<String, Object>) e.getParameter(Constants.PARAM_RESULT);
+			System.out.println("woooWWW: " + results.size());
 		}
 	}
 	

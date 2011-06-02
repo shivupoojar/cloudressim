@@ -14,4 +14,5 @@ public interface CloudSimEvents {
 	
 	final int EVENT_PROGRESS_UPDATE = 4000;
 	final int EVENT_FITNESS_UPDATE = 4001;
+	final int EVENT_GGA_FINISHED = 4002;
 }

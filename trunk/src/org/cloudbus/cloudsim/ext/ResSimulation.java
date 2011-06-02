@@ -32,7 +32,9 @@ import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.VmAllocationPolicyLite;
 import org.cloudbus.cloudsim.VmSchedulerTimeShared;
 import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.ext.event.CloudSimEvent;
 import org.cloudbus.cloudsim.ext.event.CloudSimEventListener;
+import org.cloudbus.cloudsim.ext.event.CloudSimEvents;
 import org.cloudbus.cloudsim.ext.gga.GaParamsT;
 import org.cloudbus.cloudsim.ext.TopologyParamsT;
 import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
@@ -196,6 +198,8 @@ public class ResSimulation {
 	    	    	datacenter0.printDebts();
 
 	            	Log.printLine("CloudSimExample2 finished!");
+	            	CloudSimEvent e1 = new CloudSimEvent(CloudSimEvents.EVENT_SIMULATION_ENDED);
+	    			guiListener.cloudSimEventFired(e1);
 	        }
 	        catch (Exception e) {
 	            e.printStackTrace();

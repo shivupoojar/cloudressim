@@ -194,7 +194,7 @@ public class ConfigureSimulationPanel extends JPanel
 		x += compW + vGap;
 		compW = 150;
 		compH = 20;
-		cmbWorkloadSize = new JComboBox(new Integer[]{300, 400, 1000
+		cmbWorkloadSize = new JComboBox(new Integer[]{50, 300, 400, 1000
 		});
 		cmbWorkloadSize.setSelectedItem(simulation.getWorkloadSize());
 		cmbWorkloadSize.setBounds(x, y, compW, compH);
