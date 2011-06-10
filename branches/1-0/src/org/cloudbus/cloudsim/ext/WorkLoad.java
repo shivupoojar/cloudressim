@@ -1,5 +1,6 @@
 package org.cloudbus.cloudsim.ext;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -273,6 +274,30 @@ public class WorkLoad {
 		try {
 			IOUtil.saveAsXML(workload, time + Constants.SIM_FILE_EXTENSION);
 		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		// 生成csv格式的文件：
+		FileWriter csvFile = null;
+		try {
+			csvFile = new FileWriter("workload-" + time);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			System.exit(0);
+		}
+
+		// workload文件，注意，第一行是Host的配置信息
+		try {
+			for (int i=0; i < workload.size(); i++) {
+				c = workload.get(i);
+				csvFile.write(c.getCpu() + ", ");
+				csvFile.write(c.getMem() + ", ");
+				csvFile.write(c.getDisk() + ", ");
+				csvFile.write(c.getBandwidth() + "\n");
+			}
+			csvFile.close();
+		} catch (Exception e) {
+			System.err.println("Warning: could not open solution files");
 			e.printStackTrace();
 		}
 	}

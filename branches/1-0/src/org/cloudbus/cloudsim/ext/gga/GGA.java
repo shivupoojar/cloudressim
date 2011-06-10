@@ -69,19 +69,22 @@ public class GGA {
 		plotdata = properties.getBoolean("plotdata"); //true;//inifile.ReadBool ("plotdata");
 		printsolutions = properties.getBoolean("printsolutions"); //true;//inifile.ReadBool ("printsolutions");
 		
-		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy/MM/dd HH/mm/ss");
+		java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
 		java.util.Date date = new java.util.Date();
+		// 时间戳
+		String timeTag = format.format(date);
 
 		if (printsolutions)
 		{
 			try {
-				solutionsFile = new FileWriter("solutions");
+				solutionsFile = new FileWriter("solutions-" + timeTag);
 			} catch (IOException e1) {
 				printsolutions = false;
 				e1.printStackTrace();
+				System.exit(0);
 			}// .open (inifile.ReadString("solutionsfile"));
 			try {
-				solutionsFile.write("New data:" + format.format(date));
+				solutionsFile.write("New data:" + timeTag + "\n");
 			} catch (Exception e) {
 				printsolutions = false;
 				System.err.println("Warning: could not open solution files");
@@ -92,14 +95,14 @@ public class GGA {
 		if (plotdata)
 		{
 			try {
-				dataFile =  new FileWriter("data");
+				dataFile =  new FileWriter("data-"+timeTag);
 			} catch (IOException e1) {
 				plotdata = false;
 				e1.printStackTrace();
 			}//.open (inifile.ReadString("datafile"));
 			
 			try {
-				dataFile.write("New data:" + format.format(date));
+				dataFile.write("New data:" + timeTag + "\n");
 			} catch (Exception e) {
 				plotdata = false;
 				e.printStackTrace();
@@ -145,7 +148,8 @@ public class GGA {
 
 			if (plotdata)
 				try {
-					dataFile.write(gen + " generation's best: " + population.getBestGeno() + "\n");
+					//dataFile.write(gen + " generation's best: " + population.getBestGeno() + "\n");
+					dataFile.write(population.getBestGeno().getStatics() + "\n");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
