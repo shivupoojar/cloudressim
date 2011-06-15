@@ -190,7 +190,7 @@ public class Genotype {
 		//this.Print();
 		//System.out.println("before compact");
 		// Remove holes in group part created by elimination
-		CompactGroupPart ();
+		CompactGroupSimple ();
 		//System.out.println("\nafter compact");
 		//this.Print();
 		//System.out.println("after compact");
@@ -730,7 +730,7 @@ public class Genotype {
 	{
 		switch (packingUsed) {
 		case FIRSTFIT:
-			PackObject_FirstFit_Simple(object);
+			PackObject_FirstFit_Advanced(object);
 			break;
 		// These two have to be implemented
 		/*

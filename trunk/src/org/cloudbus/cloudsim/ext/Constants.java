@@ -18,7 +18,7 @@ public interface Constants {
 	final String DEFAULT_VMM = "Xen";
 	
 	final String DEFAULT_WORKLOAD_FILE = "workload.sim";
-	final int DEFAULT_WORKLOAD_SIZE = 300;
+	final int DEFAULT_WORKLOAD_SIZE = 50;
 	final int DEFAULT_HOST_CPU = 2000;
 	final int DEFAULT_HOST_RAM = 2000;
 	final int DEFAULT_HOST_STORAGE = 1000000;
