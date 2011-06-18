@@ -82,7 +82,7 @@ public class AdvanceDatacenter extends Datacenter {
     
     private void allocateVmsWithGGA() {
     	Problem problem = new Problem();
-    	problem.CreateProblem(getVmQueue(), getHostList(), topologyParams);
+    	problem.CreateProblem(getVmQueue(), getHostList(), topologyParams, null);
     	
     	GGA gga = new GGA(progressListener, gaparams);
     	//TODO: The initialization variable should be well considered
@@ -101,6 +101,7 @@ public class AdvanceDatacenter extends Datacenter {
     	gga.Close();
     	
     	//TODO: 怎么利用结果
+    	problem.CreateProblem(getVmQueue(), getHostList(), topologyParams, bestGeno);
     	allcateByGenotype(bestGeno);
     }
     
