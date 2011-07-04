@@ -8,15 +8,19 @@ import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.ext.Topology;
 import org.cloudbus.cloudsim.ext.TopologyParamsT;
+import org.cloudbus.cloudsim.ext.utils.ScientificMethods;
 
 public class Problem {
 	private ArrayList<Capacity> items;
+	private ArrayList<Capacity> leftItems;
 	private Capacity cBin = new Capacity();
+	private List<Capacity> cBins = new ArrayList<Capacity>();
 	private int nrOfItems;
 	private int nrOfBins;
 	private Topology topology;
 	private boolean[] taken;
 	private int[] remainedItems;
+	private Genotype old;
 	
 	public int getNrOfItems() {
 		return nrOfItems;
@@ -28,6 +32,13 @@ public class Problem {
 	// return the size of the bin
 	{
 		Capacity bin = new Capacity(cBin);
+		return bin;
+	}
+	public Capacity GetBinSize(int binId)
+	// return the size of the bin by id of bin.
+	{
+		// 从cBins得到容量，用new方法返回副本；
+		Capacity bin = new Capacity(cBins.get(binId));
 		return bin;
 	}
 	public boolean PutItem(Capacity bin, int object) 
@@ -78,6 +89,7 @@ public class Problem {
 			items.add(c);
 		}
 		
+		this.old = old;
 		if (old != null)
 			arrangeOld(old);
 		
@@ -115,6 +127,35 @@ public class Problem {
 		return topology;
 	}
 	
+	public boolean isTaken(int binId) {
+		return taken[binId];
+	}
+	
+	public int getDistance(Genotype gen) {
+		int[] otherItems = new int[remainedItems.length];
+		for (int i=0; i<remainedItems.length; i++) {
+			otherItems[i] = remainedItems[i];
+		}
+		
+		for (int i=0; i<items.size(); i++) {
+			Capacity c = items.get(i);
+			// DEBUG用
+			System.out.println("item-id: " + c.id +"  box: " + remainedItems[c.id] + 
+					"  tobe: " + gen.getAllocatedBin(c.id) );
+			otherItems[i] = gen.getAllocatedBin(c.id);
+		}
+		
+		String oldGeno = "";
+		String newGeno = "";
+		
+		for (int i = 0; i < otherItems.length; i++) {
+			oldGeno += ("" + old.getAllocatedBin(i));
+			newGeno += ("" + otherItems[i]);
+		}
+		
+		return ScientificMethods.getLdistance(oldGeno, newGeno);
+	}
+	
 	// 用于针对上一轮的放置方案进行解析
 	private void arrangeOld(Genotype old) {
 		int [] groups = old.getGroups();
@@ -149,6 +190,8 @@ public class Problem {
 			if (taken[i]) {
 				Bin bin = bins.get(i);
 				List<Integer> removed = bin.getRemoved();
+				// 记录剩余的容量
+				cBins.add(new Capacity(bin.left));
 				if (removed.size() == bin.items.size()) {
 					taken[i] = false;
 				}
@@ -156,12 +199,25 @@ public class Problem {
 					remainedItems[removed.get(j)] = Constants.UNCOLORED;
 					System.out.println("Bin-"+i+"  Item removed: "+removed.get(j)+"  Mem:"+items.get(removed.get(j)).Mem);
 				}
+			} else {
+				cBins.add(new Capacity(cBin));
 			}
 		}
 		
 		for (int i=0; i < nrOfItems; i++) {
 			System.out.println("Item-"+i+"  Bins: "+remainedItems[i]);
 		}
+		
+		// 最后要对所有的VM进行处理，那些留下的，还有木有留下来的；
+		int counter = 0;		//计数，当前减少的个数
+		for (int i=0; i < nrOfItems; i++) {
+			if (remainedItems[i] != Constants.UNCOLORED) {
+				leftItems.add(items.remove(i - counter));
+				counter ++;
+			}
+		} 
+		
+		nrOfItems -= counter;
 		System.exit(0);
 	}
 }
@@ -170,6 +226,7 @@ class Bin {
 	int binId;
 	List<Capacity> items;
 	Capacity size;
+	public Capacity left;
 	
 	public Bin(int id, Capacity c) {
 		this.binId = id;
@@ -203,6 +260,7 @@ class Bin {
 		for (int i = fit; i < items.size(); i++) {
 			retVal.add(items.get(i).id);
 		}
+		left = total;
 		return retVal;
 	}
 	

@@ -2,7 +2,9 @@ package org.cloudbus.cloudsim.ext.gga;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -30,11 +32,14 @@ public class GGA {
 	private boolean plotdata;
 	private boolean printsolutions;
 	
+	private List<Genotype> bestGenos; 
+	
 	private CloudSimEventListener progressListener;
 	
 	public GGA (CloudSimEventListener progressListener, GaParamsT gaparams) {
 		this.progressListener = progressListener;
 		this.gaparams = gaparams;
+		this.bestGenos = new ArrayList<Genotype>();
 	}
 	
 	public void Initialize (Problem problem, int maxRuntimes, int seed)
@@ -143,6 +148,10 @@ public class GGA {
 			if (debug)
 				System.out.println("\n   " + population.GetBestFitness () + GetBinsUsed ());
 
+			Genotype geno = new Genotype();
+			population.getBestGeno().Copy(geno);
+			bestGenos.add(geno);
+			
 			if (plotdata)
 				try {
 					dataFile.write(gen + " generation's best: " + population.getBestGeno() + "\n");
@@ -216,5 +225,4 @@ public class GGA {
 		//return population.getBestGeno();
 		return population.getCurBestGeno();
 	}
-
 }
