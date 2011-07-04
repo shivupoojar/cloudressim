@@ -315,7 +315,7 @@ public class Genotype {
 	} // Crossover ()
 	*/
 
-	public void Crossover(Genotype otherParent, Genotype child1, Genotype child2)
+	public boolean Crossover(Genotype otherParent, Genotype child1, Genotype child2)
 	// 这个CrossOver是单基因位的交换
 	{
 		int p1cp, p2cp;		//两个父代的交汇点；
@@ -352,20 +352,52 @@ public class Genotype {
 				child1.objects[i] = Constants.UNCOLORED;
 				objects1.push (i);
 			}
+		
+		// 在这里进行允许交叉的判断
+		boolean inList = false;		// 对应伪码中的在List中；
+		boolean allInList = true;	// 对应伪码里头的全部在List中
 
 		// Mark all groups losing at least one object with ELIMINATED
+		
+		if (problem.isTaken(groups[p1cp])) {
+			inList = true;
+		}
 		for (i = 0; i < nrOfObjects; i++)			// look at all objects
 			if (objects[i] == groups[p1cp])			// object is in injected group
 			{
+				if (!problem.isTaken(child2.objects[i])) {
+					// 这种情况说明不在箱子里头
+					allInList = false;
+				}
+				
 				if (child2.objects[i] != Constants.UNCOLORED) eliminated2[child2.objects[i]] = true;		// mark group affected
 				child2.objects[i] = groups[p1cp];	// 这里改动了，变成直接的
 			}
+		// 判断是否允许交叉操作，如果新插入不在List内，且其内容全部是List里头的
+		if (!inList && allInList) 
+			return false;
+		
+		// 对另一组进行操作
+		
+		inList = false;		// 对应伪码中的在List中；
+		allInList = true;	// 对应伪码里头的全部在List中
+		if (problem.isTaken(otherParent.groups[p2cp])) {
+			inList = true;
+		}
 		for (i = 0; i < otherParent.nrOfObjects; i++)
 			if (otherParent.objects[i] == otherParent.groups[p2cp])
 			{
+				if (!problem.isTaken(child1.objects[i])) {
+					// 这种情况说明不在箱子里头
+					allInList = false;
+				}
+				
 				if (child1.objects[i] != Constants.UNCOLORED) eliminated1[child1.objects[i]] = true;
 				child1.objects[i] = otherParent.groups[p2cp];
 			}
+		// 判断是否允许交叉操作，如果新插入不在List内，且其内容全部是List里头的
+		if (!inList && allInList) 
+			return false;
 		
 		// 这里把bin_id冲突的标记为eliminated，为了下一步抹去group
 		eliminated1[otherParent.groups[p2cp]] = true;
@@ -418,6 +450,7 @@ public class Genotype {
 		child2.Evaluate ();
 		child1.Evaluate ();
 		
+		return true;
 		//System.out.println("\n\nAfterCrossOver:");
 		//child1.Print();
 		//child2.Print();
@@ -659,9 +692,19 @@ public class Genotype {
 		Genotype.problem = problem;
 	}
 	
+	@Deprecated
 	public int getAllocatedHost(int vm) {
 		if (vm < nrOfObjects)
 			return objects[vm];
+		else {
+			System.err.println("Err: Vm sequence exeeded");
+			return -1;
+		}
+	}
+	
+	public int getAllocatedBin(int seq) {
+		if (seq < nrOfObjects)
+			return objects[seq];
 		else {
 			System.err.println("Err: Vm sequence exeeded");
 			return -1;
@@ -764,6 +807,8 @@ public class Genotype {
 		}
 
 		// First Fit Packing
+		// 首先从已经被使用的箱子里头选择
+		// 这里的i是group位号
 		while (i < nrOfGroups) {
 			bin = groups[i];
 			binUsed[bin] = true;
@@ -776,11 +821,30 @@ public class Genotype {
 			}
 		}
 		
-		// 如果没有从已用箱子里头找到合适的，则需要重新建一个箱子
+		// 如果没有从已用箱子里头找到合适的，则进行第二轮
+		// 第二轮优先使用已经占用的箱子
+		i = 0;		//这里的i是binId;
+		while (!find) {
+			//如果箱子木有用，则试试
+			if (!binUsed[i] && problem.isTaken(i)) {
+				objects[object] = i;
+				if (ViolatedConstraints(object) > 0) {
+					find = false;
+				} else {
+					find = true;
+					nrOfGroups++;
+					groups[nrOfGroups - 1] = i;
+				}
+			} 
+			i++;
+		}
+		
+		// 最后，如果没有从已用和上轮预留箱子里头找到合适的
+		// 则需要重新建一个箱子
 		i = 0;
 		while (!find) {
 			//如果箱子木有用，则试试
-			if (!binUsed[i]) {
+			if (!binUsed[i] && !problem.isTaken(i)) {
 				objects[object] = i;
 				if (ViolatedConstraints(object) > 0) {
 					find = false;
