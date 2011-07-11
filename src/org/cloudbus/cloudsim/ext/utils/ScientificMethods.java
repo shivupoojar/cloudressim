@@ -71,7 +71,7 @@ public class ScientificMethods {
 		if (n == 0)
 			return m;
 		// Construct a matrix
-		int[][] matrix = new int[n][m];
+		int[][] matrix = new int[n+1][m+1];
 		for (int i = 0; i <= n; i++)
 			for (int j = 0; j <= m; j++)
 				matrix[i][j] = 0;

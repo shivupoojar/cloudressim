@@ -101,15 +101,39 @@ public class AdvanceDatacenter extends Datacenter {
     	gga.Close();
     	
     	//TODO: 怎么利用结果
+    	
+    	//TODO: 临时代码，这部分要改的，试试再来一次调度
+    	problem = new Problem();
     	problem.CreateProblem(getVmQueue(), getHostList(), topologyParams, bestGeno);
-    	allcateByGenotype(bestGeno);
+    	//gaparams.PopulationSize = problem.getNrOfItems();
+    	//gaparams.N_Crossover = gaparams.PopulationSize / 2;
+    	//gaparams.N_Mutation = gaparams.PopulationSize / 2;
+    	gga = new GGA(progressListener, gaparams);
+    	System.out.println("debug, here1");
+    	//TODO: The initialization variable should be well considered
+    	gga.Initialize(problem, ggaGenerations, new Random().nextInt(9999999));
+    	System.out.println("debug, here2");
+    	
+    	bestGeno = null;
+		gga.InitializePopulation ();
+		System.out.println("debug, here3");
+
+		if (gga.Run()) {
+			bestGeno = gga.getBestGeno();
+		} else {
+		}    		
+    	gga.Close();
+    	
+    	// 临时代码结束
+    	
+    	allcateByGenotype(bestGeno, problem);
     }
     
-    private void allcateByGenotype(Genotype geno) {
+    private void allcateByGenotype(Genotype geno, Problem problem) {
     	int size = getVmQueue().size();
     	for (int i=0; i < size; i++) {
     		Vm vm = getVmQueue().get(i);
-    		int host = geno.getAllocatedHost(i);
+    		int host = problem.getHostAllocated(geno, i);//geno.getAllocatedHost(i);
     		boolean result = getVmAllocationPolicy().allocateHostForVm(vm, getHostList().get(host));
     		int[] data = new int[3];
             data[0] = getId();
@@ -137,7 +161,7 @@ public class AdvanceDatacenter extends Datacenter {
 						.getHost(vm).getVmScheduler().getAllocatedMipsForVm(vm));
 			} else {
 				System.err.println("GGA Seems to be failed");
-				assert(3==2);
+				//assert(3==2);
 			}
     		
     	}
