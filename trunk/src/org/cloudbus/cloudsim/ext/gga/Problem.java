@@ -90,8 +90,15 @@ public class Problem {
 		}
 		
 		this.old = old;
-		if (old != null)
+		if (old != null) {
 			arrangeOld(old);
+		}
+		else {
+			taken = new boolean[nrOfItems];
+			for (int i=0; i < nrOfItems; i++) {
+				taken[i] = true;
+			}
+		}
 		
 		
 		/* 拓扑的代码暂时不用了		
@@ -132,6 +139,10 @@ public class Problem {
 	}
 	
 	public int getDistance(Genotype gen) {
+		if (old == null) {
+			return 0;
+		}
+		
 		int[] otherItems = new int[remainedItems.length];
 		for (int i=0; i<remainedItems.length; i++) {
 			otherItems[i] = remainedItems[i];
@@ -140,26 +151,52 @@ public class Problem {
 		for (int i=0; i<items.size(); i++) {
 			Capacity c = items.get(i);
 			// DEBUG用
-			System.out.println("item-id: " + c.id +"  box: " + remainedItems[c.id] + 
-					"  tobe: " + gen.getAllocatedBin(c.id) );
-			otherItems[i] = gen.getAllocatedBin(c.id);
+			//System.out.println("item-id: " + c.id +"  box: " + remainedItems[c.id] + 
+			//		"  tobe: " + gen.getAllocatedBin(c.id) );
+			//otherItems[i] = gen.getAllocatedBin(c.id);
+			
+			//System.out.println("item-id: " + c.id +"  box: " + remainedItems[c.id] + 
+			//		"  tobe: " + gen.getAllocatedBin(i) );
+			otherItems[c.id] = gen.getAllocatedBin(i);
 		}
 		
 		String oldGeno = "";
 		String newGeno = "";
 		
 		for (int i = 0; i < otherItems.length; i++) {
-			oldGeno += ("" + old.getAllocatedBin(i));
-			newGeno += ("" + otherItems[i]);
+			oldGeno += (char)('0' + old.getAllocatedBin(i));
+			newGeno += (char)('0' + otherItems[i]);
 		}
 		
+		//System.out.println("new: " + newGeno + "\nold" + oldGeno);
+		
 		return ScientificMethods.getLdistance(oldGeno, newGeno);
+	}
+	
+	public int getHostAllocated(Genotype geno, int vm) {
+		if (old == null) {
+			return geno.getAllocatedBin(vm);
+		}
+		if (remainedItems[vm] != Constants.UNCOLORED) {
+			return remainedItems[vm];			
+		} else {
+			for (int i=0; i<items.size(); i++) {
+				Capacity c = items.get(i);
+				if (c.id == vm) {
+					System.out.println("NOTREMAIN: " + vm);
+					return geno.getAllocatedBin(i);
+				}
+			}
+		}
+		
+		return 0;
 	}
 	
 	// 用于针对上一轮的放置方案进行解析
 	private void arrangeOld(Genotype old) {
 		int [] groups = old.getGroups();
 		remainedItems = new int[nrOfItems];
+		leftItems = new ArrayList<Capacity>();
 		
 		// 标记已经用了的group号
 		taken = new boolean[nrOfBins];
@@ -170,6 +207,10 @@ public class Problem {
 			taken[groups[i]] = true;
 		}
 		
+		for (int i=0; i < nrOfBins; i++) {
+			System.out.println("bins-" + i + " " + taken[i]);
+		}
+		
 		// 得到Bin的安排
 		List<Bin> bins = new ArrayList<Bin>();
 		for (int i=0; i < nrOfBins; i++) {
@@ -178,7 +219,7 @@ public class Problem {
 		
 		// 放入到合适的Bin中
 		for (int i=0; i < nrOfItems; i++) {
-			int binId = old.getAllocatedHost(i);
+			int binId = old.getAllocatedBin(i);//old.getAllocatedHost(i);
 			bins.get(binId).add(items.get(i));
 			// 复制上一次的放置信息
 			remainedItems[i] = binId;
@@ -192,6 +233,7 @@ public class Problem {
 				List<Integer> removed = bin.getRemoved();
 				// 记录剩余的容量
 				cBins.add(new Capacity(bin.left));
+				System.out.println("id-" + i +" has left: " + bin.left);
 				if (removed.size() == bin.items.size()) {
 					taken[i] = false;
 				}
@@ -215,7 +257,21 @@ public class Problem {
 				leftItems.add(items.remove(i - counter));
 				counter ++;
 			}
-		} 
+		}
+		
+		for (int i=0; i < leftItems.size(); i++) {
+			Capacity c = leftItems.get(i);
+			System.out.print("Left: " + c);
+			System.out.println(" At bin" + remainedItems[c.id]);
+		}
+		for (int i=0; i < items.size(); i++) {
+			Capacity c = items.get(i);
+			System.out.println("NotLeft: " + c);
+		}
+		
+		for (int i=0; i < nrOfBins; i++) {
+			System.out.println("Bin-" + i +"  has: " + this.GetBinSize(i));
+		}
 		
 		nrOfItems -= counter;
 		System.exit(0);
@@ -249,18 +305,30 @@ class Bin {
 		// 找到最大的填充点
 		for (fit = 0; fit < items.size(); fit++) {
 			Mem += items.get(fit).Mem;
+			boolean isFull = false;
 			//TODO: 这里的0.5要编程可调的
-			if ((float)Mem / size.Mem > 0.5 && putItem(total, items.get(fit))) {
+			if ((float)Mem / size.Mem > 0.5) {
 				break;
 			} else {
-				System.out.println("Bin-"+this.binId+"  Item remained: "+items.get(fit).id+"  Mem:"+items.get(fit).Mem);
+				// 如果放置返回错误，那么说明满了
+				isFull = !putItem(total, items.get(fit));
+				if (isFull) {
+					total.Bandwidth += items.get(fit).Bandwidth;
+					total.Cpu += items.get(fit).Cpu;
+					total.Mem += items.get(fit).Mem;
+					total.Disk += items.get(fit).Disk;
+					break;
+				} else {
+					// 这种情况下可以继续填充，该item被remain下来了
+					System.out.println("Bin-"+this.binId+"  Item remained: "+items.get(fit).id+"  Mem:"+items.get(fit).Mem);
+				}
 			}
 		}
-		// 返回填充的东西
+		// 返回不能填充的东西
 		for (int i = fit; i < items.size(); i++) {
 			retVal.add(items.get(i).id);
 		}
-		left = total;
+		left = new Capacity(total);
 		return retVal;
 	}
 	

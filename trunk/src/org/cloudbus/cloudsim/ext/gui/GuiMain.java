@@ -367,7 +367,7 @@ private static final String CMD_ABOUT = "About";
 			int currSimTime = (Integer) e.getParameter(Constants.PARAM_TIME);
 			progressBar.setValue((int) currSimTime);
 		} else if (e.getId() == CloudSimEvents.EVENT_FITNESS_UPDATE){
-			simulationPanel.cloudSimEventFired(e);
+			//simulationPanel.cloudSimEventFired(e);
 		} else if (e.getId() == CloudSimEvents.EVENT_GGA_FINISHED){
 			results = (Map<String, Object>) e.getParameter(Constants.PARAM_RESULT);
 			System.out.println("woooWWW: " + results.size());

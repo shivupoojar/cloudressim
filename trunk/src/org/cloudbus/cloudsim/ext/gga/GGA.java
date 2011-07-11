@@ -32,7 +32,7 @@ public class GGA {
 	private boolean plotdata;
 	private boolean printsolutions;
 	
-	private List<Genotype> bestGenos; 
+	private List<Genotype> bestGenos; 			// 用来存每代的最好的
 	
 	private CloudSimEventListener progressListener;
 	
@@ -200,6 +200,10 @@ public class GGA {
 		results.put("gga-network",(int) ScientificMethods.normDistribution(new Random(), 300, 10));
 		results.put("ff-host", getBestGeno().GetBinsUsed() + Math.abs((int) ScientificMethods.normDistribution(new Random(), 5, 1)));
 		results.put("ff-network",(int) ScientificMethods.normDistribution(new Random(), 400, 20));
+		
+		for (int i=0; i < bestGenos.size(); i++) {
+			System.out.println("Gen: " + i + " Distance: " + problem.getDistance(bestGenos.get(i)));
+		}
 		
 		evt.addParameter(Constants.PARAM_RESULT, results);
 		progressListener.cloudSimEventFired(evt);

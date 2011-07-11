@@ -147,7 +147,44 @@ public class Genotype {
 		
 		//得到最后结果
 		fitness /= GetBinsUsed();
-		//System.err.println("fitdddd!!!ness: "+fitness);		
+		if (isGenoValid()) {
+			System.out.println("valid");
+		} else {
+			System.out.println(this);
+			System.out.println("not valid");
+		}
+		//System.err.println("fitdddd!!!ness: "+fitness);
+	}
+
+	private boolean isGenoValid() {
+		//bins 
+		int ob;
+		boolean find = false;
+		boolean [] gFind = new boolean[nrOfGroups];
+		
+		for (int j=0; j < nrOfGroups; j++) {
+			gFind[j] = false;
+		}
+		
+		for (int i=0; i < nrOfObjects; i++) {
+			ob = objects[i];
+			find = false;
+			for (int j=0; j < nrOfGroups; j++) {
+				if (ob == groups[j]) {
+					find = true;
+					gFind[j] = true;
+					break;
+				}					
+			}
+			if (!find) return false;
+		}
+		
+		for (int j=0; j < nrOfGroups; j++) {
+			if (!gFind[j])
+				return false;
+		}
+		
+		return true;
 	}
 
 	public void Mutation()
@@ -325,6 +362,11 @@ public class Genotype {
 		Stack<Integer> objects1 = new Stack<Integer>();				// holds objects from eliminated groups P1
 		Stack<Integer> objects2 = new Stack<Integer>();				// holds objects from eliminated groups P2
 		
+		//TODO: DEBUG用
+		System.out.println("\n\nbefore:");
+		System.out.println("1: " + this);
+		System.out.println("2: " + otherParent);
+		
 		for (i = 0; i < nrOfGroups; i++)
 		{
 			eliminated1[i] = false;
@@ -335,23 +377,12 @@ public class Genotype {
 		p1cp = getCrossPoint();
 		p2cp = otherParent.getCrossPoint();
 		
+		//TODO: DEBUG用
+		System.out.println("Chosen: 1: " + groups[p1cp] + " 2: " + otherParent.groups[p2cp]);
+		
 		// Copy parents to children
 		Copy (child1);
 		otherParent.Copy (child2);
-		
-		// 将bin_id冲突的item位直接拿出来
-		for (i = 0; i < child2.nrOfObjects; i++)
-			if (child2.objects[i] == groups[p1cp])
-			{
-				child2.objects[i] = Constants.UNCOLORED;
-				objects2.push (i);
-			}
-		for (i = 0; i < child1.nrOfObjects; i++)
-			if (child1.objects[i] == otherParent.groups[p2cp])
-			{
-				child1.objects[i] = Constants.UNCOLORED;
-				objects1.push (i);
-			}
 		
 		// 在这里进行允许交叉的判断
 		boolean inList = false;		// 对应伪码中的在List中；
@@ -369,15 +400,12 @@ public class Genotype {
 					// 这种情况说明不在箱子里头
 					allInList = false;
 				}
-				
-				if (child2.objects[i] != Constants.UNCOLORED) eliminated2[child2.objects[i]] = true;		// mark group affected
-				child2.objects[i] = groups[p1cp];	// 这里改动了，变成直接的
 			}
 		// 判断是否允许交叉操作，如果新插入不在List内，且其内容全部是List里头的
 		if (!inList && allInList) 
 			return false;
 		
-		// 对另一组进行操作
+		// 对另一组进行判断操作
 		
 		inList = false;		// 对应伪码中的在List中；
 		allInList = true;	// 对应伪码里头的全部在List中
@@ -391,17 +419,48 @@ public class Genotype {
 					// 这种情况说明不在箱子里头
 					allInList = false;
 				}
-				
-				if (child1.objects[i] != Constants.UNCOLORED) eliminated1[child1.objects[i]] = true;
-				child1.objects[i] = otherParent.groups[p2cp];
 			}
 		// 判断是否允许交叉操作，如果新插入不在List内，且其内容全部是List里头的
 		if (!inList && allInList) 
 			return false;
 		
+		
+		// 将bin_id冲突的item位直接拿出来
+		for (i = 0; i < child2.nrOfObjects; i++)
+			if (child2.objects[i] == groups[p1cp])
+			{
+				child2.objects[i] = Constants.UNCOLORED;
+				objects2.push (i);
+			}
+		for (i = 0; i < child1.nrOfObjects; i++)
+			if (child1.objects[i] == otherParent.groups[p2cp])
+			{
+				child1.objects[i] = Constants.UNCOLORED;
+				objects1.push (i);
+			}
+				
+		for (i = 0; i < nrOfObjects; i++)			// look at all objects
+			if (objects[i] == groups[p1cp])			// object is in injected group
+			{				
+				if (child2.objects[i] != Constants.UNCOLORED) eliminated2[child2.objects[i]] = true;		// mark group affected
+				child2.objects[i] = groups[p1cp];	// 这里改动了，变成直接的
+			}
+		
+		for (i = 0; i < otherParent.nrOfObjects; i++)
+			if (otherParent.objects[i] == otherParent.groups[p2cp])
+			{				
+				if (child1.objects[i] != Constants.UNCOLORED) eliminated1[child1.objects[i]] = true;
+				child1.objects[i] = otherParent.groups[p2cp];
+			}
+		
 		// 这里把bin_id冲突的标记为eliminated，为了下一步抹去group
 		eliminated1[otherParent.groups[p2cp]] = true;
 		eliminated2[groups[p1cp]] = true;
+		
+		//TODO: DEBUG用
+		System.out.println("\n\nBefore EG:");
+		System.out.println("1: " + child1);
+		System.out.println("2: " + child2);
 		
 		// Eliminate effected groups
 		// 这里把bin_id冲突的group位抹去
@@ -416,7 +475,17 @@ public class Genotype {
 		// 注意，我们不把和bin_id冲突的标记为eliminated，因为item位已经染色
 		eliminated1[otherParent.groups[p2cp]] = false;
 		eliminated2[groups[p1cp]] = false;
+		
+		//TODO: DEBUG用
+		System.out.println("\n\nAfter EG:");
+		System.out.println("1: " + child1);
+		System.out.println("2: " + child2);
 
+		//TODO: DEBUG用
+		System.out.println("\n\nBefore UO:");
+		System.out.println("1: " + child1);
+		System.out.println("2: " + child2);
+		
 		// Collect objects member of an eliminated group
 		// 这里不标记item位冲突的；
 		for (i = 0; i < child2.nrOfObjects; i++)
@@ -431,10 +500,28 @@ public class Genotype {
 				child1.objects[i] = Constants.UNCOLORED;
 				objects1.push (i);
 			}
+		
+		//TODO: DEBUG用
+		System.out.println("\n\nAfter UO:");
+		System.out.println("1: " + child1);
+		System.out.println("2: " + child2);
 
 		// Inject group-part from parents into children
+		
+		//TODO: DEBUG用
+		System.out.println("\n\nBefore inject:");
+		System.out.println("1: " + child1);
+		System.out.println("2: " + child2);
+		
 		child2.InsertGroup (groups, p1cp, p2cp);
 		child1.InsertGroup (otherParent.groups, p2cp, p1cp);
+		
+		//TODO: DEBUG用
+		System.out.println("\n\nAfter inject:");
+		System.out.println("1: " + child1);
+		System.out.println("2: " + child2);
+		
+		
 
 		// Remove holes in group-array created by the elimination process
 		child2.CompactGroupSimple ();
@@ -445,6 +532,11 @@ public class Genotype {
 			child2.PackObject (objects2.pop ());
 		while (!objects1.empty ())
 			child1.PackObject (objects1.pop ());
+		
+		//TODO: DEBUG用
+		System.out.println("\n\nAfter:");
+		System.out.println("1: " + child1);
+		System.out.println("2: " + child2);
 
 		// Compute fitness of children
 		child2.Evaluate ();
@@ -824,7 +916,7 @@ public class Genotype {
 		// 如果没有从已用箱子里头找到合适的，则进行第二轮
 		// 第二轮优先使用已经占用的箱子
 		i = 0;		//这里的i是binId;
-		while (!find) {
+		while (!find && i < nrOfObjects) {
 			//如果箱子木有用，则试试
 			if (!binUsed[i] && problem.isTaken(i)) {
 				objects[object] = i;
@@ -842,7 +934,7 @@ public class Genotype {
 		// 最后，如果没有从已用和上轮预留箱子里头找到合适的
 		// 则需要重新建一个箱子
 		i = 0;
-		while (!find) {
+		while (!find && i < nrOfObjects) {
 			//如果箱子木有用，则试试
 			if (!binUsed[i] && !problem.isTaken(i)) {
 				objects[object] = i;
