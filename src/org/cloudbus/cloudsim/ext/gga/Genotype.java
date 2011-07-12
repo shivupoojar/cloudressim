@@ -3,6 +3,7 @@ package org.cloudbus.cloudsim.ext.gga;
 import org.cloudbus.cloudsim.ext.gga.enums.PackingT;
 import org.cloudbus.cloudsim.ext.utils.ScientificMethods;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -147,12 +148,13 @@ public class Genotype {
 		
 		//得到最后结果
 		fitness /= GetBinsUsed();
+		/*
 		if (isGenoValid()) {
 			System.out.println("valid");
 		} else {
 			System.out.println(this);
 			System.out.println("not valid");
-		}
+		}*/
 		//System.err.println("fitdddd!!!ness: "+fitness);
 	}
 
@@ -176,12 +178,17 @@ public class Genotype {
 					break;
 				}					
 			}
-			if (!find) return false;
+			if (!find) {
+				System.out.println("Cannot find: " + ob + " at " + i);
+				return false;
+			}
 		}
 		
 		for (int j=0; j < nrOfGroups; j++) {
-			if (!gFind[j])
-				return false;
+			if (!gFind[j]) {
+				System.out.println("GG Cannot find: " + j);
+				//return false;
+			}
 		}
 		
 		return true;
@@ -363,9 +370,9 @@ public class Genotype {
 		Stack<Integer> objects2 = new Stack<Integer>();				// holds objects from eliminated groups P2
 		
 		//TODO: DEBUG用
-		System.out.println("\n\nbefore:");
-		System.out.println("1: " + this);
-		System.out.println("2: " + otherParent);
+		//System.out.println("\n\nbefore:");
+		//System.out.println("1: " + this);
+		//System.out.println("2: " + otherParent);
 		
 		for (i = 0; i < nrOfGroups; i++)
 		{
@@ -378,7 +385,7 @@ public class Genotype {
 		p2cp = otherParent.getCrossPoint();
 		
 		//TODO: DEBUG用
-		System.out.println("Chosen: 1: " + groups[p1cp] + " 2: " + otherParent.groups[p2cp]);
+		//System.out.println("Chosen: 1: " + groups[p1cp] + " 2: " + otherParent.groups[p2cp]);
 		
 		// Copy parents to children
 		Copy (child1);
@@ -438,6 +445,11 @@ public class Genotype {
 				child1.objects[i] = Constants.UNCOLORED;
 				objects1.push (i);
 			}
+		
+		//TODO: DEBUG用
+//		System.out.println("\n\nAfter First:");
+//		System.out.println("1: " + child1);
+//		System.out.println("2: " + child2);
 				
 		for (i = 0; i < nrOfObjects; i++)			// look at all objects
 			if (objects[i] == groups[p1cp])			// object is in injected group
@@ -453,14 +465,19 @@ public class Genotype {
 				child1.objects[i] = otherParent.groups[p2cp];
 			}
 		
+//		//TODO: DEBUG用
+//		System.out.println("\n\nAfter Uncoloered:");
+//		System.out.println("1: " + child1);
+//		System.out.println("2: " + child2);
+		
 		// 这里把bin_id冲突的标记为eliminated，为了下一步抹去group
 		eliminated1[otherParent.groups[p2cp]] = true;
 		eliminated2[groups[p1cp]] = true;
 		
-		//TODO: DEBUG用
-		System.out.println("\n\nBefore EG:");
-		System.out.println("1: " + child1);
-		System.out.println("2: " + child2);
+//		//TODO: DEBUG用
+//		System.out.println("\n\nBefore EG:");
+//		System.out.println("1: " + child1);
+//		System.out.println("2: " + child2);
 		
 		// Eliminate effected groups
 		// 这里把bin_id冲突的group位抹去
@@ -477,49 +494,52 @@ public class Genotype {
 		eliminated2[groups[p1cp]] = false;
 		
 		//TODO: DEBUG用
-		System.out.println("\n\nAfter EG:");
-		System.out.println("1: " + child1);
-		System.out.println("2: " + child2);
+//		System.out.println("\n\nAfter EG:");
+//		System.out.println("1: " + child1);
+//		System.out.println("2: " + child2);
 
 		//TODO: DEBUG用
-		System.out.println("\n\nBefore UO:");
-		System.out.println("1: " + child1);
-		System.out.println("2: " + child2);
+//		System.out.println("\n\nBefore UO:");
+//		System.out.println("1: " + child1);
+//		System.out.println("2: " + child2);
 		
 		// Collect objects member of an eliminated group
 		// 这里不标记item位冲突的；
 		for (i = 0; i < child2.nrOfObjects; i++)
-			if ((child2.objects[i] != Constants.UNCOLORED) && (child2.objects[i] < child2.nrOfGroups) && (eliminated2[child2.objects[i]]))
+			//!!!fuck!!! (child2.objects[i] < child2.nrOfGroups)
+			// 这个判断条件不应该要了，object[i]的标记有可能和那个不同啊！！！
+			if ((child2.objects[i] != Constants.UNCOLORED) && (eliminated2[child2.objects[i]]))
 			{
 				child2.objects[i] = Constants.UNCOLORED;
 				objects2.push (i);
 			}
 		for (i = 0; i < child1.nrOfObjects; i++)
-			if ((child1.objects[i] != Constants.UNCOLORED) && (child1.objects[i] < child1.nrOfGroups) && (eliminated1[child1.objects[i]]))
+			//!!!fuck!!!
+			if ((child1.objects[i] != Constants.UNCOLORED) && (eliminated1[child1.objects[i]]))
 			{
 				child1.objects[i] = Constants.UNCOLORED;
 				objects1.push (i);
 			}
 		
 		//TODO: DEBUG用
-		System.out.println("\n\nAfter UO:");
-		System.out.println("1: " + child1);
-		System.out.println("2: " + child2);
+//		System.out.println("\n\nAfter UO:");
+//		System.out.println("1: " + child1);
+//		System.out.println("2: " + child2);
 
 		// Inject group-part from parents into children
 		
 		//TODO: DEBUG用
-		System.out.println("\n\nBefore inject:");
-		System.out.println("1: " + child1);
-		System.out.println("2: " + child2);
+//		System.out.println("\n\nBefore inject:");
+//		System.out.println("1: " + child1);
+//		System.out.println("2: " + child2);
 		
 		child2.InsertGroup (groups, p1cp, p2cp);
 		child1.InsertGroup (otherParent.groups, p2cp, p1cp);
 		
 		//TODO: DEBUG用
-		System.out.println("\n\nAfter inject:");
-		System.out.println("1: " + child1);
-		System.out.println("2: " + child2);
+//		System.out.println("\n\nAfter inject:");
+//		System.out.println("1: " + child1);
+//		System.out.println("2: " + child2);
 		
 		
 
@@ -534,9 +554,9 @@ public class Genotype {
 			child1.PackObject (objects1.pop ());
 		
 		//TODO: DEBUG用
-		System.out.println("\n\nAfter:");
-		System.out.println("1: " + child1);
-		System.out.println("2: " + child2);
+//		System.out.println("\n\nAfter:");
+//		System.out.println("1: " + child1);
+//		System.out.println("2: " + child2);
 
 		// Compute fitness of children
 		child2.Evaluate ();
@@ -817,16 +837,16 @@ public class Genotype {
 		// Print out objects
 		for (i = 0; i < nrOfObjects; i++)
 			if (objects[i] == Constants.UNCOLORED)
-				str += ("X ");
+				str += ("xx ");
 			else
-				str += (objects[i]+ " ");
+				str += (new DecimalFormat("00").format(objects[i])+ " ");
 
 		str += (" : ");
 
 		// Print out groups
 		for (i = 0; i < nrOfGroups; i++)
 			if (groups[i] == Constants.ELIMINATED)
-				str += ("X ");
+				str += ("xx ");
 			else
 				str += (groups[i]+" ");
 

@@ -274,7 +274,7 @@ public class Problem {
 		}
 		
 		nrOfItems -= counter;
-		System.exit(0);
+		//System.exit(0);
 	}
 }
 
