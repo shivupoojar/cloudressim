@@ -81,8 +81,11 @@ public class AdvanceDatacenter extends Datacenter {
     }
     
     private void allocateVmsWithGGA() {
+    	
+    	Genotype last = new Genotype("12 15 15 14 13 14 1 9 13 4 3 6 2 3 5 1 6 10 14 2 3 13 7 10 10 0 7 6 4 12 5 8 0 8 5 4 1 13 9 1 8 11 9 2 12 12 3 11 5 11  : 2 8 3 1 9 10 6 4 7 5 0 11 12 13 14 15");
+    	
     	Problem problem = new Problem();
-    	problem.CreateProblem(getVmQueue(), getHostList(), topologyParams, null);
+    	problem.CreateProblem(getVmQueue(), getHostList(), topologyParams, last);
     	
     	GGA gga = new GGA(progressListener, gaparams);
     	//TODO: The initialization variable should be well considered
@@ -100,6 +103,8 @@ public class AdvanceDatacenter extends Datacenter {
     		
     	gga.Close();
     	
+    	/*
+    	
     	//TODO: 临时代码，这部分要改的，试试再来一次调度
     	problem = new Problem();
     	problem.CreateProblem(getVmQueue(), getHostList(), topologyParams, bestGeno);
@@ -107,14 +112,11 @@ public class AdvanceDatacenter extends Datacenter {
     	//gaparams.N_Crossover = gaparams.PopulationSize / 2;
     	//gaparams.N_Mutation = gaparams.PopulationSize / 2;
     	gga = new GGA(progressListener, gaparams);
-    	System.out.println("debug, here1");
     	//TODO: The initialization variable should be well considered
     	gga.Initialize(problem, ggaGenerations, new Random().nextInt(9999999));
-    	System.out.println("debug, here2");
     	
     	bestGeno = null;
 		gga.InitializePopulation ();
-		System.out.println("debug, here3");
 
 		if (gga.Run()) {
 			bestGeno = gga.getBestGeno();
@@ -123,6 +125,7 @@ public class AdvanceDatacenter extends Datacenter {
     	gga.Close();
     	
     	// 临时代码结束
+    	*/
     	
     	allcateByGenotype(bestGeno, problem);
     }

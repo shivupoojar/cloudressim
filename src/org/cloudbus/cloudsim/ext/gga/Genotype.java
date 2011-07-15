@@ -25,12 +25,53 @@ public class Genotype {
 	private PackingT packingUsed; // what algo to use for coloring nodes
 	private int objects[]; // holds objects
 	private int groups[]; // holds groups
+	
+	//增加统计利用率的部分
+	private double[] uCpu;
+	private double[] uRam;
+	private double[] uDisk;
+	private double[] uBw;
+	private double[] uAvg;
 
 	public Genotype() {
 		this.objects = new int[Constants.MAXOBJECTS];
 		this.groups = new int[Constants.MAXOBJECTS];
 		this.packingUsed = PackingT.FIRSTFIT;
 		this.gFitness = new double[Constants.MAXOBJECTS];
+		
+		uCpu = new double[Constants.MAXOBJECTS];
+		uRam = new double[Constants.MAXOBJECTS];
+		uDisk = new double[Constants.MAXOBJECTS];
+		uBw = new double[Constants.MAXOBJECTS];
+		uAvg = new double[Constants.MAXOBJECTS];
+	}
+	
+	public Genotype(String geno) {
+		this.objects = new int[Constants.MAXOBJECTS];
+		this.groups = new int[Constants.MAXOBJECTS];
+		this.packingUsed = PackingT.FIRSTFIT;
+		this.gFitness = new double[Constants.MAXOBJECTS];
+		
+		String [] tmp = geno.split(":");
+		String [] objs = tmp[0].trim().split(" ");
+		String [] grps = tmp[1].trim().split(" ");
+		
+		nrOfObjects = objs.length;
+		nrOfGroups = grps.length;
+		
+		for (int i=0; i < objs.length; i++) {
+			objects[i] = Integer.parseInt(objs[i]);
+			//System.out.print(i + ": " + objs[i] + "--");
+		}
+		
+		for (int i=0; i < grps.length; i++) {
+			groups[i] = Integer.parseInt(grps[i]);
+			//System.out.print(i + ": " + grps[i] + "--");
+		}
+		
+		//System.out.println("iii: " + this);
+		        		
+		//System.exit(0);
 	}
 
 	public void Initialize(int numberOfObjects,
@@ -76,11 +117,13 @@ public class Genotype {
 	}
 
 	public void Evaluate() {
+		/*
 		double uRam = 0;
 		double uCpu = 0;
 		double uDisk = 0;
 		double uBw = 0;
 		double uAvg = 0;
+		*/
 		int cRam[];
 		int cCpu[];
 		int cDisk[];
@@ -101,6 +144,13 @@ public class Genotype {
 			cDisk[i] = 0;
 			cRam[i] = 0;
 			gFitness[i] = 0;
+			
+			// 每个箱子的利用率清零
+			uBw[i] = 0;
+			uCpu[i] = 0;
+			uDisk[i] = 0;
+			uRam[i] = 0;
+			uAvg[i] = 0;
 		}
 		
 		for (int j=0; j < nrOfObjects; j++) {
@@ -117,33 +167,27 @@ public class Genotype {
 		int nBw = problem.GetBinSize().Bandwidth;
 		
 		for (int i=0; i < n; i++) {
-			//计算算子结果
-			uRam = (double)cRam[i] / nRam;
+			// 计算算子结果
+			// 将计算结果保留到了uXXX数组里头
+			uRam[i] = (double)cRam[i] / nRam;
 			//System.out.println("uRam: " + uRam);
-			uCpu = (double)cCpu[i] / nCpu;
-			uDisk = (double)cDisk[i] / nDisk;
-			uBw = (double)cBw[i] / nBw;
-			uAvg = (uRam+uCpu+uDisk+uBw) / 4;
+			uCpu[i] = (double)cCpu[i] / nCpu;
+			uDisk[i] = (double)cDisk[i] / nDisk;
+			uBw[i] = (double)cBw[i] / nBw;
+			uAvg[i] = (uRam[i]+uCpu[i]+uDisk[i]+uBw[i]) / 4;
 			
 			//计算FF中单项分母
 			double down = 0;
-			down += Math.sqrt(Math.abs(uCpu-uAvg));
-			down += Math.sqrt(Math.abs(uBw-uAvg));
-			down += Math.sqrt(Math.abs(uDisk-uAvg));
-			down += Math.sqrt(Math.abs(uRam-uAvg));
+			down += Math.sqrt(Math.abs(uCpu[i]-uAvg[i]));
+			down += Math.sqrt(Math.abs(uBw[i]-uAvg[i]));
+			down += Math.sqrt(Math.abs(uDisk[i]-uAvg[i]));
+			down += Math.sqrt(Math.abs(uRam[i]-uAvg[i]));
 			
 			//计算单项结果
 			if (down != 0) {
-				gFitness[i] = Math.sqrt(uAvg / down);
+				gFitness[i] = Math.sqrt(uAvg[i] / down);
 				fitness += gFitness[i];
 			}
-			
-			//算子清零
-			uRam = 0;
-			uCpu = 0;
-			uDisk = 0;
-			uBw = 0;
-			uAvg = 0;
 		}
 		
 		//得到最后结果
@@ -763,6 +807,45 @@ public class Genotype {
 	// Print out the geno's genes and it's fitness.
 	{
 		System.out.println("Geno: " + this);
+	}
+	
+	public String getStatics()
+	// Print out the geno's genes and it's fitness.
+	{
+		String ret = "";
+		ret += GetBinsUsed();
+		ret += ", ";
+		double tCpu = 0;
+		double tRam = 0;
+		double tDisk = 0;
+		double tBw = 0;
+		// tXX记录总的利用率
+		// 这里输出每个bin的各维利用率
+		for (int i=0; i < GetBinsUsed(); i++) {
+			ret += "bin" + i + ", ";
+			ret += uCpu[i];
+			tCpu += uCpu[i];
+			ret += ", ";
+			ret += uRam[i];
+			tRam += uRam[i];
+			ret += ", ";
+			ret += uDisk[i];
+			tDisk += uDisk[i];
+			ret += ", ";
+			ret += uBw[i];
+			tBw += uBw[i];
+			ret += ", ";
+		}
+		
+		// 最后输出总的利用率
+		ret += tCpu;
+		ret += ", ";
+		ret += tRam;
+		ret += ", ";
+		ret += tDisk;
+		ret += ", ";
+		ret += tBw;
+		return ret;
 	}
 
 	public int GetBinsUsed() {
