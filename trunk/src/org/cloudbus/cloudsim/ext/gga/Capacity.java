@@ -6,6 +6,9 @@ public class Capacity implements Comparable<Capacity>{
 	public int Disk;
 	public int Bandwidth;
 	
+	// 用来排序的
+	public int oldMem;
+	
 	public int id; 
 	
 	public Capacity(Capacity c) {
@@ -71,6 +74,6 @@ public class Capacity implements Comparable<Capacity>{
 	// 实现根据内存的比较
 	@Override
 	public int compareTo(Capacity other) {
-		return (this.Mem - other.Mem);
+		return (this.oldMem - other.oldMem);
 	}
 }

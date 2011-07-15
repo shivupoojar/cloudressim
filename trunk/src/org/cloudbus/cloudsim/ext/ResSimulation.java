@@ -81,7 +81,8 @@ public class ResSimulation {
 	public ResSimulation(CloudSimEventListener gui) {
 		this.guiListener = gui;
 		
-		this.workloadMethod = Constants.WORKLOAD_AUTO_GEN;
+		//this.workloadMethod = Constants.WORKLOAD_AUTO_GEN;
+		this.workloadMethod = Constants.WORKLOAD_FROM_XML;
 		this.workloadFile = Constants.DEFAULT_WORKLOAD_FILE;
 		this.workloadSize = Constants.DEFAULT_WORKLOAD_SIZE;
 		this.hostCpu =  Constants.DEFAULT_HOST_CPU;

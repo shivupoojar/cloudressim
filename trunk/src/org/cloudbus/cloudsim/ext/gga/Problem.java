@@ -1,5 +1,7 @@
 package org.cloudbus.cloudsim.ext.gga;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,6 +10,7 @@ import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.ext.Topology;
 import org.cloudbus.cloudsim.ext.TopologyParamsT;
+import org.cloudbus.cloudsim.ext.utils.IOUtil;
 import org.cloudbus.cloudsim.ext.utils.ScientificMethods;
 
 public class Problem {
@@ -79,17 +82,32 @@ public class Problem {
 		cBin.Disk = (int) host.getStorage();
 		cBin.Mem = host.getRam();
 		
+		List<Capacity> workload;
+		// 这里读入上一轮的workload
+		try {
+			workload = (List<Capacity>) IOUtil.loadFromXml("old.sim");
+		} catch (IOException e) {
+			e.printStackTrace();
+			workload = null;
+		}
+		
+		// 将第一个也就是host的参数pop出来；
+		workload.remove(0);
+		
 		for (int i=0; i < nrOfItems; i++) {
-			Vm vm = vmList.get(i);
+			//Vm vm = vmList.get(i);
 			Capacity c = new Capacity();
 			//TODO: Find a way to evaluate the requested resources
-			c.Bandwidth = (int) vm.getBw();
-			c.Cpu = (int) vm.getMips();
-			c.Disk = (int) vm.getSize();
-			c.Mem = vm.getRam();
+			c.Bandwidth = workload.get(i).Bandwidth; //(int) vm.getBw();
+			c.Cpu = workload.get(i).Cpu; //(int) vm.getMips();
+			c.Disk = workload.get(i).Disk; // (int) vm.getSize();
+			c.Mem = workload.get(i).Mem; // vm.getRam();
 			c.id = i;
 			items.add(c);
 		}
+		
+		// 输出workload
+		printItems("old.csv");
 		
 		this.old = old;
 		if (old != null) {
@@ -222,7 +240,33 @@ public class Problem {
 		// 放入到合适的Bin中
 		for (int i=0; i < nrOfItems; i++) {
 			int binId = old.getAllocatedBin(i);//old.getAllocatedHost(i);
-			bins.get(binId).add(items.get(i));
+			bins.get(binId).addOld(items.get(i));
+			// 复制上一次的放置信息
+			remainedItems[i] = binId;
+		}
+		
+		// 重新读入Items
+		//items = new ArrayList<Capacity>();
+		try {
+			items = (ArrayList<Capacity>) IOUtil.loadFromXml("new.sim");
+			//TODO: 这里new.xml临时的，应该用常量
+		} catch (IOException e) {
+			e.printStackTrace();
+			items = null;
+		}
+		
+		// 将第一个也就是host的参数pop出来；
+		items.remove(0);
+		
+		// 输出workload
+		printItems("new.csv");
+		
+		
+		// 放入到合适的Bin中
+		for (int i=0; i < nrOfItems; i++) {
+			items.get(i).id = i;
+			int binId = old.getAllocatedBin(i);//old.getAllocatedHost(i);
+			bins.get(binId).addNew(items.get(i));
 			// 复制上一次的放置信息
 			remainedItems[i] = binId;
 		}
@@ -278,26 +322,60 @@ public class Problem {
 		nrOfItems -= counter;
 		//System.exit(0);
 	}
+	
+	private void printItems(String file) {
+		// 生成csv格式的文件：
+		FileWriter csvFile = null;
+		try {
+			csvFile = new FileWriter(file);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			System.exit(0);
+		}
+
+		// workload文件，注意，第一行是Host的配置信息
+		try {
+			for (int i=0; i < items.size(); i++) {
+				Capacity c = items.get(i);
+				csvFile.write(c.getCpu() + ", ");
+				csvFile.write(c.getMem() + ", ");
+				csvFile.write(c.getDisk() + ", ");
+				csvFile.write(c.getBandwidth() + "\n");
+			}
+			csvFile.close();
+		} catch (Exception e) {
+			System.err.println("Warning: could not open solution files");
+			e.printStackTrace();
+		}
+	}
 }
 
 class Bin {
 	int binId;
+	List<Capacity> oldItems;
 	List<Capacity> items;
 	Capacity size;
 	public Capacity left;
 	
 	public Bin(int id, Capacity c) {
 		this.binId = id;
+		this.oldItems = new ArrayList<Capacity>();
 		this.items = new ArrayList<Capacity>();
 		this.size = c;
 	}
 	
-	public void add(Capacity item) {
+	public void addOld(Capacity item) {
+		this.oldItems.add(item);
+	}
+	public void addNew(Capacity item) {
 		this.items.add(item);
 	}
 	
 	public List<Integer> getRemoved() {
 		List<Integer> retVal = new ArrayList<Integer>();
+		for (int i=0; i < items.size(); i++) {
+			items.get(i).oldMem = oldItems.get(i).Mem;
+		}
 		Collections.sort(this.items);
 		Collections.reverse(this.items);
 		

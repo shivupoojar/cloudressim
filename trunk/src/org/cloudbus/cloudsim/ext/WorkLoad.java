@@ -193,8 +193,26 @@ public class WorkLoad {
 			vms.add(vm);
 			vmid++;
 		}
+				
+		genDynamicWorkload(workload);
 		
 		return (List<T>) vms;
+	}
+	
+	private void genDynamicWorkload(List<Capacity> workload) {
+		Random rnd = new Random();
+		for (int i=0; i < workload.size(); i++) {			
+			workload.get(i).Bandwidth = (int)((rnd.nextFloat()*1.5f + 0.5f) * workload.get(i).Bandwidth);
+			workload.get(i).Cpu = (int)((rnd.nextFloat()*1.5f + 0.5f) * workload.get(i).Cpu);
+			workload.get(i).Mem = (int)((rnd.nextFloat()*1.5f + 0.5f) * workload.get(i).Mem);
+			workload.get(i).Disk = (int)((rnd.nextFloat()*1.5f + 0.5f) * workload.get(i).Disk);
+		}
+		
+		try {
+			IOUtil.saveAsXML(workload, "next.sim");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/*

@@ -104,7 +104,7 @@ public class GGA {
 			}//.open (inifile.ReadString("datafile"));
 			
 			try {
-				dataFile.write("New data:" + format.format(date));
+				//dataFile.write("New data:" + format.format(date));
 			} catch (Exception e) {
 				plotdata = false;
 				e.printStackTrace();
@@ -155,6 +155,7 @@ public class GGA {
 			if (plotdata)
 				try {
 					dataFile.write(gen + " generation's best: " + population.getBestGeno() + "\n");
+					solutionsFile.write(population.getBestGeno().getStatics() + ", " + problem.getDistance(population.getBestGeno()) + "\n");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
