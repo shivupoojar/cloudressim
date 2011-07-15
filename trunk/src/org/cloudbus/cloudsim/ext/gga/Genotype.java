@@ -870,7 +870,9 @@ public class Genotype {
 		
 		int group = objects[object];
 		
-		Capacity size = problem.GetBinSize();
+		//Capacity size = problem.GetBinSize();
+		// FUCK! This is not RIGHT!!!
+		Capacity size = problem.GetBinSize(group);
 		
 		for (int i=0; i < nrOfObjects; i++) {
 			if (objects[i] == group) {

@@ -100,8 +100,6 @@ public class AdvanceDatacenter extends Datacenter {
     		
     	gga.Close();
     	
-    	//TODO: 怎么利用结果
-    	
     	//TODO: 临时代码，这部分要改的，试试再来一次调度
     	problem = new Problem();
     	problem.CreateProblem(getVmQueue(), getHostList(), topologyParams, bestGeno);

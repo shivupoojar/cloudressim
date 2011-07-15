@@ -38,6 +38,8 @@ public class Problem {
 	// return the size of the bin by id of bin.
 	{
 		// 从cBins得到容量，用new方法返回副本；
+		if (old == null) return new Capacity(cBin);
+		
 		Capacity bin = new Capacity(cBins.get(binId));
 		return bin;
 	}
@@ -261,12 +263,12 @@ public class Problem {
 		
 		for (int i=0; i < leftItems.size(); i++) {
 			Capacity c = leftItems.get(i);
-			System.out.print("Left: " + c);
+			System.out.print("Left: " + c.id + " " + c);
 			System.out.println(" At bin" + remainedItems[c.id]);
 		}
 		for (int i=0; i < items.size(); i++) {
 			Capacity c = items.get(i);
-			System.out.println("NotLeft: " + c);
+			System.out.println("NotLeft: " + c.id + " " + c);
 		}
 		
 		for (int i=0; i < nrOfBins; i++) {
