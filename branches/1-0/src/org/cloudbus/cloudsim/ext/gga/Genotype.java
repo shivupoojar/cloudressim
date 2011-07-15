@@ -969,6 +969,7 @@ public class Genotype {
 		
 		// 进行排序
 		Collections.sort(rankList);
+		Collections.reverse(rankList);	//Bug Fix: 需要逆序		
 		
 		// 得到一个随机的rank
 		double prob = rnd.nextDouble();
