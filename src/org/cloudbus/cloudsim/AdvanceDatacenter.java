@@ -135,6 +135,7 @@ public class AdvanceDatacenter extends Datacenter {
     	for (int i=0; i < size; i++) {
     		Vm vm = getVmQueue().get(i);
     		int host = problem.getHostAllocated(geno, i);//geno.getAllocatedHost(i);
+    		System.out.println("Vm " + i + "size" +vm.getMips());
     		boolean result = getVmAllocationPolicy().allocateHostForVm(vm, getHostList().get(host));
     		int[] data = new int[3];
             data[0] = getId();

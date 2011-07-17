@@ -133,7 +133,8 @@ public class Genotype {
 		
 		//int n = GetBinsUsed();
 		// group sequence is no longer continuous
-		int n = Constants.MAXOBJECTS;
+		//int n = Constants.MAXOBJECTS;
+		int n = this.nrOfObjects;
 		cRam = new int[n];
 		cCpu = new int[n];
 		cBw = new int[n];
@@ -161,12 +162,17 @@ public class Genotype {
 			cRam[group] += problem.getItemRequest(j, 3);
 		}
 		
-		int nRam = problem.GetBinSize().Mem;
-		int nCpu = problem.GetBinSize().Cpu;
-		int nDisk = problem.GetBinSize().Disk;
-		int nBw = problem.GetBinSize().Bandwidth;
+		int nRam = 0; //problem.GetBinSize().Mem;
+		int nCpu = 0; //problem.GetBinSize().Cpu;
+		int nDisk = 0; //problem.GetBinSize().Disk;
+		int nBw = 0; //problem.GetBinSize().Bandwidth;
 		
 		for (int i=0; i < n; i++) {
+			// 首先得到箱子剩余资源
+			nRam = problem.GetBinSize(n).Mem;
+			nCpu = problem.GetBinSize(n).Cpu;
+			nDisk = problem.GetBinSize(n).Disk;
+			nBw = problem.GetBinSize(n).Bandwidth;
 			// 计算算子结果
 			// 将计算结果保留到了uXXX数组里头
 			uRam[i] = (double)cRam[i] / nRam;
