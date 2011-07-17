@@ -74,11 +74,13 @@ public class Problem {
 			items.add(c);
 		}
 		
+		/*
 		topology = new Topology("topology.properties", topologyParams);
 		if (!topology.genTopology(items, cBin)) {
 			System.err.println("Network Generation Failure");
 			System.exit(1);
 		}
+		*/
 	}
 	
 	//TODO: 这个借口用int表示type，应当改成enum
