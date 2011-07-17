@@ -31,6 +31,7 @@ public class Problem {
 	public int getNrOfBins() {
 		return nrOfBins;
 	}
+	@Deprecated
 	public Capacity GetBinSize()
 	// return the size of the bin
 	{

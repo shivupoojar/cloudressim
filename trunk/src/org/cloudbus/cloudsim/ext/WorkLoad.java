@@ -172,7 +172,7 @@ public class WorkLoad {
 		}
 		
 		// 将第一个也就是host的参数pop出来；
-		workload.remove(0);
+		Capacity ch = workload.remove(0);
 		
 		int mips = 0;
     	long size = 0; //image size (MB)
@@ -194,22 +194,39 @@ public class WorkLoad {
 			vmid++;
 		}
 				
-		genDynamicWorkload(workload);
+		genDynamicWorkload(workload, ch);
 		
 		return (List<T>) vms;
 	}
 	
-	private void genDynamicWorkload(List<Capacity> workload) {
+	private void genDynamicWorkload(List<Capacity> workload, Capacity h) {
 		Random rnd = new Random();
-		for (int i=0; i < workload.size(); i++) {			
-			workload.get(i).Bandwidth = (int)((rnd.nextFloat()*1.5f + 0.5f) * workload.get(i).Bandwidth);
-			workload.get(i).Cpu = (int)((rnd.nextFloat()*1.5f + 0.5f) * workload.get(i).Cpu);
-			workload.get(i).Mem = (int)((rnd.nextFloat()*1.5f + 0.5f) * workload.get(i).Mem);
-			workload.get(i).Disk = (int)((rnd.nextFloat()*1.5f + 0.5f) * workload.get(i).Disk);
+		List<Capacity> next = new ArrayList<Capacity>();
+		Capacity c = new Capacity();
+		System.out.println(h.Bandwidth + " " +h.Cpu + " " +h.Disk + " " +h.Mem);
+		for (int i=0; i < workload.size(); i++) {
+			do {
+				c.Bandwidth = (int)((rnd.nextFloat()*1.5f + 0.5f) * workload.get(i).Bandwidth);
+				System.out.println(i + "B CC: " + c.Bandwidth + "HH: " + h.Bandwidth);
+			} while(c.Bandwidth > h.Bandwidth);
+			do {
+				c.Cpu = (int)((rnd.nextFloat()*1.5f + 0.5f) * workload.get(i).Cpu);
+				System.out.println(i + "C CC: " + c.Cpu + "HH: " + h.Cpu);
+			} while(c.Cpu > h.Cpu);
+			do {
+				c.Mem = (int)((rnd.nextFloat()*1.5f + 0.5f) * workload.get(i).Mem);
+				System.out.println(i + "M CC: " + c.Mem + "HH: " + h.Mem);
+			} while(c.Mem > h.Mem);
+			do {
+				c.Disk = (int)((rnd.nextFloat()*1.5f + 0.5f) * workload.get(i).Disk);
+				System.out.println(i + "D CC: " + c.Disk + "HH: " + h.Disk);
+			} while(c.Disk > h.Disk);
+			
+			next.add(c);
 		}
 		
 		try {
-			IOUtil.saveAsXML(workload, "next.sim");
+			IOUtil.saveAsXML(next, "next.sim");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
