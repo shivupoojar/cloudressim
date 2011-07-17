@@ -32,6 +32,9 @@ public class GGA {
 	private boolean plotdata;
 	private boolean printsolutions;
 	
+	private int minD;
+	private int bestIndex;
+	
 	private List<Genotype> bestGenos; 			// 用来存每代的最好的
 	
 	private CloudSimEventListener progressListener;
@@ -40,6 +43,8 @@ public class GGA {
 		this.progressListener = progressListener;
 		this.gaparams = gaparams;
 		this.bestGenos = new ArrayList<Genotype>();
+		this.minD = Integer.MAX_VALUE;
+		this.bestIndex = -1;
 	}
 	
 	public void Initialize (Problem problem, int maxRuntimes, int seed)
@@ -86,7 +91,7 @@ public class GGA {
 				e1.printStackTrace();
 			}// .open (inifile.ReadString("solutionsfile"));
 			try {
-				solutionsFile.write("New data:" + format.format(date));
+				//solutionsFile.write("New data:" + format.format(date));
 			} catch (Exception e) {
 				printsolutions = false;
 				System.err.println("Warning: could not open solution files");
@@ -160,6 +165,12 @@ public class GGA {
 					e.printStackTrace();
 				}
 				
+			int distance = problem.getDistance(population.getBestGeno());
+			if (distance < minD) {
+				minD = distance;
+				bestIndex = gen - 1;
+			}
+				
 			CloudSimEvent e1 = new CloudSimEvent(CloudSimEvents.EVENT_PROGRESS_UPDATE);
 			e1.addParameter(Constants.PARAM_TIME, gen);
 			progressListener.cloudSimEventFired(e1);
@@ -228,6 +239,8 @@ public class GGA {
 
 	public Genotype getBestGeno() {
 		//return population.getBestGeno();
-		return population.getCurBestGeno();
+		//return population.getCurBestGeno();
+		System.out.println("\n\nbest is :!! " + bestIndex + "\n");
+		return bestGenos.get(bestIndex);
 	}
 }

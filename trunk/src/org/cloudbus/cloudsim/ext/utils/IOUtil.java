@@ -5,6 +5,7 @@ import java.beans.XMLEncoder;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -56,5 +57,19 @@ public class IOUtil {
 		inputFile.close();
 
 		return obj;
+	}
+	
+	public static void writeFile(String content, String outputFile) throws IOException{
+		FileWriter file = null;
+		try {
+			file = new FileWriter(outputFile);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			System.exit(0);
+		}
+
+		file.write(content);
+		
+		file.close();
 	}
 }

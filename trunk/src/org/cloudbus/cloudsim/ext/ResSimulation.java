@@ -146,7 +146,7 @@ public class ResSimulation {
 	            	
 	            	WorkLoad workload = new WorkLoad(workloadMethod, workloadFile, brokerId, datacenter0.getHostList().get(0), workloadSize);
 	            	workload.genWorkLoad();
-	            	workload.genNetwork("VolumeFile.txt");
+	            	//workload.genNetwork("VolumeFile.txt");
 	            	vmlist = workload.getVmList();
 
 	            	//submit vm list to the broker

@@ -132,9 +132,11 @@ public class AdvanceDatacenter extends Datacenter {
     
     private void allcateByGenotype(Genotype geno, Problem problem) {
     	int size = getVmQueue().size();
+    	String plan = "";
     	for (int i=0; i < size; i++) {
     		Vm vm = getVmQueue().get(i);
     		int host = problem.getHostAllocated(geno, i);//geno.getAllocatedHost(i);
+    		plan += host + " ";
     		System.out.println("Vm " + i + "size" +vm.getMips());
     		boolean result = getVmAllocationPolicy().allocateHostForVm(vm, getHostList().get(host));
     		int[] data = new int[3];
@@ -163,10 +165,13 @@ public class AdvanceDatacenter extends Datacenter {
 						.getHost(vm).getVmScheduler().getAllocatedMipsForVm(vm));
 			} else {
 				System.err.println("GGA Seems to be failed");
+				System.out.println("Host: " + problem.GetBinSize(host));
 				//assert(3==2);
 			}
     		
     	}
+    	
+    	System.out.println("VM ALLOCATON: " + plan);
     	
     	getVmQueue().clear();
     }

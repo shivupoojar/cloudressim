@@ -31,7 +31,7 @@ public class Problem {
 	public int getNrOfBins() {
 		return nrOfBins;
 	}
-	@Deprecated
+
 	public Capacity GetBinSize()
 	// return the size of the bin
 	{
@@ -394,10 +394,10 @@ class Bin {
 				// 如果放置返回错误，那么说明满了
 				isFull = !putItem(total, items.get(fit));
 				if (isFull) {
-					total.Bandwidth += items.get(fit).Bandwidth;
-					total.Cpu += items.get(fit).Cpu;
-					total.Mem += items.get(fit).Mem;
-					total.Disk += items.get(fit).Disk;
+					//total.Bandwidth += items.get(fit).Bandwidth;
+					//total.Cpu += items.get(fit).Cpu;
+					//total.Mem += items.get(fit).Mem;
+					//total.Disk += items.get(fit).Disk;
 					break;
 				} else {
 					// 这种情况下可以继续填充，该item被remain下来了
@@ -414,23 +414,28 @@ class Bin {
 	}
 	
 	private boolean putItem(Capacity bin, Capacity item) {
+		boolean avail = true;
+		
 		if (item.Cpu > bin.Cpu)
-			return false;
-		else
-			bin.Cpu -= item.Cpu;
-		if (item.Mem > bin.Mem)
-			return false;
-		else
-			bin.Mem -= item.Mem;
-		if (item.Disk > bin.Disk)
-			return false;
-		else
-			bin.Disk -= item.Disk;
-		if (item.Bandwidth > bin.Bandwidth)
-			return false;
-		else
-			bin.Bandwidth -= item.Bandwidth;
+			avail = false;
 			
-		return true;		
+		if (item.Mem > bin.Mem)
+			avail = false;
+			
+		if (item.Disk > bin.Disk)
+			avail = false;
+			
+		if (item.Bandwidth > bin.Bandwidth)
+			avail = false;
+			
+		
+		if (avail) {
+			bin.Cpu -= item.Cpu;
+			bin.Mem -= item.Mem;
+			bin.Disk -= item.Disk;
+			bin.Bandwidth -= item.Bandwidth;
+		}
+			
+		return avail;		
 	}
 }
