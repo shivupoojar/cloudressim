@@ -194,6 +194,24 @@ public class Problem {
 		return ScientificMethods.getLdistance(oldGeno, newGeno);
 	}
 	
+	public int getDistance(Genotype one, Genotype other) {
+		if (one == null || other == null) {
+			return 0;
+		}
+		
+		String oldGeno = "";
+		String newGeno = "";
+		
+		for (int i = 0; i < nrOfItems; i++) {
+			oldGeno += (char)('0' + one.getAllocatedBin(i));
+			newGeno += (char)('0' + other.getAllocatedBin(i));
+		}
+		
+		//System.out.println("new: " + newGeno + "\nold" + oldGeno);
+		
+		return ScientificMethods.getLdistance(oldGeno, newGeno);
+	}
+	
 	public int getHostAllocated(Genotype geno, int vm) {
 		if (old == null) {
 			return geno.getAllocatedBin(vm);
