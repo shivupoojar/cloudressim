@@ -115,6 +115,41 @@ public class Genotype {
 		//System.out.println("\n\nNetworkCost: " + problem.getTopology().getVolumeCostOfNetwork(objects) + "\n");
 
 	}
+	
+	public void xfdInitialize(int numberOfObjects, PackingT packingAlgorithm) {
+		int i, r;
+		
+		r = rnd.nextInt(99999);
+
+		idTag = idnum;
+		idnum++;
+		allEleMutationProb = 0;
+
+		packingUsed = packingAlgorithm;
+
+		if (packingUsed == PackingT.UNDIFINED) {
+			System.err.println("Error: No coloring algorithm defined");
+			System.exit(2);
+		}
+
+		nrOfGroups = 0;
+		// number of packs can be equal to number of objects
+		nrOfPacks = numberOfObjects;
+		nrOfObjects = numberOfObjects;
+
+		if (nrOfObjects > Constants.MAXOBJECTS) {
+			System.err.println("Error: number of objects is larger than "
+					+ Constants.MAXOBJECTS);
+			System.exit(2);
+		}
+
+		for (i = 0; i < nrOfObjects; i++)
+			objects[i] = Constants.UNCOLORED;
+		for (i = 0; i < nrOfObjects; i++)
+			PackObject(i);
+
+		Evaluate();
+	}
 
 	public void Evaluate() {
 		/*
@@ -984,6 +1019,12 @@ public class Genotype {
 		case FIRSTFIT:
 			PackObject_FirstFit_Advanced(object);
 			break;
+		case FFD:
+			PackObject_FirstFit_Simple(object);
+			break;
+		case BFD:
+			PackObject_BestFit(object);
+			break;
 		// These two have to be implemented
 		/*
 		 * case smallfirst: PackObject_OrderedPacking (object); break; case
@@ -1085,7 +1126,56 @@ public class Genotype {
                  groups[nrOfGroups - 1] = nrOfGroups - 1;
          }
 	} // PackObject_FirstFit_Simple ()
+	
+	private void PackObject_BestFit(int object)
+	// Packs an object by using a best fit heurist
+	{
+		 int best = 0;
+		 int leastLeft = Integer.MAX_VALUE; 
 
+         // First Fit Packing
+         int left = 0;
+         for (int i=0; i < nrOfObjects; i++) {
+        	 objects[object] = i;
+        	 left = tryBestFit(object);
+        	 if (left >= 0 && left < leastLeft) {
+        		 best = i;
+        		 leastLeft = left;        		 
+        	 } 
+         }
+         
+         objects[object] = best;
+
+         // New color used, update number of groups and
+         // add a new color to the group-part
+         if (best + 1 > nrOfGroups) {
+                 nrOfGroups = best + 1;
+                 groups[nrOfGroups - 1] = nrOfGroups - 1;
+         }
+	} // PackObject_FirstFit_Simple ()
+
+
+	private int tryBestFit(int object) {
+		int left = -1;
+		boolean success = false;
+		
+		int group = objects[object];
+		
+		//Capacity size = problem.GetBinSize();
+		// FUCK! This is not RIGHT!!!
+		Capacity size = problem.GetBinSize(group);
+		
+		for (int i=0; i < nrOfObjects; i++) {
+			if (objects[i] == group) {
+				//将第i个item放到bin里头，size记录当前这个bin剩余容量
+				success = problem.PutItem(size, i);
+				//如果不能放入的话，返回>0的violations，表示这个防止方法不符合要求
+				if (!success) return -1;
+			}
+		}
+			
+		return size.Cpu;
+	}
 
 	private void InsertGroup(int parentGroups[], int cp1, int cp2, int position)
 	// Given the group-part and the crossing-points of another geno,
