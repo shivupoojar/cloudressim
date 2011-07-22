@@ -86,7 +86,12 @@ public class Problem {
 		List<Capacity> workload;
 		// 这里读入上一轮的workload
 		try {
-			workload = (List<Capacity>) IOUtil.loadFromXml("old.sim");
+			// 这里的话，如果是old=null，就是XFD算法，只用new
+			if (old == null) {
+				workload = (List<Capacity>) IOUtil.loadFromXml(nrOfItems+"-new.sim");
+			} else {
+				workload = (List<Capacity>) IOUtil.loadFromXml(nrOfItems+"-old.sim");
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 			workload = null;
@@ -108,7 +113,7 @@ public class Problem {
 		}
 		
 		// 输出workload
-		printItems("old.csv");
+		printItems(nrOfItems + "-old.csv");
 		
 		this.old = old;
 		if (old != null) {
@@ -267,7 +272,7 @@ public class Problem {
 		// 重新读入Items
 		//items = new ArrayList<Capacity>();
 		try {
-			items = (ArrayList<Capacity>) IOUtil.loadFromXml("new.sim");
+			items = (ArrayList<Capacity>) IOUtil.loadFromXml(nrOfItems + "-new.sim");
 			//TODO: 这里new.xml临时的，应该用常量
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -278,7 +283,7 @@ public class Problem {
 		items.remove(0);
 		
 		// 输出workload
-		printItems("new.csv");
+		printItems(items.size()+"-new.csv");
 		
 		
 		// 放入到合适的Bin中

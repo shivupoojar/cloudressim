@@ -35,16 +35,20 @@ public class GGA {
 	private int minD;
 	private int bestIndex;
 	
+	// 求解问题大小
+	private int pSize;
+	
 	private List<Genotype> bestGenos; 			// 用来存每代的最好的
 	
 	private CloudSimEventListener progressListener;
 	
-	public GGA (CloudSimEventListener progressListener, GaParamsT gaparams) {
+	public GGA (CloudSimEventListener progressListener, GaParamsT gaparams, int pSize) {
 		this.progressListener = progressListener;
 		this.gaparams = gaparams;
 		this.bestGenos = new ArrayList<Genotype>();
 		this.minD = Integer.MAX_VALUE;
 		this.bestIndex = -1;
+		this.pSize = pSize;
 	}
 	
 	public void Initialize (Problem problem, int maxRuntimes, int seed)
@@ -85,7 +89,7 @@ public class GGA {
 		if (printsolutions)
 		{
 			try {
-				solutionsFile = new FileWriter("solutions");
+				solutionsFile = new FileWriter(pSize + "-solutions");
 			} catch (IOException e1) {
 				printsolutions = false;
 				e1.printStackTrace();
@@ -102,7 +106,7 @@ public class GGA {
 		if (plotdata)
 		{
 			try {
-				dataFile =  new FileWriter("data");
+				dataFile =  new FileWriter(pSize + "data");
 			} catch (IOException e1) {
 				plotdata = false;
 				e1.printStackTrace();
@@ -190,6 +194,12 @@ public class GGA {
 
 		if (printsolutions) {
 			//TODO: Solution file
+		}
+		
+		try {
+			dataFile.write("All final best is: " + this.getBestGeno() + "\n");
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		
 		//getBestGeno().CompactFromOutSide();

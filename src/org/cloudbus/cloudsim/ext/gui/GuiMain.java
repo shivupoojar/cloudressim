@@ -6,6 +6,9 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,13 +85,13 @@ private static final String CMD_ABOUT = "About";
 	
 	private Map<String, Object> results;
 	
-	/** No args constructor */
-	public GuiMain() throws Exception{	
-		simulation = new ResSimulation(this);
+	public GuiMain(int size, int strategy) throws Exception{	
+		simulation = new ResSimulation(this, size, strategy);
 		
+		/* fxxx the gui!
 		initUI();
 		showHomeScreen();
-		
+		*/
 	}
 	
 	private void initUI(){		
@@ -288,6 +291,10 @@ private static final String CMD_ABOUT = "About";
 		messagePanel.revalidate();
 		this.repaint();
 	}
+	
+	private void runSimulation() {
+		simulation.runSimulation();
+	}
 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getActionCommand().equals(CMD_CONFIGURE_SIMULATION)){			
@@ -356,6 +363,7 @@ private static final String CMD_ABOUT = "About";
 
 
 	public void cloudSimEventFired(CloudSimEvent e) {
+		/* fxxx the gui!
 		if (e.getId() == CloudSimEvents.EVENT_SIMULATION_ENDED){
 			simulationFinished = true;
 			simulationStarted = false;
@@ -371,7 +379,7 @@ private static final String CMD_ABOUT = "About";
 		} else if (e.getId() == CloudSimEvents.EVENT_GGA_FINISHED){
 			results = (Map<String, Object>) e.getParameter(Constants.PARAM_RESULT);
 			System.out.println("woooWWW: " + results.size());
-		}
+		}*/
 	}
 	
 	private void showOnScreenResults(){
@@ -385,8 +393,24 @@ private static final String CMD_ABOUT = "About";
 	public static void main(String[] args){
 		GuiMain app;
 		try {
-			app = new GuiMain();
-			app.setVisible(true);
+			int size = 300;
+			
+			File test = new File("outlog.txt"); 
+			PrintStream out = new PrintStream(new FileOutputStream(test)); 
+			//System.setOut(out); 
+			
+			System.out.println("The size is:" + size);
+			
+			app = new GuiMain(size, 2);			
+			app.runSimulation();
+			
+			app = new GuiMain(size, 1);			
+			app.runSimulation();
+			
+			app = new GuiMain(size, 0);			
+			app.runSimulation();
+			
+			//app.setVisible(true);
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, 
 										  "An error prevented the application from starting properly!",
