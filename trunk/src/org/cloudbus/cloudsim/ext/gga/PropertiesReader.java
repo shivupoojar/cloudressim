@@ -3,7 +3,7 @@ package org.cloudbus.cloudsim.ext.gga;
 import java.io.InputStream;
 
 public class PropertiesReader {
-	static final String FILE_NAME = "gga.properties";
+	static final String FILE_NAME = "conf.properties";
 	java.util.Properties properties = null;
 	private static PropertiesReader properties_object = null;
 

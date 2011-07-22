@@ -54,6 +54,179 @@ public class WorkLoad {
 		}		
 	}
 	
+	public static void genManyWorkload() {
+		int[] sizes = new int[5];
+		sizes[0] = 100;
+		sizes[1] = 300;
+		sizes[2] = 500;
+		sizes[3] = 800;
+		sizes[4] = 1000;
+		
+		for (int i=0; i < sizes.length; i++) {
+			genWorkload(sizes[i]);
+		}
+	}
+	
+	public static void genWorkload(int pSize) {
+		int hMips = 2000;
+    	int hSize = 1000000;
+    	int hRam = 2000;
+    	int hBw = 100;
+    	
+    	int mips;
+    	int size;
+    	int ram;
+    	int bw;
+    	
+    	mips = 0;
+    	size = 0;
+    	ram = 0;
+    	bw = 0;
+    	
+    	int cpuCnt = pSize / 4;
+    	int memCnt = pSize / 4;
+    	int bwCnt = pSize / 4;
+    	int diskCnt = pSize / 4;
+    	
+    	double meanMips = 0.4 * hMips;
+    	double deMips = 0.2 * hMips;
+    	double meanSize = 0.4 * hSize; 
+    	double deSize = 0.2 * hSize;
+    	double meanRam = 0.4 * hRam; 
+    	double deRam = 0.2 * hRam;
+    	double meanBw = 0.4 * hBw; 
+    	double deBw = 0.2 * hBw;
+    	
+    	Random rnd = new Random();
+    	Random rnd1 = new Random();
+    	Random rnd2 = new Random();
+    	Random rnd3 = new Random();
+    	Random rnd4 = new Random();
+    	
+    	List<Capacity> workload = new ArrayList<Capacity>();
+    	
+    	Capacity host = new Capacity();
+    	host.Cpu = hMips;
+    	host.Mem = hRam;
+    	host.Disk = hSize;
+    	host.Bandwidth = hBw;
+    	
+    	workload.add(host);
+    	
+    	int i=0;
+    	while (i < pSize) {
+    		// 递增i
+    		i ++;    		
+    		int choice = rnd.nextInt(100) % 4;
+    		Capacity c = null;
+    		double per = 0;
+    		switch (choice) {
+    		case 0:
+    			cpuCnt --;
+    			if (cpuCnt < 0) {
+    				i--;
+    				continue;
+    			}
+    			while (mips <= 0.1 || mips > hMips || per <= 0.1) {
+        			mips = (int) ScientificMethods.normDistribution(rnd1, meanMips, deMips);
+    				per = (double)mips / hMips;
+    			}
+    			
+    			System.out.println("Perss" + per);
+    			
+        		while (size <= 0 || ((double)size / hSize) > per)
+        			size = (int) (hSize * (rnd2.nextDouble()*0.15 + 0.1));
+        		while (ram <= 0 || ((double)ram / hRam) > per)
+        			ram = (int) (hRam * (rnd3.nextDouble()*0.15 + 0.1));
+        		while (bw <= 0 || ((double)bw / hBw) > per)
+        			bw = (int) (hBw * (rnd4.nextDouble()*0.15 + 0.1));
+    			break;
+    		case 1:
+    			memCnt --;
+    			if (memCnt < 0) {
+    				i--;
+    				continue;
+    			}
+    			while (ram <= 0.1 || ram > hRam || per <= 0.1) {
+    				ram = (int) ScientificMethods.normDistribution(rnd3, meanRam, deRam);
+    				per = (double)ram / hRam;
+    			}
+    			
+    			System.out.println("Perss" + per);
+    			
+        		while (size <= 0 || ((double)size / hSize) > per)
+        			size = (int) (hSize * (rnd2.nextDouble()*0.15 + 0.1));
+        		while (mips <= 0 || ((double)mips / hMips) > per)
+        			mips = (int) (hMips * (rnd1.nextDouble()*0.15 + 0.1));
+        		while (bw <= 0 || ((double)bw / hBw) > per)
+        			bw = (int) (hBw * (rnd4.nextDouble()*0.15 + 0.1));
+    			break;
+    		case 2:
+    			diskCnt --;
+    			if (diskCnt < 0) {
+    				i--;
+    				continue;
+    			}
+    			while (size <= 0.1 || size > hSize || per <= 0.1) {
+    				size = (int) ScientificMethods.normDistribution(rnd2, meanSize, deSize);
+    				per = (double)size / hSize;
+    			}
+    			
+    			System.out.println("Perss" + per);
+    			
+    			while (ram <= 0 || ((double)ram / hRam) > per)
+        			ram = (int) (hRam * (rnd3.nextDouble()*0.15 + 0.1));
+        		while (mips <= 0 || ((double)mips / hMips) > per)
+        			mips = (int) (hMips * (rnd1.nextDouble()*0.15 + 0.1));
+        		while (bw <= 0 || ((double)bw / hBw) > per)
+        			bw = (int) (hBw * (rnd4.nextDouble()*0.15 + 0.1));
+    			break;
+    		case 3:
+    			bwCnt --;
+    			if (bwCnt < 0) {
+    				i--;
+    				continue;
+    			}
+    			while (bw <= 0.1 || bw > hBw || per <= 0.1) {
+    				bw = (int) ScientificMethods.normDistribution(rnd4, meanBw, deBw);
+    				per = (double)bw / hBw;
+    			}
+    			
+    			System.out.println("Perss" + per);
+    			
+    			while (ram <= 0 || ((double)ram / hRam) > per)
+        			ram = (int) (hRam * (rnd3.nextDouble()*0.15 + 0.1));
+    			while (mips <= 0 || ((double)mips / hMips) > per)
+        			mips = (int) (hMips * (rnd1.nextDouble()*0.15 + 0.1));
+        		while (size <= 0 || ((double)size / hSize) > per)
+        			size = (int) (hSize * (rnd2.nextDouble()*0.15 + 0.1));
+    			break;
+    		}
+    		c = new Capacity();
+    		c.Cpu = mips;
+    		c.Mem = ram;
+    		c.Disk = size;
+    		c.Bandwidth = bw;
+    		
+    		mips = 0;
+        	size = 0;
+        	ram = 0;
+        	bw = 0;
+    		
+    		workload.add(c);
+    	}
+    	
+    	try {
+			IOUtil.saveAsXML(workload, (workload.size()-1) + "-old.sim");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		workload.remove(0);
+		
+		genDynamicWorkload(workload, new Capacity(host));
+	}
+	
 	public void genNetwork(String fileName) {
 		FileWriter file = null;
 		Random comRnd = new Random();
@@ -194,12 +367,12 @@ public class WorkLoad {
 			vmid++;
 		}
 				
-		genDynamicWorkload(workload, ch);
+		//genDynamicWorkload(workload, ch);
 		
 		return (List<T>) vms;
 	}
 	
-	private void genDynamicWorkload(List<Capacity> workload, Capacity h) {
+	private static void genDynamicWorkload(List<Capacity> workload, Capacity h) {
 		Random rnd = new Random();
 		List<Capacity> next = new ArrayList<Capacity>();
 		next.add(h);
@@ -227,7 +400,7 @@ public class WorkLoad {
 		}
 		
 		try {
-			IOUtil.saveAsXML(next, "next.sim");
+			IOUtil.saveAsXML(next, workload.size() + "-new.sim");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -332,4 +505,7 @@ public class WorkLoad {
 		this.vmList = vmList;
 	}
 
+	public static void main(String[] args){
+		genManyWorkload();
+	}
 }

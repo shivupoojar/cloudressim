@@ -888,6 +888,10 @@ public class Genotype {
 		ret += tDisk;
 		ret += ", ";
 		ret += tBw;
+		
+		ret += ", ";
+		ret += this.GetFitness();
+		
 		return ret;
 	}
 

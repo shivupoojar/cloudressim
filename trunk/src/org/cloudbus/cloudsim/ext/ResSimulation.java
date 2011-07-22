@@ -76,6 +76,9 @@ public class ResSimulation {
 	private int mutations;
 	private double mutationProb;
 	
+	// 策略定义，0为GGA，1为FFD，2为BFD
+	private int strategy;
+	
 	private CloudSimEventListener guiListener;
 	
 	public ResSimulation(CloudSimEventListener gui) {
@@ -99,6 +102,14 @@ public class ResSimulation {
 		this.crossover = Constants.DEFAULT_GGA_CROSSOVER;
 		this.mutations = Constants.DEFAULT_GGA_MUTATIONS;
 		this.mutationProb = Constants.DEFAULT_GGA_MUTATION_PROB;		
+	}
+	
+	public ResSimulation(CloudSimEventListener gui, int workloadSize, int strategy) {
+		this(gui);
+		
+		this.workloadSize = workloadSize;
+		this.workloadFile = Integer.toString(workloadSize) + "-new.sim";
+		this.strategy = strategy;
 	}
 
 	/**
@@ -278,7 +289,7 @@ public class ResSimulation {
 	        
 	        AdvanceDatacenter datacenter = null;
 	        try {
-	            datacenter = new AdvanceDatacenter(name, characteristics, new VmAllocationPolicyLite(hostList), storageList, 0, workloadSize, ggaGens, guiListener, gaparams, topology);
+	            datacenter = new AdvanceDatacenter(name, characteristics, new VmAllocationPolicyLite(hostList), storageList, 0, workloadSize, ggaGens, guiListener, gaparams, topology, strategy);
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
