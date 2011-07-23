@@ -106,7 +106,7 @@ public class GGA {
 		if (plotdata)
 		{
 			try {
-				dataFile =  new FileWriter(pSize + "data");
+				dataFile =  new FileWriter(pSize + "-data");
 			} catch (IOException e1) {
 				plotdata = false;
 				e1.printStackTrace();
