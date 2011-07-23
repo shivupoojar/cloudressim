@@ -68,8 +68,9 @@ public class Population {
 		int object = 0; // holds first faulty gene
 
 		for (i = 0; i < gaParams.PopulationSize; i++) {
-			if (debug)
-				population[i].Print();
+			if (debug) {
+				//population[i].Print();
+			}
 			// Look for a better best fitness
 			if (population[bestIndex].GetFitness() < population[i].GetFitness())
 				bestIndex = i;

@@ -393,22 +393,29 @@ private static final String CMD_ABOUT = "About";
 	public static void main(String[] args){
 		GuiMain app;
 		try {
-			int size = 300;
+			int [] sizes = new int[5];
+			sizes[0] = 100;
+			sizes[1] = 300;
+			sizes[2] = 500;
+			sizes[3] = 800;
+			sizes[4] = 1000;
 			
 			File test = new File("outlog.txt"); 
 			PrintStream out = new PrintStream(new FileOutputStream(test)); 
-			//System.setOut(out); 
+			System.setOut(out); 
 			
-			System.out.println("The size is:" + size);
-			
-			app = new GuiMain(size, 2);			
-			app.runSimulation();
-			
-			app = new GuiMain(size, 1);			
-			app.runSimulation();
-			
-			app = new GuiMain(size, 0);			
-			app.runSimulation();
+			for (int i=0; i < 5; i++) {
+				System.out.println("The size now is:" + sizes[i]);
+				
+				app = new GuiMain(sizes[i], 2);			
+				app.runSimulation();
+				
+				app = new GuiMain(sizes[i], 1);			
+				app.runSimulation();
+				
+				app = new GuiMain(sizes[i], 0);			
+				app.runSimulation();
+			}
 			
 			//app.setVisible(true);
 		} catch (Exception e) {
