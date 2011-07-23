@@ -7,6 +7,7 @@ import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Vm;
 import org.cloudbus.cloudsim.ext.Topology;
 import org.cloudbus.cloudsim.ext.TopologyParamsT;
+import org.cloudbus.cloudsim.ext.utils.ScientificMethods;
 
 public class Problem {
 	private ArrayList<Capacity> items;
@@ -14,6 +15,8 @@ public class Problem {
 	private int nrOfItems;
 	private int nrOfBins;
 	private Topology topology;
+	
+	private Genotype old;
 	
 	public int getNrOfItems() {
 		return nrOfItems;
@@ -50,9 +53,11 @@ public class Problem {
 			
 		return true;		
 	}
-	public void CreateProblem(List<? extends Vm> vmList, List<? extends Host> hostList, TopologyParamsT topologyParams) 
+	public void CreateProblem(List<? extends Vm> vmList, List<? extends Host> hostList, TopologyParamsT topologyParams, Genotype oldGeno)
 	// Create the problem.
 	{
+		this.old = oldGeno;
+		
 		items = new ArrayList<Capacity>();
 		nrOfItems = vmList.size();
 		nrOfBins = hostList.size();
@@ -106,5 +111,25 @@ public class Problem {
 	}
 	public Topology getTopology() {
 		return topology;
+	}
+	
+	public int getDistance(Genotype one) {
+		Genotype other = old;
+		
+		if (one == null || other == null) {
+			return 0;
+		}
+		
+		String oldGeno = "";
+		String newGeno = "";
+		
+		for (int i = 0; i < nrOfItems; i++) {
+			oldGeno += (char)('0' + one.getAllocatedHost(i));
+			newGeno += (char)('0' + other.getAllocatedHost(i));
+		}
+		
+		//System.out.println("new: " + newGeno + "\nold" + oldGeno);
+		
+		return ScientificMethods.getLdistance(oldGeno, newGeno);
 	}
 }

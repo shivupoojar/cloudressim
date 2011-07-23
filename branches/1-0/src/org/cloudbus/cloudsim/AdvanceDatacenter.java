@@ -12,6 +12,7 @@ import org.cloudbus.cloudsim.ext.gga.GGA;
 import org.cloudbus.cloudsim.ext.gga.GaParamsT;
 import org.cloudbus.cloudsim.ext.gga.Genotype;
 import org.cloudbus.cloudsim.ext.gga.Problem;
+import org.cloudbus.cloudsim.ext.gga.PropertiesReader;
 import org.cloudbus.cloudsim.ext.event.CloudSimEventListener;
 
 public class AdvanceDatacenter extends Datacenter {
@@ -82,7 +83,12 @@ public class AdvanceDatacenter extends Datacenter {
     
     private void allocateVmsWithGGA() {
     	Problem problem = new Problem();
-    	problem.CreateProblem(getVmQueue(), getHostList(), topologyParams);
+    	
+    	PropertiesReader properties = PropertiesReader.loader();
+		String oldG = properties.getString(vmQueueCapacity+"old");
+    	Genotype oldGeno = new Genotype(oldG);
+    	
+    	problem.CreateProblem(getVmQueue(), getHostList(), topologyParams, oldGeno);
     	
     	GGA gga = new GGA(progressListener, gaparams);
     	//TODO: The initialization variable should be well considered
