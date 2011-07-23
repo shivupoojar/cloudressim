@@ -44,6 +44,34 @@ public class Genotype {
 		uBw = new double[Constants.MAXOBJECTS];
 		uAvg = new double[Constants.MAXOBJECTS];
 	}
+	
+	public Genotype(String geno) {
+		this.objects = new int[Constants.MAXOBJECTS];
+		this.groups = new int[Constants.MAXOBJECTS];
+		this.packingUsed = PackingT.FIRSTFIT;
+		this.gFitness = new double[Constants.MAXOBJECTS];
+		
+		String [] tmp = geno.split(":");
+		String [] objs = tmp[0].trim().split(" ");
+		String [] grps = tmp[1].trim().split(" ");
+		
+		nrOfObjects = objs.length;
+		nrOfGroups = grps.length;
+		
+		for (int i=0; i < objs.length; i++) {
+			objects[i] = Integer.parseInt(objs[i]);
+			//System.out.print(i + ": " + objs[i] + "--");
+		}
+		
+		for (int i=0; i < grps.length; i++) {
+			groups[i] = Integer.parseInt(grps[i]);
+			//System.out.print(i + ": " + grps[i] + "--");
+		}
+		
+		//System.out.println("iii: " + this);
+		        		
+		//System.exit(0);
+	}
 
 	public void Initialize(int numberOfObjects,
 			double allElemutationProbability, int kBinpacking,

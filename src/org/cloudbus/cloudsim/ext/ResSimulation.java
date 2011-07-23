@@ -81,7 +81,8 @@ public class ResSimulation {
 	public ResSimulation(CloudSimEventListener gui) {
 		this.guiListener = gui;
 		
-		this.workloadMethod = Constants.WORKLOAD_AUTO_GEN;
+		//this.workloadMethod = Constants.WORKLOAD_AUTO_GEN;
+		this.workloadMethod = Constants.WORKLOAD_FROM_XML;
 		this.workloadFile = Constants.DEFAULT_WORKLOAD_FILE;
 		this.workloadSize = Constants.DEFAULT_WORKLOAD_SIZE;
 		this.hostCpu =  Constants.DEFAULT_HOST_CPU;
@@ -98,6 +99,13 @@ public class ResSimulation {
 		this.crossover = Constants.DEFAULT_GGA_CROSSOVER;
 		this.mutations = Constants.DEFAULT_GGA_MUTATIONS;
 		this.mutationProb = Constants.DEFAULT_GGA_MUTATION_PROB;		
+	}
+	
+	public ResSimulation(CloudSimEventListener gui, int workloadSize) {
+		this(gui);
+		
+		this.workloadSize = workloadSize;
+		this.workloadFile = Integer.toString(workloadSize) + "-new.sim";
 	}
 
 	/**

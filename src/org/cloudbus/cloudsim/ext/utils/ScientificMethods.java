@@ -60,4 +60,51 @@ public class ScientificMethods {
 		double rndNum = rndSeed.nextGaussian();
 		return (rndNum * deviation + mean); 
 	}
+	
+	public static int getLdistance(String source, String target) {
+		// step 1
+
+		int n = source.length();
+		int m = target.length();
+		if (m == 0)
+			return n;
+		if (n == 0)
+			return m;
+		// Construct a matrix
+		int[][] matrix = new int[n+1][m+1];
+		for (int i = 0; i <= n; i++)
+			for (int j = 0; j <= m; j++)
+				matrix[i][j] = 0;
+
+		// step 2 Initialize
+
+		for (int i = 1; i <= n; i++)
+			matrix[i][0] = i;
+		for (int i = 1; i <= m; i++)
+			matrix[0][i] = i;
+
+		// step 3
+		for (int i = 1; i <= n; i++) {
+			char si = source.charAt(i - 1);
+			// step 4
+			for (int j = 1; j <= m; j++) {
+
+				char dj = target.charAt(j - 1);
+				// step 5
+				int cost;
+				if (si == dj) {
+					cost = 0;
+				} else {
+					cost = 1;
+				}
+				// step 6
+				int above = matrix[i - 1][j] + 1;
+				int left = matrix[i][j - 1] + 1;
+				int diag = matrix[i - 1][j - 1] + cost;
+				matrix[i][j] = Math.min(above, Math.min(left, diag));
+
+			}
+		}// step7
+		return matrix[n][m];
+	}
 }

@@ -10,6 +10,7 @@ import org.cloudbus.cloudsim.ext.event.CloudSimEventListener;
 import org.cloudbus.cloudsim.ext.event.CloudSimEvent;
 import org.cloudbus.cloudsim.ext.event.CloudSimEvents;
 import org.cloudbus.cloudsim.ext.gga.enums.PackingT;
+import org.cloudbus.cloudsim.ext.utils.IOUtil;
 import org.cloudbus.cloudsim.ext.utils.ScientificMethods;
 import org.cloudbus.cloudsim.ext.Constants;
 
@@ -77,14 +78,15 @@ public class GGA {
 		if (printsolutions)
 		{
 			try {
-				solutionsFile = new FileWriter("solutions-" + timeTag);
+				solutionsFile = new FileWriter("solutions-" + nrofobjects);
 			} catch (IOException e1) {
 				printsolutions = false;
 				e1.printStackTrace();
 				System.exit(0);
 			}// .open (inifile.ReadString("solutionsfile"));
 			try {
-				solutionsFile.write("New data:" + timeTag + "\n");
+				//solutionsFile.write("New data:" + timeTag + "\n");
+				solutionsFile.write("New data:" + nrofobjects + "\n");
 			} catch (Exception e) {
 				printsolutions = false;
 				System.err.println("Warning: could not open solution files");
@@ -95,14 +97,15 @@ public class GGA {
 		if (plotdata)
 		{
 			try {
-				dataFile =  new FileWriter("data-"+timeTag);
+				dataFile =  new FileWriter("data-"+nrofobjects);
 			} catch (IOException e1) {
 				plotdata = false;
 				e1.printStackTrace();
 			}//.open (inifile.ReadString("datafile"));
 			
 			try {
-				dataFile.write("New data:" + timeTag + "\n");
+				//dataFile.write("New data:" + timeTag + "\n");
+				dataFile.write("New data:" + nrofobjects + "\n");
 			} catch (Exception e) {
 				plotdata = false;
 				e.printStackTrace();
@@ -149,7 +152,8 @@ public class GGA {
 			if (plotdata)
 				try {
 					//dataFile.write(gen + " generation's best: " + population.getBestGeno() + "\n");
-					dataFile.write(population.getBestGeno().getStatics() + "\n");
+					solutionsFile.write("gen" + gen + ", " + population.getBestGeno().getStatics() + ", " + problem.getDistance(population.getBestGeno()) + "\n");
+					dataFile.write("gen" + gen + ", " + population.getBestGeno() + "\n");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -176,6 +180,11 @@ public class GGA {
 		}
 		
 		//getBestGeno().CompactFromOutSide();
+		try {
+			IOUtil.writeFile("" + this.getBestGeno(), nrofobjects+".best");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 				
 		population.PrintBest ();
 
